@@ -1,7 +1,7 @@
 """
 tt-midi-maker MCP server.
 
-8 tools, 4 prompts, 4 resources, argument completions.
+12 tools, 4 prompts, 4 resources, argument completions.
 Run with: python -m tt_midi_maker
 """
 from __future__ import annotations
@@ -31,6 +31,11 @@ from .models.blueprint import MusicalBlueprint
 from .player import (
     active_jobs, job_status, list_output_ports, list_soundfonts,
     play as _player_play, stop as _player_stop,
+)
+from .stream_player import (
+    loop_play as _loop_play, loop_queue as _loop_queue,
+    loop_stop as _loop_stop, start_synth as _start_synth,
+    synth_status as _synth_status,
 )
 from .prompt_engine import build_blueprint
 from .session import MusicalContext, clear_session, get_session, set_session
@@ -349,6 +354,7 @@ def list_midi_devices() -> dict:
         "soundfonts": list_soundfonts(),
         "fluidsynth_available": bool(shutil.which("fluidsynth")),
         "active_jobs": active_jobs(),
+        "streaming_synth": _synth_status(),
     }
 
 
@@ -413,6 +419,90 @@ Call list_midi_devices to see currently active jobs (returned in active_jobs fie
 )
 def stop_playback(job_id: str) -> dict:
     return _player_stop(job_id)
+
+
+@mcp.tool(
+    title="Start Streaming Synth",
+    description="""Start a persistent FluidSynth server for real-time loop playback.
+
+Must be called once before loop_play / loop_queue / loop_stop. Starts FluidSynth
+as an ALSA sequencer server and opens a direct MIDI connection to it. The server
+stays alive for the session — call again only to change soundfont or gain.
+
+audio_driver: 'pulseaudio' (default) or 'alsa'
+soundfont:    path to a .sf2 file; defaults to the system FluidR3 GM soundfont
+gain:         output volume multiplier (default 2.0; raise if quiet)""",
+    annotations=ToolAnnotations(
+        readOnlyHint=False, destructiveHint=False,
+        idempotentHint=False, openWorldHint=True,
+    ),
+)
+def synth_start(
+    soundfont: str | None = None,
+    gain: float = 2.0,
+    audio_driver: str = "pulseaudio",
+) -> dict:
+    return _start_synth(soundfont=soundfont, gain=gain, driver=audio_driver)
+
+
+@mcp.tool(
+    title="Loop MIDI File",
+    description="""Start looping a MIDI file immediately through the streaming synth.
+
+Interrupts any currently looping pattern. The file plays in a tight real-time
+loop: when the last bar ends the first bar begins, with no gap and no file I/O
+overhead. Timing is driven by the system monotonic clock at tick resolution.
+
+Call synth_start first. Use generate_midi to create loop files.
+Returns current player state including loop_bars and bpm.""",
+    annotations=ToolAnnotations(
+        readOnlyHint=False, destructiveHint=False,
+        idempotentHint=False, openWorldHint=True,
+    ),
+)
+def loop_play(file_path: str) -> dict:
+    return _loop_play(file_path)
+
+
+@mcp.tool(
+    title="Queue Next Loop",
+    description="""Queue a MIDI file to take over at the next loop boundary.
+
+The current loop keeps playing undisturbed until it reaches its end, then the
+queued pattern starts on the downbeat — seamless, no audible gap. Call this
+while the current loop is playing to set up the next variation.
+
+Typical flow:
+  1. loop_play("bassline_v1.mid")          # starts immediately
+  2. generate_midi("add more energy")      # generate while it loops
+  3. loop_queue("bassline_v2.mid")         # queues for next boundary
+  4. generate_midi("now add horns")        # keep going...
+  5. loop_queue("full_arrangement.mid")
+
+Only one pattern can be queued; calling again replaces the previous queued file.""",
+    annotations=ToolAnnotations(
+        readOnlyHint=False, destructiveHint=False,
+        idempotentHint=False, openWorldHint=True,
+    ),
+)
+def loop_queue(file_path: str) -> dict:
+    return _loop_queue(file_path)
+
+
+@mcp.tool(
+    title="Stop Loop",
+    description="""Stop the looping playback.
+
+immediately=False (default): finishes the current loop then stops cleanly.
+  All notes are silenced on the last beat, preserving the musical phrase end.
+immediately=True: cuts off right now, sends all-notes-off on every channel.""",
+    annotations=ToolAnnotations(
+        readOnlyHint=False, destructiveHint=False,
+        idempotentHint=True, openWorldHint=False,
+    ),
+)
+def loop_stop(immediately: bool = False) -> dict:
+    return _loop_stop(immediately=immediately)
 
 
 # ---------------------------------------------------------------------------
