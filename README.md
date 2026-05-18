@@ -12,14 +12,16 @@ Prompt → LLM blueprint → Aria MIDI transformer (tt-forge) → coherence laye
 ## What it does
 
 Give it a text description; get back a polished, multi-track General MIDI file ready to
-drop into any DAW or sampler.
+drop into any DAW, sampler, or hardware synth — or play directly through the built-in
+FluidSynth software synthesizer.
 
 ```
-"dreamy lo-fi hip hop, slow, dusty drums and sparse piano"
-  → 120 BPM, C major, 8-bar loop
-  → melody (ch1) + bass (ch2) + pad (ch5) + drums (ch10)
+"cool jazz vamp, D minor, sparse for soloing, 68 BPM"
+  → Dm | Gm | Bb | C progression, 4-bar loop
+  → melody (ch1) + bass (ch2) + harmony (ch3) + drums (ch10)
   → scale-quantized, chord-filtered, humanised
   → ~/Music/tt-midi-maker/1716000000.mid
+  → synth_start() → loop_play("…/1716000000.mid")  ← plays right now
 ```
 
 ---
@@ -32,7 +34,9 @@ drop into any DAW or sampler.
 | **Coherence** | Scale quantisation, chord-aware note filtering, velocity humanisation, timing nudge, phrase stitching |
 | **Roles** | 7 GM roles: melody (ch1), bass (ch2), harmony (ch3), arp (ch4), pad (ch5), fx (ch9), drums (ch10) |
 | **Styles** | 6 built-in: lo-fi hip hop, bossa nova, ambient, hip hop, jazz, drum and bass |
-| **MCP interface** | 5 tools · 4 prompts · 4 resources · argument completions |
+| **File playback** | FluidSynth (GM software synth → system audio) or raw MIDI to any ALSA port with per-channel routing |
+| **Streaming loops** | Real-time loop player with seamless pattern transitions at bar boundaries (no gap, no file I/O) |
+| **MCP interface** | 12 tools · 4 prompts · 4 resources · argument completions |
 | **Session state** | Persistent key / BPM / style / chord progression across calls |
 
 ---
@@ -43,15 +47,15 @@ drop into any DAW or sampler.
 # Install
 pip install -e ".[dev]"
 
+# Install FluidSynth + GM SoundFont for local audio (Ubuntu/Debian)
+sudo apt install fluidsynth fluid-soundfont-gm
+
 # Point at your LLM (needs OpenAI-compatible /chat/completions)
 export MIDI_LLM_URL=http://localhost:8000/v1
 export MIDI_LLM_MODEL=qwen3          # or llama3, mistral, etc.
 
 # Start the MCP server (streamable-HTTP on :8000 by default)
 python -m tt_midi_maker
-
-# Or use the installed entry point
-tt-midi-maker
 ```
 
 The server announces itself at `http://127.0.0.1:8000`.  
@@ -61,7 +65,9 @@ Output files land in `~/Music/tt-midi-maker/`.
 
 ## MCP Tools
 
-### `generate_midi`
+### Generation
+
+#### `generate_midi`
 
 Generate a new multi-track MIDI file from a prompt.
 
@@ -84,7 +90,7 @@ Returns: `file_path`, `bars_generated`, `bpm`, `key`, `roles_generated`, `hardwa
 
 ---
 
-### `continue_midi`
+#### `continue_midi`
 
 Extend an existing MIDI file, maintaining musical continuity.
 
@@ -99,7 +105,24 @@ Returns: `file_path`, `bars_added`, `total_bars`
 
 ---
 
-### `describe_midi`
+#### `set_musical_context`
+
+Establish a persistent session context that overrides anything inferred from prompts.
+
+| Parameter | Type | Description |
+|---|---|---|
+| `key` | `str` | e.g. `"D minor"`, `"F# major"` — pass `null` to clear |
+| `bpm` | `int` | 40–300 — pass `null` to clear |
+| `style` | `str` | e.g. `"lo-fi hip hop"` |
+| `chord_progression` | `list[str]` | Roman numerals or chord names: `["Dm","Gm","A7","Dm"]` |
+
+Set this first when composing a multi-part piece. Returns: all fields plus `fields_set`.
+
+---
+
+### Analysis
+
+#### `describe_midi`
 
 Analyse a MIDI file and return a structured musical description.
 
@@ -112,23 +135,7 @@ Returns: `key`, `tempo_bpm`, `time_signature`, `bars`, `tracks`, `chord_progress
 
 ---
 
-### `set_musical_context`
-
-Establish a persistent session context that overrides anything inferred from prompts.
-
-| Parameter | Type | Description |
-|---|---|---|
-| `key` | `str` | e.g. `"D minor"`, `"F# major"` — pass `null` to clear |
-| `bpm` | `int` | 40–300 — pass `null` to clear |
-| `style` | `str` | e.g. `"lo-fi hip hop"` |
-| `chord_progression` | `list[str]` | Roman numerals or chord names: `["Dm","Gm","A7","Dm"]` |
-
-Set this first when composing a multi-part piece to keep all sections in the same
-harmonic world. Returns: all fields plus `fields_set`.
-
----
-
-### `chat_with_midi`
+#### `chat_with_midi`
 
 Ask any musical question about a MIDI file.
 
@@ -144,6 +151,135 @@ Example questions:
 - `"How could I make this feel more like 90s R&B?"`
 
 Returns: `answer`, `analysis_context`
+
+---
+
+### File Playback
+
+#### `list_midi_devices`
+
+Enumerate all available MIDI output destinations.
+
+Returns: `alsa_ports`, `soundfonts`, `fluidsynth_available`, `active_jobs`,
+`streaming_synth` (status of the real-time loop player).
+
+---
+
+#### `play_midi`
+
+Play a MIDI file once through FluidSynth or any ALSA MIDI port.
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `file_path` | `str` | — | Path to a `.mid` file |
+| `backend` | `"fluidsynth"\|"alsa"` | `"fluidsynth"` | Synthesis engine |
+| `port` | `str` | auto | ALSA output port name (alsa backend only) |
+| `channel_map` | `dict[str,str]` | — | Per-channel port routing; keys are 1-indexed channel strings |
+| `soundfont` | `str` | FluidR3 GM | Path to a `.sf2` SoundFont |
+| `gain` | `float` | `2.0` | Output volume multiplier |
+| `blocking` | `bool` | `false` | Wait for playback to finish before returning |
+
+Returns: `job_id` — pass to `stop_playback` to cancel early.
+
+**Per-channel routing example:**
+```json
+{
+  "channel_map": {
+    "1": "USB Synth A:0",
+    "10": "Bluetooth Drum Machine:1"
+  }
+}
+```
+Channels not in the map fall back to `port`. GM layout: 1=melody, 2=bass,
+3=harmony, 4=arp, 5=pad, 9=fx, 10=drums.
+
+---
+
+#### `stop_playback`
+
+Stop a background playback job started by `play_midi`.
+
+| Parameter | Type | Description |
+|---|---|---|
+| `job_id` | `str` | Job ID returned by `play_midi` |
+
+---
+
+### Streaming Loop Playback
+
+The streaming player runs FluidSynth as a persistent ALSA sequencer server and drives
+it from a background thread using the monotonic clock. Patterns transition at bar
+boundaries with no audible gap — ideal for live performance, composition workflows,
+and waiting-for-instruction loops.
+
+#### `synth_start`
+
+Start the FluidSynth server. Call once per session before any `loop_*` tool.
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `soundfont` | `str` | FluidR3 GM | Path to a `.sf2` SoundFont |
+| `gain` | `float` | `2.0` | Output volume multiplier |
+| `audio_driver` | `str` | `"pulseaudio"` | Audio backend: `"pulseaudio"` or `"alsa"` |
+
+Returns: `status`, `port`, `running`, `soundfont`, `gain`
+
+---
+
+#### `loop_play`
+
+Start looping a MIDI file immediately. Interrupts any current playback.
+
+| Parameter | Type | Description |
+|---|---|---|
+| `file_path` | `str` | Path to a `.mid` file |
+
+Returns: player state — `state`, `current_file`, `queued_file`, `bpm`, `loop_bars`,
+`loops_played`
+
+---
+
+#### `loop_queue`
+
+Queue a MIDI file to take over at the next loop boundary.
+
+The current loop plays undisturbed until it reaches its natural end, then the queued
+pattern starts on the downbeat — no gap, no click.
+
+| Parameter | Type | Description |
+|---|---|---|
+| `file_path` | `str` | Path to a `.mid` file |
+
+Only one pattern can be queued; calling again replaces the previous queued file.
+
+---
+
+#### `loop_stop`
+
+Stop the loop player.
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `immediately` | `bool` | `false` | `false` = finish current loop then stop; `true` = cut off now + all-notes-off |
+
+---
+
+**Typical streaming workflow:**
+
+```
+synth_start()
+loop_play("dm_jazz_vamp.mid")          # starts immediately
+
+# While it loops — generate a variation
+generate_midi("add trombone solo")     # creates next_pattern.mid
+loop_queue("next_pattern.mid")         # transitions on next bar boundary
+
+# Generate another layer
+generate_midi("make it more intense")
+loop_queue("intense.mid")              # replaces queued slot
+
+loop_stop()                            # finishes current loop, then stops
+```
 
 ---
 
@@ -202,7 +338,9 @@ Pre-built workflows for common composition tasks:
 
 ```
 tt_midi_maker/
-├── server.py              MCP server — 5 tools, 4 prompts, 4 resources
+├── server.py              MCP server — 12 tools, 4 prompts, 4 resources
+├── stream_player.py       Real-time loop player: FluidSynthServer + LoopPlayer
+├── player.py              File-based playback: FluidSynth subprocess or ALSA port
 ├── prompt_engine.py       LLM → MusicalBlueprint (Pydantic model)
 ├── assembler.py           RoleTrack list → Type-1 mido MidiFile
 ├── analyzer.py            mido parse → facts dict → LLM describe / chat
@@ -244,6 +382,27 @@ Prompt + MusicalContext
         │
         ▼
    assembler.py  ──────────────────▶  Type-1 .mid file
+        │
+        ├─▶ player.py (file-based)    fluidsynth -ni → audio, or mido → ALSA port
+        └─▶ stream_player.py (loop)   FluidSynthServer + LoopPlayer → seamless loops
+```
+
+### Streaming player internals
+
+```
+FluidSynthServer
+  subprocess.Popen(["fluidsynth", "-a", "pulseaudio", "-m", "alsa_seq", ...],
+                   stdin=PIPE)     ← stdin=PIPE keeps the process alive
+  polls mido.get_output_names() until "FLUID Synth ..." appears
+  returns ALSA port name
+
+LoopPlayer (background thread)
+  time.monotonic() clock — sub-millisecond note scheduling
+  spt = 60 / (bpm × ticks_per_beat)  seconds per tick
+  loop_origin advances by loop_ticks × spt at each boundary
+  _next pattern swapped in atomically under threading.Lock
+  stop(immediately=False) → sets state="stopping", exits after current loop
+  stop(immediately=True)  → sets state="stopped", sends CC#123 all-notes-off
 ```
 
 ---
@@ -263,9 +422,10 @@ Prompt + MusicalContext
 pytest tests/ -v
 ```
 
-98 tests cover all coherence passes, the assembler, session state, MCP tool handlers,
-Aria backend (mocked), tokenizer, analyzer, hardware detection, and end-to-end
-integration with mocked LLM.
+131 tests cover all coherence passes, the assembler, session state, MCP tool handlers,
+Aria backend (mocked), tokenizer, analyzer, hardware detection, streaming loop player
+(timing, loop count, queue transitions, all-notes-off), file-based player (both
+backends), and end-to-end integration with mocked LLM and FluidSynth.
 
 ---
 
@@ -314,6 +474,9 @@ The prompt engine works with any OpenAI-compatible `/chat/completions` endpoint.
 
 **Swap the generation backend** — replace `_run_generation` in `server.py`.  
 It receives a `MusicalBlueprint` and must return `list[RoleTrack]`.
+
+**Use a different SoundFont** — pass `soundfont=` to `synth_start` or `play_midi`.  
+Drop any `.sf2` file into `~/.local/share/sounds/sf2/` and it appears in `list_midi_devices`.
 
 ---
 

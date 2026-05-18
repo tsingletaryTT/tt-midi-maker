@@ -6,6 +6,8 @@
 |---|---|---|
 | Python | 3.11+ | 3.12 recommended |
 | pip | 23+ | `pip install --upgrade pip` |
+| fluidsynth | any recent | Required for local audio playback (`sudo apt install fluidsynth`) |
+| fluid-soundfont-gm | — | GM SoundFont for FluidSynth (`sudo apt install fluid-soundfont-gm`) |
 | A Tenstorrent device | optional | N150 / N300 / T3000; CPU fallback is used without one |
 | tt-smi | optional | Needed for hardware detection (`tt-smi -s`) |
 | tt-forge | optional | Needed for on-device model compilation |
@@ -20,13 +22,54 @@ An LLM endpoint is required for blueprint generation and MIDI analysis — see
 ## 1. Clone / obtain the source
 
 ```bash
-git clone https://github.com/tenstorrent/tt-midi-maker
+git clone https://github.com/tsingletaryTT/tt-midi-maker
 cd tt-midi-maker
 ```
 
 ---
 
-## 2. Create a virtual environment
+## 2. Install system packages
+
+### FluidSynth (required for local audio playback)
+
+FluidSynth is the default audio engine — it provides software GM synthesis so you
+can hear generated MIDI immediately without any hardware synth.
+
+```bash
+# Ubuntu / Debian
+sudo apt install fluidsynth fluid-soundfont-gm
+
+# Fedora / RHEL
+sudo dnf install fluidsynth fluid-soundfont
+
+# Arch
+sudo pacman -S fluidsynth soundfont-fluid
+```
+
+This installs:
+- `fluidsynth` binary — the synthesis engine
+- `FluidR3_GM.sf2` — a high-quality General MIDI SoundFont (typically
+  installed to `/usr/share/sounds/sf2/`)
+
+Verify:
+```bash
+fluidsynth --version        # should print FluidSynth version
+ls /usr/share/sounds/sf2/   # should list FluidR3_GM.sf2
+```
+
+### python-rtmidi (installed automatically, but needs build tools)
+
+`python-rtmidi` is pulled in by `pip install -e .`. It compiles a C extension,
+so you need the ALSA headers:
+
+```bash
+sudo apt install libasound2-dev   # Ubuntu / Debian
+sudo dnf install alsa-lib-devel   # Fedora
+```
+
+---
+
+## 3. Create a virtual environment
 
 ```bash
 python3.12 -m venv .venv
@@ -36,7 +79,7 @@ source .venv/bin/activate          # Linux / macOS
 
 ---
 
-## 3. Install the package
+## 4. Install the package
 
 **Development install** (editable, includes test dependencies):
 
@@ -55,7 +98,8 @@ This installs all runtime dependencies declared in `pyproject.toml`:
 | Package | Purpose |
 |---|---|
 | `mcp>=1.27.0` | MCP server framework (FastMCP) |
-| `mido>=1.3.0` | MIDI file read/write |
+| `mido>=1.3.0` | MIDI file read/write and real-time output |
+| `python-rtmidi>=1.5.0` | ALSA MIDI port access for streaming player |
 | `miditok>=3.0.0` | MIDI tokenisation (REMI+) |
 | `transformers>=4.40.0` | Aria model inference |
 | `torch>=2.0.0` | Tensor backend for Aria |
@@ -65,7 +109,7 @@ This installs all runtime dependencies declared in `pyproject.toml`:
 
 ---
 
-## 4. LLM setup
+## 5. LLM setup
 
 tt-midi-maker needs an OpenAI-compatible LLM to turn prompts into musical blueprints
 and to answer analytical questions about MIDI files.
@@ -107,7 +151,7 @@ before starting the server.
 
 ---
 
-## 5. Tenstorrent hardware setup (optional)
+## 6. Tenstorrent hardware setup (optional)
 
 If you have a Tenstorrent device, install the tt-forge runtime to accelerate generation.
 
@@ -142,10 +186,10 @@ sudo sysctl --system
 
 ---
 
-## 6. Verify installation
+## 7. Verify installation
 
 ```bash
-# Run the test suite (all 98 tests should pass)
+# Run the test suite (all 131 tests should pass)
 pytest tests/ -v
 
 # Start the server and confirm it binds
@@ -157,14 +201,14 @@ kill %1
 
 Expected test output:
 ```
-========================= 98 passed, 1 warning in ~1.5s =========================
+========================= 131 passed, 1 warning in ~9s =========================
 ```
 
 The single warning is a harmless miditok configuration notice about attribute controls.
 
 ---
 
-## 7. Start the server
+## 8. Start the server
 
 ```bash
 # Foreground (shows logs)
@@ -182,7 +226,7 @@ transport. Output MIDI files go to `~/Music/tt-midi-maker/` (created automatical
 
 ---
 
-## 8. Connect an MCP client
+## 9. Connect an MCP client
 
 ### Claude Desktop
 
@@ -199,8 +243,7 @@ or `%APPDATA%\Claude\claude_desktop_config.json` (Windows):
 }
 ```
 
-Restart Claude Desktop. The `generate_midi`, `describe_midi`, and other tools will
-appear in Claude's tool list.
+Restart Claude Desktop. All 12 tools will appear in Claude's tool list.
 
 ### Claude Code (CLI)
 
@@ -215,28 +258,43 @@ documentation for the exact config format.
 
 ---
 
-## 9. First generation
+## 10. First generation and playback
 
 With the server running and Claude Desktop connected:
 
 1. Open a new Claude conversation
-2. Ask: *"Generate a calm 8-bar lo-fi hip hop loop in C minor"*
-3. Claude calls `set_musical_context` then `generate_midi`
-4. The `.mid` file path is returned — open it in your DAW
+2. Ask: *"Generate a calm 8-bar lo-fi hip hop loop in C minor, then play it"*
+3. Claude calls `set_musical_context` → `generate_midi` → `synth_start` → `loop_play`
+4. You hear the loop immediately through your speakers
 
-Or call the tool directly:
+Or drive it directly:
 
 ```python
 # Example using the MCP Python SDK
 import mcp
 
 async with mcp.ClientSession("http://127.0.0.1:8000/mcp") as session:
+    # Generate
     result = await session.call_tool("generate_midi", {
         "prompt": "calm lo-fi hip hop, C minor, dusty drums and sparse piano",
         "mode": "loop",
         "bars": 8,
     })
-    print(result)  # {"file_path": "~/Music/tt-midi-maker/1716000000.mid", ...}
+    file_path = result["file_path"]
+
+    # Start the FluidSynth server (once per session)
+    await session.call_tool("synth_start", {})
+
+    # Loop it
+    await session.call_tool("loop_play", {"file_path": file_path})
+
+    # Generate a variation while it loops
+    next_result = await session.call_tool("generate_midi", {
+        "prompt": "same vibe, add a Rhodes piano melody",
+    })
+
+    # Transition at the next bar boundary
+    await session.call_tool("loop_queue", {"file_path": next_result["file_path"]})
 ```
 
 ---
@@ -265,6 +323,68 @@ curl $MIDI_LLM_URL/models     # should return a model list
 ```
 
 Ensure your LLM server is running and `MIDI_LLM_URL` is set correctly.
+
+---
+
+### `FLUIDSYNTH_NOT_FOUND` error from `synth_start` or `play_midi`
+
+FluidSynth is not installed or not on PATH:
+
+```bash
+sudo apt install fluidsynth
+which fluidsynth    # should print /usr/bin/fluidsynth
+```
+
+---
+
+### `SOUNDFONT_NOT_FOUND` error
+
+The default SoundFont (`/usr/share/sounds/sf2/FluidR3_GM.sf2`) is missing:
+
+```bash
+sudo apt install fluid-soundfont-gm
+ls /usr/share/sounds/sf2/   # should list FluidR3_GM.sf2
+```
+
+Or pass a custom path: `synth_start(soundfont="/path/to/custom.sf2")`
+
+---
+
+### `FLUIDSYNTH_PORT_TIMEOUT` — ALSA MIDI port did not appear
+
+The ALSA sequencer module may not be loaded:
+
+```bash
+modprobe snd_seq
+# Make permanent:
+echo snd_seq | sudo tee /etc/modules-load.d/snd_seq.conf
+```
+
+Also verify PulseAudio / PipeWire is running (required by the default `pulseaudio`
+driver). On PipeWire systems (Ubuntu 22.04+) the PulseAudio compatibility layer
+is active automatically. If audio still fails, try the `alsa` driver:
+
+```bash
+synth_start(audio_driver="alsa")
+```
+
+---
+
+### FluidSynth plays but audio is silent / wrong output device
+
+List your audio sinks and set the default:
+
+```bash
+pactl list short sinks          # list PulseAudio / PipeWire sinks
+pactl set-default-sink <name>   # set default output
+```
+
+Or set the `PULSE_SINK` environment variable before starting the MCP server:
+
+```bash
+export PULSE_SINK=alsa_output.pci-0000_00_1f.3.analog-stereo
+python -m tt_midi_maker
+```
 
 ---
 
@@ -299,7 +419,7 @@ python -c "import forge; print(forge.__version__)"
 ### `UserWarning: Attribute controls are not compatible...` from miditok
 
 This is a harmless warning from miditok's REMI tokenizer configuration. It does not
-affect output quality. It will be resolved when miditok updates its API.
+affect output quality.
 
 ---
 
