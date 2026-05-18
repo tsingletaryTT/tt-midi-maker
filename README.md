@@ -32,8 +32,8 @@ FluidSynth software synthesizer.
 |---|---|
 | **Generation** | Aria MIDI transformer via tt-forge; CPU fallback when no TT device is detected |
 | **Coherence** | Scale quantisation, chord-aware note filtering, velocity humanisation, timing nudge, phrase stitching |
-| **Roles** | 7 GM roles: melody (ch1), bass (ch2), harmony (ch3), arp (ch4), pad (ch5), fx (ch9), drums (ch10) |
-| **Styles** | 6 built-in: lo-fi hip hop, bossa nova, ambient, hip hop, jazz, drum and bass |
+| **Roles** | 12 GM roles across channels 1–12: melody, bass, harmony, arp, pad, lead, strings, brass, fx, drums, guitar, organ |
+| **Styles** | 20 built-in across electronic, jazz, rock, world, cinematic, and experimental genres |
 | **File playback** | FluidSynth (GM software synth → system audio) or raw MIDI to any ALSA port with per-channel routing |
 | **Streaming loops** | Real-time loop player with seamless pattern transitions at bar boundaries (no gap, no file I/O) |
 | **MCP interface** | 12 tools · 4 prompts · 4 resources · argument completions |
@@ -309,28 +309,79 @@ Pre-built workflows for common composition tasks:
 
 ## Style catalog
 
-| Style | BPM range | Default roles | Swing |
-|---|---|---|---|
-| lo-fi hip hop | 70–90 | drums, bass, melody, pad | 0.55 |
-| bossa nova | 120–160 | drums, bass, melody, harmony | 0 |
-| ambient | 60–90 | pad, melody, fx | 0 |
-| hip hop | 80–100 | drums, bass, melody, arp | 0.55 |
-| jazz | 120–200 | drums, bass, melody, harmony | 0.65 |
-| drum and bass | 160–180 | drums, bass, arp | 0 |
+**20 styles** across electronic, jazz, rock, world, cinematic, and experimental genres.
+
+### Electronic / Hip-Hop
+
+| Style | BPM range | Default roles | Swing | Mood |
+|---|---|---|---|---|
+| lo-fi hip hop | 70–90 | drums, bass, melody, pad | 0.55 | pensive, oozy |
+| hip hop | 80–100 | drums, bass, melody, arp | 0.55 | tense, exuberant |
+| drum and bass | 160–180 | drums, bass, arp | 0 | tense, synthetic |
+| synthwave | 90–118 | melody, bass, arp, pad, drums | 0 | atmospheric, synthetic |
+| idm | 100–160 | drums, bass, arp, fx, pad | 0 | glitchy, synthetic |
+| detroit techno | 128–138 | drums, bass, arp, pad | 0 | tense, atmospheric |
+
+### Jazz / Swing
+
+| Style | BPM range | Default roles | Swing | Mood |
+|---|---|---|---|---|
+| jazz | 120–200 | drums, bass, melody, harmony | 0.65 | pensive, organic |
+| bossa nova | 120–160 | drums, bass, melody, harmony | 0 | pensive, ethereal |
+| blues | 60–130 | melody, bass, harmony, drums | 0.65 | pensive, tense |
+| ska | 160–200 | melody, bass, harmony, brass, drums | 0.5 | exuberant, organic |
+
+### Rock
+
+| Style | BPM range | Default roles | Swing | Mood |
+|---|---|---|---|---|
+| surf rock | 140–180 | melody, bass, harmony, drums | 0 | exuberant, tense |
+| post-rock | 60–140 | melody, harmony, bass, strings, drums | 0 | atmospheric, pensive |
+
+### World / Latin
+
+| Style | BPM range | Default roles | Swing | Mood |
+|---|---|---|---|---|
+| afrobeat | 100–130 | drums, bass, melody, harmony, brass | 0 | exuberant, organic |
+| cumbia | 100–120 | drums, bass, melody, harmony, arp | 0.2 | exuberant, organic |
+
+### Cinematic / Classical
+
+| Style | BPM range | Default roles | Swing | Mood |
+|---|---|---|---|---|
+| classical | 60–180 | melody, strings, harmony, bass | 0 | pensive, tense |
+| nino rota | 80–140 | melody, harmony, bass, arp, drums | 0.4 | pensive, ethereal |
+| dark cinematic | 60–110 | strings, pad, bass, fx, melody | 0 | tense, atmospheric |
+
+### Ambient / Experimental
+
+| Style | BPM range | Default roles | Swing | Mood |
+|---|---|---|---|---|
+| ambient | 60–90 | pad, melody, fx | 0 | spacey, ethereal |
+| dark ambient | 40–70 | pad, fx, bass, melody | 0 | spacey, oozy |
+| glitch | 90–150 | drums, bass, fx, pad, arp | 0 | glitchy, chaos |
 
 ---
 
 ## GM channel / role map
 
-| Role | GM channel | Default program | Note range |
-|---|---|---|---|
-| melody | 1 | 0 (Acoustic Grand Piano) | C4–C8 |
-| bass | 2 | 32 (Acoustic Bass) | E1–E3 |
-| harmony | 3 | 48 (String Ensemble 1) | C3–C5 |
-| arp | 4 | 4 (Electric Piano 1) | C4–C6 |
-| pad | 5 | 89 (Pad 2 Warm) | C2–C5 |
-| fx | 9 | 88 (Pad 1 New Age) | full range |
-| drums | **10** | — (percussion) | GM kit |
+**12 roles** across 12 GM channels. Default programs are starting points — generation
+overrides them based on style and prompt.
+
+| Role | GM ch | Default program | Note range | Purpose |
+|---|---|---|---|---|
+| melody | 1 | 0 · Acoustic Grand Piano | C4–C7 | Primary melodic voice |
+| bass | 2 | 32 · Acoustic Bass | E1–E3 | Root-motion bass line |
+| harmony | 3 | 48 · String Ensemble 1 | C3–C5 | Chordal / comping support |
+| arp | 4 | 4 · Electric Piano 1 | C4–C6 | Arpeggiated forward motion |
+| pad | 5 | 89 · Pad 2 Warm | C2–C5 | Sustained background texture |
+| lead | 6 | 56 · Trumpet | C4–C7 | Bright solo lead (trumpet, sax, guitar) |
+| strings | 7 | 49 · String Ensemble 2 | E2–C6 | Orchestral strings, swells, pizzicato |
+| brass | 8 | 61 · Brass Section | Bb2–F5 | Horn stabs, ska upstrokes, fanfares |
+| fx | 9 | 88 · Pad 1 New Age | full | Drones, sweeps, cinematic noise |
+| drums | **10** | — percussion | GM kit | Main drum kit |
+| guitar | 11 | 25 · Acoustic Steel | E2–E5 | Guitar parts (program sets style) |
+| organ | 12 | 16 · Drawbar Organ | C2–C7 | Hammond/church organ, blues comping |
 
 ---
 

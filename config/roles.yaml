@@ -1,36 +1,97 @@
 roles:
+
+  # ── core melodic roles ───────────────────────────────────────────────────────
+
   melody:
     channel: 1
-    program: 0
-    note_range: [60, 96]
+    program: 0          # Acoustic Grand Piano — overridden by style/prompt
+    note_range: [60, 96]  # C4–C7
     density_default: 1.0
-  bass:
-    channel: 2
-    program: 32
-    note_range: [28, 52]
-    density_default: 0.8
+    description: "Primary melodic voice. The line the listener remembers."
+
+  lead:
+    channel: 6
+    program: 56         # Trumpet — bright, cutting solo voice
+    note_range: [60, 96]  # C4–C7
+    density_default: 0.6
+    description: "Solo lead line, typically above the melody register. Trumpet, sax, guitar lead."
+
+  # ── harmonic / chordal roles ─────────────────────────────────────────────────
+
   harmony:
     channel: 3
-    program: 48
-    note_range: [48, 72]
+    program: 48         # String Ensemble 1 — lush pad-like harmonic support
+    note_range: [48, 72]  # C3–C5
     density_default: 0.6
+    description: "Chordal harmonic support. Comping, rhythm guitar, string chords."
+
+  strings:
+    channel: 7
+    program: 49         # String Ensemble 2 — orchestral strings voicing
+    note_range: [40, 84]  # E2–C6
+    density_default: 0.5
+    description: "Orchestral string section. Swells, long tones, pizzicato passages."
+
+  brass:
+    channel: 8
+    program: 61         # Brass Section — horn stabs and riff lines
+    note_range: [46, 77]  # Bb2–F5
+    density_default: 0.4
+    description: "Horn section. Ska upstrokes, jazz comping, film stabs, fanfares."
+
+  organ:
+    channel: 12
+    program: 16         # Drawbar Organ (Hammond-style)
+    note_range: [36, 96]  # C2–C7
+    density_default: 0.5
+    description: "Organ / keyboard. Blues shuffles, gospel comping, ska stabs, drone bass."
+
+  guitar:
+    channel: 11
+    program: 25         # Acoustic Steel Guitar — swap program for electric/distorted
+    note_range: [40, 76]  # E2–E5
+    density_default: 0.5
+    description: "Guitar part. Clean picking, power chords, arpeggios. Program: 25=steel, 27=jazz, 29=overdrive, 30=distortion."
+
+  # ── rhythmic / textural roles ────────────────────────────────────────────────
+
   arp:
     channel: 4
-    program: 4
-    note_range: [60, 84]
+    program: 4          # Electric Piano 1
+    note_range: [60, 84]  # C4–C6
     density_default: 0.4
+    description: "Arpeggiated or broken-chord pattern. Adds movement and forward momentum."
+
   pad:
     channel: 5
-    program: 89
-    note_range: [36, 72]
+    program: 89         # Pad 2 (Warm)
+    note_range: [36, 72]  # C2–C5
     density_default: 0.3
+    description: "Sustained background texture. Atmosphere, warmth, glue between tracks."
+
+  # ── bass ────────────────────────────────────────────────────────────────────
+
+  bass:
+    channel: 2
+    program: 32         # Acoustic Bass
+    note_range: [28, 52]  # E1–E3
+    density_default: 0.8
+    description: "Root-motion bass line. Anchors harmony and groove."
+
+  # ── effects / noise ─────────────────────────────────────────────────────────
+
   fx:
     channel: 9
-    program: 88
+    program: 88         # Pad 1 (New Age) — atmospheric noise/texture
     note_range: [0, 127]
     density_default: 0.2
+    description: "Sound design layer. Drones, sweeps, noise, stingers, cinematic fx."
+
+  # ── percussion ───────────────────────────────────────────────────────────────
+
   drums:
-    channel: 10
+    channel: 10         # GM percussion channel — program ignored
     program: 0
-    note_range: [35, 81]
+    note_range: [35, 81]  # B1–A5 (GM kit map)
     density_default: 0.7
+    description: "Main drum kit on GM channel 10. Kick=36, Snare=38, HH=42/46, Crash=49."

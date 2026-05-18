@@ -1,37 +1,224 @@
 styles:
+
+  # ── electronic / hip-hop ─────────────────────────────────────────────────────
+
   lo-fi hip hop:
     bpm_range: [70, 90]
     typical_keys: ["C major", "F major", "D minor", "A minor"]
     default_roles: [drums, bass, melody, pad]
     swing_ratio: 0.55
-    examples: ["dusty drums, sparse bass, melancholic piano melody"]
-  bossa nova:
-    bpm_range: [120, 160]
-    typical_keys: ["D minor", "G major", "C major"]
-    default_roles: [drums, bass, melody, harmony]
-    swing_ratio: 0.0
-    examples: ["brushed snare, walking bass, piano melody"]
-  ambient:
-    bpm_range: [60, 90]
-    typical_keys: ["C major", "D minor", "F major"]
-    default_roles: [pad, melody, fx]
-    swing_ratio: 0.0
-    examples: ["slow pad swells, sparse melody, atmospheric fx"]
+    mood_tags: [pensive, oozy, organic]
+    examples:
+      - "dusty vinyl drums, sparse piano, melancholic bass"
+      - "slow boom-bap, Rhodes melody, deep sub"
+
   hip hop:
     bpm_range: [80, 100]
-    typical_keys: ["C minor", "D minor", "F minor"]
+    typical_keys: ["C minor", "D minor", "F minor", "G minor"]
     default_roles: [drums, bass, melody, arp]
     swing_ratio: 0.55
-    examples: ["trap hi-hats, 808 bass, synth melody"]
-  jazz:
-    bpm_range: [120, 200]
-    typical_keys: ["F major", "Bb major", "C minor"]
-    default_roles: [drums, bass, melody, harmony]
-    swing_ratio: 0.65
-    examples: ["walking bass, piano comping, trumpet melody"]
+    mood_tags: [tense, exuberant, synthetic]
+    examples:
+      - "trap hi-hats, 808 sub, synth melody, punchy snare"
+      - "boom-bap kit, sampled bass, melodic lead"
+
   drum and bass:
     bpm_range: [160, 180]
     typical_keys: ["D minor", "A minor", "E minor"]
     default_roles: [drums, bass, arp]
     swing_ratio: 0.0
-    examples: ["amen breaks, sub bass, minimal arp"]
+    mood_tags: [tense, exuberant, synthetic]
+    examples:
+      - "amen break chops, rolling sub bass, minimal arp"
+      - "neurofunk drums, reese bass, sparse pad stab"
+
+  synthwave:
+    bpm_range: [90, 118]
+    typical_keys: ["A minor", "C minor", "E minor", "F minor"]
+    default_roles: [melody, bass, arp, pad, drums]
+    swing_ratio: 0.0
+    mood_tags: [atmospheric, synthetic, pensive]
+    examples:
+      - "arpeggiated poly synth, analog bass, gated reverb drums, lush pad"
+      - "retrowave lead, punchy kick, neon arp, atmospheric strings"
+
+  idm:
+    bpm_range: [100, 160]
+    typical_keys: ["D minor", "C minor", "F# minor", "A minor", "Bb minor"]
+    default_roles: [drums, bass, arp, fx, pad]
+    swing_ratio: 0.0
+    mood_tags: [glitchy, synthetic, tense, atmospheric]
+    examples:
+      - "glitchy polyrhythmic drums, filtered acid bass, melodic arp, evolving pads"
+      - "fragmented breakbeat, pitch-shifted textures, unstable bass, granular fx"
+    notes: "Irregular rhythms and off-grid programming are intentional. Dense layering."
+
+  detroit techno:
+    bpm_range: [128, 138]
+    typical_keys: ["A minor", "C minor", "G minor"]
+    default_roles: [drums, bass, arp, pad]
+    swing_ratio: 0.0
+    mood_tags: [tense, synthetic, atmospheric]
+    examples:
+      - "hard kick, minimal acid bass, sparse chord stab, cold pad"
+      - "funky 909 drums, hypnotic bass loop, Detroit-style arps"
+
+  # ── jazz / swing ─────────────────────────────────────────────────────────────
+
+  jazz:
+    bpm_range: [120, 200]
+    typical_keys: ["F major", "Bb major", "C minor", "Eb major", "G minor"]
+    default_roles: [drums, bass, melody, harmony]
+    swing_ratio: 0.65
+    mood_tags: [pensive, exuberant, organic]
+    examples:
+      - "walking bass, piano comping, trumpet melody, brushed kit"
+      - "slow jazz ballad, Rhodes, muted brass, cymbal wash"
+
+  bossa nova:
+    bpm_range: [120, 160]
+    typical_keys: ["D minor", "G major", "C major", "A minor"]
+    default_roles: [drums, bass, melody, harmony]
+    swing_ratio: 0.0
+    mood_tags: [pensive, organic, ethereal]
+    examples:
+      - "brushed snare, walking bass, piano melody, nylon guitar chords"
+      - "gentle bossa rhythm, flute melody, bass guitar, triangle"
+
+  blues:
+    bpm_range: [60, 130]
+    typical_keys: ["E major", "A major", "G major", "Bb major", "B major"]
+    default_roles: [melody, bass, harmony, drums]
+    swing_ratio: 0.65
+    mood_tags: [pensive, organic, tense]
+    examples:
+      - "12-bar blues, guitar lick call-response, walking bass, shuffled kit"
+      - "slow blues, piano fills, organ comping, brushed drums"
+    notes: "12-bar form standard. Blues scale (pentatonic + b5). Strong shuffle groove."
+
+  ska:
+    bpm_range: [160, 200]
+    typical_keys: ["D major", "G major", "Bb major", "C major", "A major"]
+    default_roles: [melody, bass, harmony, brass, drums]
+    swing_ratio: 0.5
+    mood_tags: [exuberant, organic]
+    examples:
+      - "offbeat keyboard chop, walking bass, horn stabs, snare on 2 and 4"
+      - "brass riff, ska upstroke, bass skank, tight drum pattern"
+    notes: "Defining feature: upstroke/offbeat harmony stab. Horns play riffs between vocal phrases."
+
+  # ── rock ─────────────────────────────────────────────────────────────────────
+
+  surf rock:
+    bpm_range: [140, 180]
+    typical_keys: ["E major", "A major", "B major", "D major"]
+    default_roles: [melody, bass, harmony, drums]
+    swing_ratio: 0.0
+    mood_tags: [exuberant, tense, organic]
+    examples:
+      - "reverb-drenched tremolo guitar lead, locked bass and drums, twangy arp"
+      - "Dick Dale gallop, clean guitar riff, surf beat kick-snare pattern"
+    notes: "Heavy spring reverb on lead. Fast alternate picking (gallop). Tight locked rhythm section."
+
+  post-rock:
+    bpm_range: [60, 140]
+    typical_keys: ["E minor", "D major", "G major", "B minor", "A major"]
+    default_roles: [melody, harmony, bass, strings, drums]
+    swing_ratio: 0.0
+    mood_tags: [atmospheric, pensive, tense, ethereal]
+    examples:
+      - "quiet clean guitar swell, slow build, crashing drum climax, lush string pad"
+      - "tremolo guitar melody, bass undertow, long crescendo, open hi-hat"
+    notes: "Dynamic range is the instrument. Sections typically build from sparse to full-band."
+
+  # ── world / latin ─────────────────────────────────────────────────────────────
+
+  afrobeat:
+    bpm_range: [100, 130]
+    typical_keys: ["D minor", "G minor", "C minor", "F minor"]
+    default_roles: [drums, bass, melody, harmony, brass]
+    swing_ratio: 0.0
+    mood_tags: [exuberant, organic]
+    examples:
+      - "interlocking polyrhythm drums, bass guitar groove, horn stabs, keyboard vamp"
+      - "Fela-style rhythm, talking drum accents, brass riff, funk bass"
+    notes: "Layered interlocking rhythms. All instruments function rhythmically."
+
+  cumbia:
+    bpm_range: [100, 120]
+    typical_keys: ["D minor", "A minor", "E minor", "G minor"]
+    default_roles: [drums, bass, melody, harmony, arp]
+    swing_ratio: 0.2
+    mood_tags: [exuberant, organic]
+    examples:
+      - "caja drum pattern, bass guitar ostinato, marimba riff, accordion harmony"
+      - "Colombian cumbia rhythm, guacharaca, melodic flute, bass pulse"
+
+  # ── cinematic / classical ────────────────────────────────────────────────────
+
+  classical:
+    bpm_range: [60, 180]
+    typical_keys: ["C major", "G major", "D major", "A minor", "D minor", "F major"]
+    default_roles: [melody, strings, harmony, bass]
+    swing_ratio: 0.0
+    mood_tags: [pensive, ethereal, tense, exuberant]
+    examples:
+      - "piano melody, string ensemble accompaniment, pizzicato bass"
+      - "orchestral swell, melodic woodwind, string pads, bass pizzicato"
+    notes: "Functional harmony. Voice leading matters. Melody clearly defined. No percussion by default."
+
+  nino rota:
+    bpm_range: [80, 140]
+    typical_keys: ["C minor", "G minor", "Bb major", "D minor", "F major"]
+    default_roles: [melody, harmony, bass, arp, drums]
+    swing_ratio: 0.4
+    mood_tags: [pensive, organic, ethereal, exuberant]
+    examples:
+      - "accordion-style melody, circus waltz rhythm, pizzicato bass, orchestral color"
+      - "Italian cinema theme, solo woodwind over strings, wistful and bittersweet"
+      - "Godfather-style: nylon guitar melody, muted trumpet, accordion, brushed snare"
+    notes: "Characteristic timbres: accordion, nylon guitar, muted trumpet, solo oboe or clarinet. Bittersweet, wistful quality. Often waltz-adjacent (3/4 or 6/8 feel even in 4/4)."
+
+  dark cinematic:
+    bpm_range: [60, 110]
+    typical_keys: ["D minor", "B minor", "E minor", "G# minor", "C minor"]
+    default_roles: [strings, pad, bass, fx, melody]
+    swing_ratio: 0.0
+    mood_tags: [tense, atmospheric, ethereal]
+    examples:
+      - "low cello ostinato, tension pad swell, distant brass, sparse piano"
+      - "trailer-style string build, sub bass pulse, atmospheric fx, sparse hits"
+
+  # ── ambient / experimental ───────────────────────────────────────────────────
+
+  ambient:
+    bpm_range: [60, 90]
+    typical_keys: ["C major", "D minor", "F major", "G major", "A minor"]
+    default_roles: [pad, melody, fx]
+    swing_ratio: 0.0
+    mood_tags: [spacey, ethereal, atmospheric, oozy]
+    examples:
+      - "slow pad swells, sparse high melody, atmospheric fx, no percussion"
+      - "Brian Eno-style: long tones, tape delay echoes, minimal movement"
+
+  dark ambient:
+    bpm_range: [40, 70]
+    typical_keys: ["D minor", "B minor", "E minor", "G# minor"]
+    default_roles: [pad, fx, bass, melody]
+    swing_ratio: 0.0
+    mood_tags: [spacey, oozy, atmospheric, tense]
+    examples:
+      - "glacial drone, low sub rumble, sparse high tone, evolving noise texture"
+      - "industrial hum, reverb decay, slow bass movement, distant melody fragment"
+    notes: "Very slow or unmeasured feel. Low-end weight. Sparse events. Long reverb tails."
+
+  glitch:
+    bpm_range: [90, 150]
+    typical_keys: ["C minor", "A minor", "E minor"]
+    default_roles: [drums, bass, fx, pad, arp]
+    swing_ratio: 0.0
+    mood_tags: [glitchy, synthetic, chaos, tense]
+    examples:
+      - "fragmented micro-rhythms, stuttered bass, granular pad, unstable pitch fx"
+      - "cut-up drums, circuit-bent textures, bit-crushed melody, noise bursts"
+    notes: "Irregularity is aesthetic. Intentional artifacts, fragmented phrases."
