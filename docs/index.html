@@ -389,6 +389,163 @@ audio::-webkit-media-controls-panel { background: var(--bg3); }
 .code-block .value  { color: var(--gold); }
 .code-block .fn     { color: var(--pink); }
 
+/* ── mcp section ── */
+#mcp { background: var(--bg1); }
+
+.config-block {
+  background: var(--bg0);
+  border: 1px solid var(--border);
+  border-radius: .5rem;
+  padding: 1.2rem 1.5rem;
+  font-family: 'Cascadia Code', 'Fira Code', monospace;
+  font-size: .8rem;
+  color: var(--teal-light);
+  overflow-x: auto;
+  white-space: pre;
+  margin-bottom: 2.5rem;
+}
+.config-block .key   { color: var(--teal); }
+.config-block .val   { color: var(--gold); }
+.config-block .cmt   { color: var(--text-dim); }
+
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+}
+.tool-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: .6rem;
+  padding: 1rem 1.1rem;
+  transition: border-color .2s;
+}
+.tool-card:hover { border-color: var(--teal); }
+.tool-card .tool-name {
+  font-family: 'Cascadia Code', 'Fira Code', monospace;
+  font-size: .8rem;
+  color: var(--teal);
+  font-weight: 600;
+  margin-bottom: .35rem;
+}
+.tool-card .tool-group {
+  font-size: .68rem;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--text-dim);
+  margin-bottom: .4rem;
+}
+.tool-card p {
+  font-size: .8rem;
+  color: var(--text-dim);
+  line-height: 1.45;
+}
+
+.prompt-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+}
+.prompt-card {
+  background: var(--bg0);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--teal);
+  border-radius: .5rem;
+  padding: 1rem 1.2rem;
+}
+.prompt-card h4 {
+  font-size: .9rem;
+  font-weight: 600;
+  margin-bottom: .3rem;
+  color: var(--teal-light);
+}
+.prompt-card p {
+  font-size: .8rem;
+  color: var(--text-dim);
+  line-height: 1.45;
+}
+
+.resources-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1rem;
+}
+.resource-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: .6rem;
+  padding: .9rem 1.1rem;
+}
+.resource-card .resource-uri {
+  font-family: 'Cascadia Code', 'Fira Code', monospace;
+  font-size: .72rem;
+  color: var(--pink);
+  margin-bottom: .35rem;
+}
+.resource-card p { font-size: .8rem; color: var(--text-dim); }
+
+/* ── styles catalog section ── */
+#styles { background: var(--bg0); }
+
+.category-label {
+  font-size: .7rem;
+  text-transform: uppercase;
+  letter-spacing: .14em;
+  color: var(--text-dim);
+  margin: 2rem 0 .75rem;
+  padding-bottom: .4rem;
+  border-bottom: 1px solid var(--border);
+}
+.category-label:first-of-type { margin-top: 0; }
+
+.styles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1rem;
+  margin-bottom: .5rem;
+}
+.style-card {
+  background: var(--bg1);
+  border: 1px solid var(--border);
+  border-radius: .6rem;
+  padding: 1rem 1.1rem;
+  transition: border-color .2s;
+}
+.style-card:hover { border-color: var(--teal); }
+.style-card .style-name {
+  font-weight: 700;
+  font-size: .9rem;
+  margin-bottom: .2rem;
+  text-transform: capitalize;
+}
+.style-card .style-bpm {
+  font-size: .72rem;
+  color: var(--gold);
+  margin-bottom: .35rem;
+}
+.style-card .style-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .3rem;
+  margin-bottom: .6rem;
+}
+.style-tag {
+  font-size: .65rem;
+  background: rgba(79,209,197,.08);
+  border: 1px solid rgba(79,209,197,.2);
+  border-radius: 999px;
+  padding: .1rem .5rem;
+  color: var(--teal);
+}
+.style-card .style-example {
+  font-size: .75rem;
+  color: var(--text-dim);
+  font-style: italic;
+  line-height: 1.4;
+}
+
 /* ── footer ── */
 footer {
   background: var(--bg1);
@@ -520,19 +677,14 @@ footer a { color: var(--teal); }
   </p>
 
   <div class="machine-wrap">
-    <svg class="pipeline-svg" viewBox="0 0 860 560" xmlns="http://www.w3.org/2000/svg">
+    <svg class="pipeline-svg" viewBox="0 0 860 720" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
           <polygon points="0 0, 8 3, 0 6" fill="rgba(79,209,197,.5)"/>
         </marker>
-        <filter id="glow">
-          <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-          <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
-        </filter>
-        <linearGradient id="chip-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" style="stop-color:#0F2A35"/>
-          <stop offset="100%" style="stop-color:#1A3C47"/>
-        </linearGradient>
+        <marker id="arrowhead-dim" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="rgba(79,209,197,.25)"/>
+        </marker>
       </defs>
 
       <!-- ── Row 1: Input params ── -->
@@ -542,35 +694,24 @@ footer a { color: var(--teal); }
         <text class="sub" x="80" y="46">D minor · BPM 118 · 8 bars</text>
         <text class="sub accent" x="80" y="62">Dm7 → Am7 → Bbmaj7 → A7</text>
       </g>
-
-      <!-- arrow right → Blueprint -->
       <line class="arrow data" x1="190" y1="70" x2="238" y2="70"/>
 
-      <!-- Blueprint -->
       <g class="comp" transform="translate(240,30)">
         <rect class="box" width="140" height="80" rx="8"/>
         <text class="label" x="70" y="28">Blueprint</text>
         <text class="sub" x="70" y="48">MusicalBlueprint</text>
         <text class="sub accent" x="70" y="64">Pydantic model</text>
       </g>
-
-      <!-- arrow right → Prompt -->
       <line class="arrow data" x1="380" y1="70" x2="428" y2="70"/>
 
-      <!-- Prompt builder -->
       <g class="comp" transform="translate(430,30)">
         <rect class="box" width="150" height="80" rx="8"/>
         <text class="label" x="75" y="28">Prompt Builder</text>
         <text class="sub" x="75" y="48">BOS + set_tempo</text>
         <text class="sub" x="75" y="64">+ patch_changes</text>
       </g>
+      <line class="arrow data" x1="580" y1="70" x2="628" y2="70"/>
 
-      <!-- arrow right → Source MIDI -->
-      <g>
-        <line class="arrow data" x1="580" y1="70" x2="628" y2="70"/>
-      </g>
-
-      <!-- Source MIDI context -->
       <g class="comp" transform="translate(630,30)">
         <rect class="box" width="150" height="80" rx="8"/>
         <text class="label pink" x="75" y="28">Source MIDI</text>
@@ -578,119 +719,143 @@ footer a { color: var(--teal); }
         <text class="sub" x="75" y="64">last 8 bars of context</text>
       </g>
 
-      <!-- vertical arrow down from Prompt to TT block -->
+      <!-- vertical arrow down → HW block -->
       <line class="arrow" x1="505" y1="110" x2="505" y2="148"/>
 
       <!-- ── Row 2: TT Hardware block ── -->
-      <!-- Big box around chips -->
-      <rect x="30" y="150" width="750" height="200" rx="12"
+      <rect x="30" y="150" width="750" height="210" rx="12"
             fill="rgba(15,42,53,.8)" stroke="rgba(79,209,197,.25)" stroke-width="1.5"/>
       <text font-family="'Segoe UI',sans-serif" font-size="11" fill="rgba(79,209,197,.6)"
             x="46" y="168" letter-spacing="1">TENSTORRENT  HARDWARE  —  4 × P300C</text>
 
-      <!-- Compile label -->
-      <g class="comp" transform="translate(40,175)">
-        <rect class="box" width="130" height="60" rx="8"/>
-        <text class="label" x="65" y="24">forge.compile</text>
-        <text class="sub accent" x="65" y="42">12-layer LlamaModel</text>
-        <text class="sub" x="65" y="54">~45s first call</text>
+      <!-- forge.compile box -->
+      <g class="comp" transform="translate(40,178)">
+        <rect class="box" width="130" height="64" rx="8"/>
+        <text class="label" x="65" y="22">forge.compile</text>
+        <text class="sub accent" x="65" y="38">12-layer LlamaModel</text>
+        <text class="sub" x="65" y="52">~45s first call</text>
       </g>
 
-      <!-- arrow → chips group -->
-      <line class="arrow" x1="170" y1="205" x2="208" y2="205"/>
+      <!-- bus line from compile to all chips -->
+      <line stroke="rgba(79,209,197,.4)" stroke-width="2" x1="170" y1="210" x2="260" y2="210"/>
+      <line stroke="rgba(79,209,197,.25)" stroke-width="1.5" stroke-dasharray="3 3"
+            x1="260" y1="210" x2="595" y2="210"/>
+      <!-- tick marks at each chip centre -->
+      <line stroke="rgba(79,209,197,.35)" stroke-width="1.5" x1="285" y1="210" x2="285" y2="178"/>
+      <line stroke="rgba(79,209,197,.35)" stroke-width="1.5" x1="370" y1="210" x2="370" y2="178"/>
+      <line stroke="rgba(79,209,197,.35)" stroke-width="1.5" x1="455" y1="210" x2="455" y2="178"/>
+      <line stroke="rgba(79,209,197,.35)" stroke-width="1.5" x1="540" y1="210" x2="540" y2="178"/>
 
-      <!-- 4 chips -->
-      <g class="chip" transform="translate(210,175)">
-        <rect class="chip-glow" width="100" height="60" rx="8"/>
-        <rect class="box" width="100" height="60" rx="8"/>
-        <text class="label" x="50" y="24">P300C #0</text>
-        <text class="sub" x="50" y="40">Wormhole</text>
-        <text class="sub accent" x="50" y="54">~2.4 TFLOPS</text>
+      <!-- 4 chips — no architecture label -->
+      <g class="chip" transform="translate(235,155)">
+        <rect class="chip-glow" width="100" height="55" rx="8"/>
+        <rect class="box" width="100" height="55" rx="8"/>
+        <text class="label" x="50" y="22">P300C #0</text>
+        <text class="sub accent" x="50" y="40">AI accelerator</text>
       </g>
-      <g class="chip" transform="translate(320,175)">
-        <rect class="chip-glow" width="100" height="60" rx="8" style="animation-delay:-.6s"/>
-        <rect class="box" width="100" height="60" rx="8"/>
-        <text class="label" x="50" y="24">P300C #1</text>
-        <text class="sub" x="50" y="40">Wormhole</text>
-        <text class="sub accent" x="50" y="54">~2.4 TFLOPS</text>
+      <g class="chip" transform="translate(320,155)">
+        <rect class="chip-glow" width="100" height="55" rx="8" style="animation-delay:-.6s"/>
+        <rect class="box" width="100" height="55" rx="8"/>
+        <text class="label" x="50" y="22">P300C #1</text>
+        <text class="sub accent" x="50" y="40">AI accelerator</text>
       </g>
-      <g class="chip" transform="translate(430,175)">
-        <rect class="chip-glow" width="100" height="60" rx="8" style="animation-delay:-1.2s"/>
-        <rect class="box" width="100" height="60" rx="8"/>
-        <text class="label" x="50" y="24">P300C #2</text>
-        <text class="sub" x="50" y="40">Wormhole</text>
-        <text class="sub accent" x="50" y="54">~2.4 TFLOPS</text>
+      <g class="chip" transform="translate(405,155)">
+        <rect class="chip-glow" width="100" height="55" rx="8" style="animation-delay:-1.2s"/>
+        <rect class="box" width="100" height="55" rx="8"/>
+        <text class="label" x="50" y="22">P300C #2</text>
+        <text class="sub accent" x="50" y="40">AI accelerator</text>
       </g>
-      <g class="chip" transform="translate(540,175)">
-        <rect class="chip-glow" width="100" height="60" rx="8" style="animation-delay:-1.8s"/>
-        <rect class="box" width="100" height="60" rx="8"/>
-        <text class="label" x="50" y="24">P300C #3</text>
-        <text class="sub" x="50" y="40">Wormhole</text>
-        <text class="sub accent" x="50" y="54">~2.4 TFLOPS</text>
-      </g>
-
-      <!-- hw_context_interval label -->
-      <text font-family="'Segoe UI',sans-serif" font-size="10" fill="#F4C471"
-            x="655" y="195">hw_context_interval = 4</text>
-      <text font-family="'Segoe UI',sans-serif" font-size="10" fill="rgba(244,196,113,.6)"
-            x="655" y="210">hardware every 4 events</text>
-      <text font-family="'Segoe UI',sans-serif" font-size="10" fill="rgba(244,196,113,.6)"
-            x="655" y="225">~500ms per hw call</text>
-
-      <!-- CPU net_token -->
-      <g class="comp" transform="translate(210,255)">
-        <rect class="box" width="430" height="60" rx="8" fill="#142030"/>
-        <text class="label gold" x="215" y="24">CPU net_token (3-layer, ~50M params)</text>
-        <text class="sub" x="215" y="42">runs between hardware refreshes</text>
-        <text class="sub" x="215" y="54">top-p / top-k sampling per token</text>
+      <g class="chip" transform="translate(490,155)">
+        <rect class="chip-glow" width="100" height="55" rx="8" style="animation-delay:-1.8s"/>
+        <rect class="box" width="100" height="55" rx="8"/>
+        <text class="label" x="50" y="22">P300C #3</text>
+        <text class="sub accent" x="50" y="40">AI accelerator</text>
       </g>
 
-      <!-- flowing notes along CPU band -->
-      <g transform="translate(270,280)">
+      <!-- hw_context_interval annotation -->
+      <text font-family="'Segoe UI',sans-serif" font-size="10" fill="#F4C471" x="610" y="170">hw_context_interval = 4</text>
+      <text font-family="'Segoe UI',sans-serif" font-size="10" fill="rgba(244,196,113,.6)" x="610" y="184">hw called every 4 events</text>
+      <text font-family="'Segoe UI',sans-serif" font-size="10" fill="rgba(244,196,113,.6)" x="610" y="198">~500ms PCIe dispatch/call</text>
+
+      <!-- CPU net_token band -->
+      <g class="comp" transform="translate(40,230)">
+        <rect class="box" width="600" height="56" rx="8" fill="#142030"/>
+        <text class="label gold" x="300" y="22">CPU  net_token  (3-layer, ~50M params)</text>
+        <text class="sub" x="300" y="38">runs between hardware refreshes · top-p / top-k sampling per token</text>
+      </g>
+      <!-- flowing note particles -->
+      <g transform="translate(200,258)">
         <circle class="note-particle" r="3" cx="0" cy="0"/>
         <circle class="note-particle" r="2.5" cx="0" cy="0"/>
         <circle class="note-particle" r="2" cx="0" cy="0"/>
       </g>
 
       <!-- vertical arrow down from hw block -->
-      <line class="arrow" x1="425" y1="350" x2="425" y2="388"/>
+      <line class="arrow" x1="430" y1="360" x2="430" y2="398"/>
 
       <!-- ── Row 3: Coherence ── -->
-      <g class="comp" transform="translate(180,390)">
-        <rect class="box" width="490" height="80" rx="8"/>
-        <text class="label" x="245" y="26">Coherence Layer</text>
-        <!-- 4 passes -->
-        <rect x="20" y="36" width="100" height="28" rx="6" fill="rgba(79,209,197,.1)" stroke="rgba(79,209,197,.3)" stroke-width="1"/>
-        <text font-family="'Segoe UI',sans-serif" font-size="10" fill="#4FD1C5" text-anchor="middle" x="70" y="53">scale_quantize</text>
-
-        <rect x="130" y="36" width="100" height="28" rx="6" fill="rgba(236,150,184,.1)" stroke="rgba(236,150,184,.3)" stroke-width="1"/>
-        <text font-family="'Segoe UI',sans-serif" font-size="10" fill="#EC96B8" text-anchor="middle" x="180" y="53">chord_aware_filter</text>
-
-        <rect x="240" y="36" width="100" height="28" rx="6" fill="rgba(244,196,113,.1)" stroke="rgba(244,196,113,.3)" stroke-width="1"/>
-        <text font-family="'Segoe UI',sans-serif" font-size="10" fill="#F4C471" text-anchor="middle" x="290" y="53">humanize_velocities</text>
-
-        <rect x="350" y="36" width="100" height="28" rx="6" fill="rgba(39,174,96,.1)" stroke="rgba(39,174,96,.3)" stroke-width="1"/>
-        <text font-family="'Segoe UI',sans-serif" font-size="10" fill="#27AE60" text-anchor="middle" x="400" y="53">nudge_timing</text>
+      <g class="comp" transform="translate(155,400)">
+        <rect class="box" width="550" height="76" rx="8"/>
+        <text class="label" x="275" y="22">Coherence Layer</text>
+        <rect x="16"  y="32" width="118" height="26" rx="6" fill="rgba(79,209,197,.1)"  stroke="rgba(79,209,197,.3)"  stroke-width="1"/>
+        <text font-family="'Segoe UI',sans-serif" font-size="10" fill="#4FD1C5"  text-anchor="middle" x="75"  y="49">scale_quantize</text>
+        <rect x="144" y="32" width="118" height="26" rx="6" fill="rgba(236,150,184,.1)" stroke="rgba(236,150,184,.3)" stroke-width="1"/>
+        <text font-family="'Segoe UI',sans-serif" font-size="10" fill="#EC96B8" text-anchor="middle" x="203" y="49">chord_aware_filter</text>
+        <rect x="272" y="32" width="118" height="26" rx="6" fill="rgba(244,196,113,.1)" stroke="rgba(244,196,113,.3)" stroke-width="1"/>
+        <text font-family="'Segoe UI',sans-serif" font-size="10" fill="#F4C471" text-anchor="middle" x="331" y="49">humanize_velocities</text>
+        <rect x="400" y="32" width="118" height="26" rx="6" fill="rgba(39,174,96,.1)"  stroke="rgba(39,174,96,.3)"  stroke-width="1"/>
+        <text font-family="'Segoe UI',sans-serif" font-size="10" fill="#27AE60" text-anchor="middle" x="459" y="49">nudge_timing</text>
       </g>
 
-      <!-- vertical arrow down from coherence -->
-      <line class="arrow" x1="425" y1="470" x2="425" y2="508"/>
+      <!-- vertical arrow down from coherence to GM MIDI -->
+      <line class="arrow" x1="430" y1="476" x2="430" y2="508"/>
 
-      <!-- ── Row 4: Output ── -->
-      <g class="comp" transform="translate(180,510)">
+      <!-- ── Row 4: GM MIDI (fan-out) ── -->
+      <g class="comp" transform="translate(330,510)">
         <rect class="box" width="200" height="40" rx="8"/>
-        <text class="label accent" x="100" y="24">GM MIDI File</text>
+        <text class="label accent" x="100" y="24">GM MIDI</text>
       </g>
-      <line class="arrow data" x1="380" y1="530" x2="428" y2="530"/>
-      <g class="comp" transform="translate(430,510)">
-        <rect class="box" width="200" height="40" rx="8"/>
-        <text class="label gold" x="100" y="24">FluidSynth Loop Player</text>
+
+      <!-- vertical stem down from GM MIDI -->
+      <line class="arrow" x1="430" y1="550" x2="430" y2="572"/>
+      <!-- horizontal branch bar -->
+      <line stroke="rgba(79,209,197,.4)" stroke-width="2" x1="190" y1="572" x2="670" y2="572"/>
+
+      <!-- branch arrows down to three destinations -->
+      <line class="arrow" x1="190" y1="572" x2="190" y2="592"/>
+      <line class="arrow" x1="430" y1="572" x2="430" y2="592"/>
+      <line class="arrow" x1="670" y1="572" x2="670" y2="592"/>
+
+      <!-- Destination 1: FluidSynth (left) -->
+      <g class="comp" transform="translate(110,594)">
+        <rect class="box" width="160" height="40" rx="8"/>
+        <text class="label gold" x="80" y="24">FluidSynth</text>
       </g>
-      <line class="arrow data" x1="630" y1="530" x2="678" y2="530"/>
-      <g class="comp" transform="translate(680,510)">
-        <rect class="box" width="100" height="40" rx="8"/>
-        <text class="label green" x="50" y="24">Audio out</text>
+      <line class="arrow" x1="190" y1="634" x2="190" y2="652"/>
+      <g class="comp" transform="translate(120,654)">
+        <rect class="box" width="140" height="36" rx="8"/>
+        <text class="label green" x="70" y="22">loop player</text>
       </g>
+      <line class="arrow" x1="190" y1="690" x2="190" y2="706"/>
+      <text font-family="'Segoe UI',sans-serif" font-size="10" fill="rgba(39,174,96,.8)" text-anchor="middle" x="190" y="716">speakers</text>
+
+      <!-- Destination 2: Hardware synth (center) -->
+      <g class="comp" transform="translate(340,594)">
+        <rect class="box" width="180" height="40" rx="8"/>
+        <text class="label" x="90" y="16">Hardware</text>
+        <text class="label" x="90" y="30">Synthesizer</text>
+      </g>
+      <text font-family="'Segoe UI',sans-serif" font-size="10" fill="var(--text-dim)" text-anchor="middle" x="430" y="650">MIDI keyboard / module</text>
+      <text font-family="'Segoe UI',sans-serif" font-size="10" fill="var(--text-dim)" text-anchor="middle" x="430" y="663">any MIDI-capable device</text>
+
+      <!-- Destination 3: DAW / Soft Synth (right) -->
+      <g class="comp" transform="translate(580,594)">
+        <rect class="box" width="180" height="40" rx="8"/>
+        <text class="label pink" x="90" y="16">DAW /</text>
+        <text class="label pink" x="90" y="30">Software Synth</text>
+      </g>
+      <text font-family="'Segoe UI',sans-serif" font-size="10" fill="var(--text-dim)" text-anchor="middle" x="670" y="650">Ableton · Logic · Reaper</text>
+      <text font-family="'Segoe UI',sans-serif" font-size="10" fill="var(--text-dim)" text-anchor="middle" x="670" y="663">VST / AU · ALSA port</text>
 
     </svg><!-- /svg -->
   </div><!-- /machine-wrap -->
@@ -713,6 +878,401 @@ footer a { color: var(--teal); }
       <h3><span>Coherence layer</span> — music theory post-processing</h3>
       <p>Four passes clean up raw model output: scale quantization (D Aeolian), chord-aware filter (keeps chord tones on beats), velocity humanization (natural dynamics), and micro-timing nudge (±10ms groove feel).</p>
     </div>
+  </div>
+
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ MCP SERVER -->
+<section id="mcp">
+<div class="container">
+  <div class="section-label">Model Context Protocol server</div>
+  <h2 class="section-title">Compose from any AI assistant</h2>
+  <p class="section-desc">
+    tt-midi-maker exposes every generation and playback capability as a standard MCP server.
+    Connect from Claude Desktop (or any MCP-compatible client) and compose interactively —
+    the assistant can generate loops, continue patterns, analyze what it made, and play it
+    back through your speakers, all without leaving the conversation.
+  </p>
+
+  <!-- connection config -->
+  <div class="section-label" style="margin-top:0">Connect</div>
+  <div class="config-block"><span class="cmt">// ~/Library/Application Support/Claude/claude_desktop_config.json</span>
+{
+  <span class="key">"mcpServers"</span>: {
+    <span class="key">"tt-midi-maker"</span>: {
+      <span class="key">"command"</span>: <span class="val">"python"</span>,
+      <span class="key">"args"</span>: [<span class="val">"-m"</span>, <span class="val">"tt_midi_maker"</span>],
+      <span class="key">"cwd"</span>: <span class="val">"/path/to/tt-midi-maker"</span>,
+      <span class="key">"env"</span>: {
+        <span class="key">"MIDI_LLM_URL"</span>: <span class="val">"http://localhost:8000/v1"</span>  <span class="cmt">// local LLM endpoint</span>
+      }
+    }
+  }
+}</div>
+
+  <!-- tools grid -->
+  <div class="section-label">12 tools</div>
+  <div class="tools-grid">
+
+    <div class="tool-card">
+      <div class="tool-group">Generation</div>
+      <div class="tool-name">generate_midi</div>
+      <p>Generate a multi-track MIDI file from a natural language prompt. Returns a file path and hardware stats.</p>
+    </div>
+
+    <div class="tool-card">
+      <div class="tool-group">Generation</div>
+      <div class="tool-name">continue_midi</div>
+      <p>Extend an existing file by seeding the model with its last 4–8 bars. Writes a new file; original untouched.</p>
+    </div>
+
+    <div class="tool-card">
+      <div class="tool-group">Generation</div>
+      <div class="tool-name">set_musical_context</div>
+      <p>Lock in key, BPM, style, and chord progression for the session. All subsequent generates respect these values.</p>
+    </div>
+
+    <div class="tool-card">
+      <div class="tool-group">Analysis</div>
+      <div class="tool-name">describe_midi</div>
+      <p>Analyze a MIDI file: key, tempo, bar count, track inventory, chord guesses, style guess, prose description.</p>
+    </div>
+
+    <div class="tool-card">
+      <div class="tool-group">Analysis</div>
+      <div class="tool-name">chat_with_midi</div>
+      <p>Ask any musical question about a file. "Why does bar 4 feel tense?" "How do I make this more 90s R&amp;B?"</p>
+    </div>
+
+    <div class="tool-card">
+      <div class="tool-group">Devices</div>
+      <div class="tool-name">list_midi_devices</div>
+      <p>Enumerate all ALSA sequencer ports (USB synths, BT devices, DAW loopbacks), soundfonts, and active playback jobs.</p>
+    </div>
+
+    <div class="tool-card">
+      <div class="tool-group">Playback</div>
+      <div class="tool-name">play_midi</div>
+      <p>One-shot playback via FluidSynth or any ALSA port. Per-channel routing: send melody to one synth, bass to another.</p>
+    </div>
+
+    <div class="tool-card">
+      <div class="tool-group">Playback</div>
+      <div class="tool-name">stop_playback</div>
+      <p>Cancel a background playback job by its job_id. Stops within ~100 ms.</p>
+    </div>
+
+    <div class="tool-card">
+      <div class="tool-group">Streaming</div>
+      <div class="tool-name">synth_start</div>
+      <p>Launch a persistent FluidSynth server for real-time loop playback. Call once per session before loop_play.</p>
+    </div>
+
+    <div class="tool-card">
+      <div class="tool-group">Streaming</div>
+      <div class="tool-name">loop_play</div>
+      <p>Start looping a MIDI file immediately — tight real-time loop, no gap between iterations, monotonic clock timing.</p>
+    </div>
+
+    <div class="tool-card">
+      <div class="tool-group">Streaming</div>
+      <div class="tool-name">loop_queue</div>
+      <p>Queue the next pattern to take over at the next loop boundary. The current loop keeps playing until its end.</p>
+    </div>
+
+    <div class="tool-card">
+      <div class="tool-group">Streaming</div>
+      <div class="tool-name">loop_stop</div>
+      <p>Stop the loop after the current phrase ends (clean), or immediately with all-notes-off on every channel.</p>
+    </div>
+
+  </div>
+
+  <!-- prompts -->
+  <div class="section-label">4 prompt helpers</div>
+  <div class="prompt-list">
+
+    <div class="prompt-card">
+      <h4>Quick Loop</h4>
+      <p>Best starting point. Provide a style, optional key, and bar count — the assistant calls
+         <code style="color:var(--teal);font-size:.75rem">set_musical_context</code> then <code style="color:var(--teal);font-size:.75rem">generate_midi</code> and returns a ready-to-play loop.</p>
+    </div>
+
+    <div class="prompt-card">
+      <h4>Build a Song Section</h4>
+      <p>Guided 5-step workflow: set context → generate seed → describe → extend to full length → describe final.
+         Ideal for verse/chorus/bridge with real internal development.</p>
+    </div>
+
+    <div class="prompt-card">
+      <h4>Analyze and Improve</h4>
+      <p>Point it at an existing file and a goal ("make it more tense", "resolve the harmony").
+         The assistant diagnoses what's wrong and recommends whether to regenerate, continue, or re-context.</p>
+    </div>
+
+    <div class="prompt-card">
+      <h4>Collaborative Session</h4>
+      <p>Open-ended start. The assistant asks about style, mood, instrumentation, and reference tracks,
+         then begins generating and iterating — a co-composer in your chat window.</p>
+    </div>
+
+  </div>
+
+  <!-- resources -->
+  <div class="section-label">4 live resources</div>
+  <div class="resources-row">
+
+    <div class="resource-card">
+      <div class="resource-uri">midi://session/context</div>
+      <p>Active key, BPM, style, and chord progression. Read before generating to confirm the session context is set.</p>
+    </div>
+
+    <div class="resource-card">
+      <div class="resource-uri">midi://hardware/status</div>
+      <p>Connected Tenstorrent devices, active model, and generation backend. Check when generation is slow or failing.</p>
+    </div>
+
+    <div class="resource-card">
+      <div class="resource-uri">midi://styles/catalog</div>
+      <p>Full styles catalog — BPM ranges, keys, roles, and example prompts for all 20 styles. Consult before prompting.</p>
+    </div>
+
+    <div class="resource-card">
+      <div class="resource-uri">midi://output/{filename}</div>
+      <p>Fetch a previously generated MIDI file by name. Returns raw MIDI bytes for download or further analysis.</p>
+    </div>
+
+  </div>
+
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ STYLES CATALOG -->
+<section id="styles">
+<div class="container">
+  <div class="section-label">Prompt helpers — styles library</div>
+  <h2 class="section-title">20 styles. One sentence to any of them.</h2>
+  <p class="section-desc">
+    Every style has calibrated defaults: BPM range, typical keys, instrument roles, swing ratio, and
+    example prompts. Feed these directly to <code style="color:var(--teal);font-size:.9rem">generate_midi</code>
+    or mix and match — the model handles the rest.
+  </p>
+
+  <!-- Electronic / Hip-hop -->
+  <div class="category-label">Electronic &amp; Hip-Hop</div>
+  <div class="styles-grid">
+
+    <div class="style-card">
+      <div class="style-name">Lo-Fi Hip Hop</div>
+      <div class="style-bpm">70–90 BPM · swing 0.55</div>
+      <div class="style-tags">
+        <span class="style-tag">pensive</span><span class="style-tag">oozy</span><span class="style-tag">organic</span>
+      </div>
+      <div class="style-example">"dusty vinyl drums, sparse piano, melancholic bass"</div>
+    </div>
+
+    <div class="style-card">
+      <div class="style-name">Hip Hop</div>
+      <div class="style-bpm">80–100 BPM · swing 0.55</div>
+      <div class="style-tags">
+        <span class="style-tag">tense</span><span class="style-tag">exuberant</span><span class="style-tag">synthetic</span>
+      </div>
+      <div class="style-example">"trap hi-hats, 808 sub, synth melody, punchy snare"</div>
+    </div>
+
+    <div class="style-card">
+      <div class="style-name">Drum &amp; Bass</div>
+      <div class="style-bpm">160–180 BPM · no swing</div>
+      <div class="style-tags">
+        <span class="style-tag">tense</span><span class="style-tag">exuberant</span><span class="style-tag">synthetic</span>
+      </div>
+      <div class="style-example">"amen break chops, rolling sub bass, minimal arp"</div>
+    </div>
+
+    <div class="style-card">
+      <div class="style-name">Synthwave</div>
+      <div class="style-bpm">90–118 BPM · no swing</div>
+      <div class="style-tags">
+        <span class="style-tag">atmospheric</span><span class="style-tag">synthetic</span><span class="style-tag">pensive</span>
+      </div>
+      <div class="style-example">"arpeggiated poly synth, analog bass, gated reverb drums, lush pad"</div>
+    </div>
+
+    <div class="style-card">
+      <div class="style-name">IDM</div>
+      <div class="style-bpm">100–160 BPM · no swing</div>
+      <div class="style-tags">
+        <span class="style-tag">glitchy</span><span class="style-tag">synthetic</span><span class="style-tag">tense</span>
+      </div>
+      <div class="style-example">"glitchy polyrhythmic drums, filtered acid bass, melodic arp, evolving pads"</div>
+    </div>
+
+    <div class="style-card">
+      <div class="style-name">Detroit Techno</div>
+      <div class="style-bpm">128–138 BPM · no swing</div>
+      <div class="style-tags">
+        <span class="style-tag">tense</span><span class="style-tag">synthetic</span><span class="style-tag">atmospheric</span>
+      </div>
+      <div class="style-example">"hard kick, minimal acid bass, sparse chord stab, cold pad"</div>
+    </div>
+
+  </div>
+
+  <!-- Jazz / Swing -->
+  <div class="category-label">Jazz &amp; Swing</div>
+  <div class="styles-grid">
+
+    <div class="style-card">
+      <div class="style-name">Jazz</div>
+      <div class="style-bpm">120–200 BPM · swing 0.65</div>
+      <div class="style-tags">
+        <span class="style-tag">pensive</span><span class="style-tag">exuberant</span><span class="style-tag">organic</span>
+      </div>
+      <div class="style-example">"walking bass, piano comping, trumpet melody, brushed kit"</div>
+    </div>
+
+    <div class="style-card">
+      <div class="style-name">Bossa Nova</div>
+      <div class="style-bpm">120–160 BPM · no swing</div>
+      <div class="style-tags">
+        <span class="style-tag">pensive</span><span class="style-tag">organic</span><span class="style-tag">ethereal</span>
+      </div>
+      <div class="style-example">"brushed snare, walking bass, piano melody, nylon guitar chords"</div>
+    </div>
+
+    <div class="style-card">
+      <div class="style-name">Blues</div>
+      <div class="style-bpm">60–130 BPM · shuffle 0.65</div>
+      <div class="style-tags">
+        <span class="style-tag">pensive</span><span class="style-tag">organic</span><span class="style-tag">tense</span>
+      </div>
+      <div class="style-example">"12-bar blues, guitar lick call-response, walking bass, shuffled kit"</div>
+    </div>
+
+    <div class="style-card">
+      <div class="style-name">Ska</div>
+      <div class="style-bpm">160–200 BPM · swing 0.5</div>
+      <div class="style-tags">
+        <span class="style-tag">exuberant</span><span class="style-tag">organic</span>
+      </div>
+      <div class="style-example">"offbeat keyboard chop, walking bass, horn stabs, snare on 2 and 4"</div>
+    </div>
+
+  </div>
+
+  <!-- Rock -->
+  <div class="category-label">Rock</div>
+  <div class="styles-grid">
+
+    <div class="style-card">
+      <div class="style-name">Surf Rock</div>
+      <div class="style-bpm">140–180 BPM · no swing</div>
+      <div class="style-tags">
+        <span class="style-tag">exuberant</span><span class="style-tag">tense</span><span class="style-tag">organic</span>
+      </div>
+      <div class="style-example">"reverb-drenched tremolo guitar lead, locked bass and drums, twangy arp"</div>
+    </div>
+
+    <div class="style-card">
+      <div class="style-name">Post-Rock</div>
+      <div class="style-bpm">60–140 BPM · no swing</div>
+      <div class="style-tags">
+        <span class="style-tag">atmospheric</span><span class="style-tag">pensive</span><span class="style-tag">ethereal</span>
+      </div>
+      <div class="style-example">"quiet clean guitar swell, slow build, crashing drum climax, lush string pad"</div>
+    </div>
+
+  </div>
+
+  <!-- World / Latin -->
+  <div class="category-label">World &amp; Latin</div>
+  <div class="styles-grid">
+
+    <div class="style-card">
+      <div class="style-name">Afrobeat</div>
+      <div class="style-bpm">100–130 BPM · no swing</div>
+      <div class="style-tags">
+        <span class="style-tag">exuberant</span><span class="style-tag">organic</span>
+      </div>
+      <div class="style-example">"interlocking polyrhythm drums, bass guitar groove, horn stabs, keyboard vamp"</div>
+    </div>
+
+    <div class="style-card">
+      <div class="style-name">Cumbia</div>
+      <div class="style-bpm">100–120 BPM · swing 0.2</div>
+      <div class="style-tags">
+        <span class="style-tag">exuberant</span><span class="style-tag">organic</span>
+      </div>
+      <div class="style-example">"caja drum pattern, bass guitar ostinato, marimba riff, accordion harmony"</div>
+    </div>
+
+  </div>
+
+  <!-- Cinematic / Classical -->
+  <div class="category-label">Cinematic &amp; Classical</div>
+  <div class="styles-grid">
+
+    <div class="style-card">
+      <div class="style-name">Classical</div>
+      <div class="style-bpm">60–180 BPM · no swing</div>
+      <div class="style-tags">
+        <span class="style-tag">pensive</span><span class="style-tag">ethereal</span><span class="style-tag">exuberant</span>
+      </div>
+      <div class="style-example">"piano melody, string ensemble accompaniment, pizzicato bass"</div>
+    </div>
+
+    <div class="style-card">
+      <div class="style-name">Nino Rota</div>
+      <div class="style-bpm">80–140 BPM · swing 0.4</div>
+      <div class="style-tags">
+        <span class="style-tag">pensive</span><span class="style-tag">organic</span><span class="style-tag">ethereal</span>
+      </div>
+      <div class="style-example">"accordion-style melody, circus waltz rhythm, pizzicato bass, orchestral color"</div>
+    </div>
+
+    <div class="style-card">
+      <div class="style-name">Dark Cinematic</div>
+      <div class="style-bpm">60–110 BPM · no swing</div>
+      <div class="style-tags">
+        <span class="style-tag">tense</span><span class="style-tag">atmospheric</span><span class="style-tag">ethereal</span>
+      </div>
+      <div class="style-example">"low cello ostinato, tension pad swell, distant brass, sparse piano"</div>
+    </div>
+
+  </div>
+
+  <!-- Ambient / Experimental -->
+  <div class="category-label">Ambient &amp; Experimental</div>
+  <div class="styles-grid">
+
+    <div class="style-card">
+      <div class="style-name">Ambient</div>
+      <div class="style-bpm">60–90 BPM · no swing</div>
+      <div class="style-tags">
+        <span class="style-tag">spacey</span><span class="style-tag">ethereal</span><span class="style-tag">atmospheric</span>
+      </div>
+      <div class="style-example">"slow pad swells, sparse high melody, atmospheric fx, no percussion"</div>
+    </div>
+
+    <div class="style-card">
+      <div class="style-name">Dark Ambient</div>
+      <div class="style-bpm">40–70 BPM · no swing</div>
+      <div class="style-tags">
+        <span class="style-tag">spacey</span><span class="style-tag">oozy</span><span class="style-tag">tense</span>
+      </div>
+      <div class="style-example">"glacial drone, low sub rumble, sparse high tone, evolving noise texture"</div>
+    </div>
+
+    <div class="style-card">
+      <div class="style-name">Glitch</div>
+      <div class="style-bpm">90–150 BPM · no swing</div>
+      <div class="style-tags">
+        <span class="style-tag">glitchy</span><span class="style-tag">synthetic</span><span class="style-tag">chaos</span>
+      </div>
+      <div class="style-example">"fragmented micro-rhythms, stuttered bass, granular pad, unstable pitch fx"</div>
+    </div>
+
   </div>
 
 </div>
