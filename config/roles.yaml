@@ -1,0 +1,36 @@
+roles:
+  melody:
+    channel: 1
+    program: 0
+    note_range: [60, 96]
+    density_default: 1.0
+  bass:
+    channel: 2
+    program: 32
+    note_range: [28, 52]
+    density_default: 0.8
+  harmony:
+    channel: 3
+    program: 48
+    note_range: [48, 72]
+    density_default: 0.6
+  arp:
+    channel: 4
+    program: 4
+    note_range: [60, 84]
+    density_default: 0.4
+  pad:
+    channel: 5
+    program: 89
+    note_range: [36, 72]
+    density_default: 0.3
+  fx:
+    channel: 9
+    program: 88
+    note_range: [0, 127]
+    density_default: 0.2
+  drums:
+    channel: 10
+    program: 0
+    note_range: [35, 81]
+    density_default: 0.7

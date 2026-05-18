@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tt-midi-maker"
+version = "0.1.0"
+description = "Multi-track MIDI generation from text prompts on Tenstorrent hardware"
+requires-python = ">=3.11"
+dependencies = [
+    "mcp>=1.27.0",
+    "mido>=1.3.0",
+    "miditok>=3.0.0",
+    "transformers>=4.40.0",
+    "torch>=2.0.0",
+    "pydantic>=2.0.0",
+    "httpx>=0.27.0",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "pytest-asyncio>=0.23"]
+
+[project.scripts]
+tt-midi-maker = "tt_midi_maker.server:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["tt_midi_maker*"]
+
+[tool.setuptools.package-data]
+tt_midi_maker = ["../config/*.yaml"]
