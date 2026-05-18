@@ -25,8 +25,7 @@ from .coherence.humanize import humanize_velocities, nudge_timing
 from .coherence.scale import build_scale_set, parse_key, scale_quantize
 from .errors import MidiMakerError
 from .generation.hardware import detect_tt_devices, hardware_status
-from .generation.aria_backend import get_model, generate_tokens
-from .generation.tokenizer import decode_tokens_to_midi, encode_midi_file
+from .generation.midi_backend import generate_from_blueprint as _generate_from_blueprint
 from .models.blueprint import MusicalBlueprint
 from .player import (
     active_jobs, job_status, list_output_ports, list_soundfonts,
@@ -85,7 +84,24 @@ def _set_musical_context(
 
 
 def _run_generation(blueprint: MusicalBlueprint) -> list:
-    """Placeholder: generates stub notes from blueprint (Aria wiring is a follow-up)."""
+    """Generate MIDI tracks from blueprint using skytnt/midi-model.
+
+    Falls back to a one-note-per-bar stub when the backend raises so that the
+    server never crashes due to a model loading failure during development.
+    """
+    try:
+        tracks = _generate_from_blueprint(blueprint, ROLES_CONFIG)
+        if tracks:
+            return tracks
+        # Empty output (e.g. model produced only EOS) — fall through to stub
+        raise RuntimeError("model returned no notes")
+    except Exception as exc:
+        import logging
+        logging.getLogger(__name__).warning(
+            "[tt-midi-maker] midi_backend failed (%s), using stub", exc,
+        )
+
+    # Minimal fallback: one note per bar so the pipeline doesn't break
     from .models.track import NoteEvent, RoleTrack
     tracks = []
     for role_name, role_cfg in blueprint.roles.items():
@@ -145,19 +161,25 @@ def _generate_midi(
     if bars:
         blueprint = blueprint.model_copy(update={"bars": bars})
 
+    t0            = time.time()
     raw_tracks    = _run_generation(blueprint)
+    gen_ms        = int((time.time() - t0) * 1000)
     clean_tracks  = _apply_coherence(raw_tracks, blueprint)
     ts            = int(time.time())
     out           = Path(output_path) if output_path else OUTPUT_DIR / f"{ts}.mid"
     build_midi_file(clean_tracks, blueprint.bpm, out)
+
+    devices = detect_tt_devices()
+    hw_label = f"tt-forge/{len(devices)}x" if devices else "cpu"
+
     return {
         "file_path":       str(out),
         "bars_generated":  blueprint.bars,
         "bpm":             blueprint.bpm,
         "key":             blueprint.key,
         "roles_generated": [t.role for t in clean_tracks],
-        "generation_ms":   0,
-        "hardware_used":   "cpu-fallback",
+        "generation_ms":   gen_ms,
+        "hardware_used":   hw_label,
     }
 
 

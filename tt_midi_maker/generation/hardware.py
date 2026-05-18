@@ -12,7 +12,7 @@ def detect_tt_devices() -> list[int]:
         if result.returncode != 0:
             return []
         data = json.loads(result.stdout)
-        return [d["id"] for d in data.get("device_info", [])
+        return [i for i, d in enumerate(data.get("device_info", []))
                 if d.get("status") == "available"]
     except (FileNotFoundError, json.JSONDecodeError, subprocess.TimeoutExpired):
         return []
