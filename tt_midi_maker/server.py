@@ -128,14 +128,11 @@ def _generate_midi(
     blueprint = build_blueprint(prompt, ctx)
 
     if roles:
-        for role in list(blueprint.roles.keys()):
-            if role not in roles:
-                from dataclasses import replace
-                blueprint = replace(
-                    blueprint,
-                    roles={**blueprint.roles,
-                           role: blueprint.roles[role].model_copy(update={"density": 0.0})},
-                )
+        filtered_roles = {
+            role: (cfg if role in roles else cfg.model_copy(update={"density": 0.0}))
+            for role, cfg in blueprint.roles.items()
+        }
+        blueprint = blueprint.model_copy(update={"roles": filtered_roles})
     if bars:
         blueprint = blueprint.model_copy(update={"bars": bars})
 
