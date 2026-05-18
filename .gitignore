@@ -7,5 +7,17 @@ __pycache__/
 dist/
 build/
 .pytest_cache/
+
+# generated MIDI (working output) — but keep curated examples
 *.mid
+!examples/**/*.mid
+!docs/midi/*.mid
+
+# runtime outputs
+generated/
+generated_modules/
 ~/Music/
+
+# virtual environments
+.venv/
+forge-venv/

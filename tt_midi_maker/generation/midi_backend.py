@@ -2,14 +2,15 @@
 Orchestration layer: blueprint → skytnt/midi-model → RoleTracks.
 
 CPU path: loads skytnt/midi-model weights from HuggingFace Hub.
-TT hardware path (Phase 2): forge-compiled decode steps on P300C cards.
+TT hardware path: forge-compiled net on P300C chips when available.
+  - model.net (12-layer, ~350 M params) compiled with forge.compile
+  - model.net_token (3-layer, ~50 M params) stays on CPU
 
 Model weights are cached after first load. To force a reload, call reset_model().
 """
 from __future__ import annotations
 
 import logging
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -25,19 +26,20 @@ logger = logging.getLogger(__name__)
 _MODEL_ID = "skytnt/midi-model"
 _TICKS_PER_BEAT = 480
 
-# Lazy-loaded singleton: (MIDIModel, tokenizer)
-_model_cache: tuple | None = None
+# Lazy-loaded singletons
+_model_cache: tuple | None = None         # (MIDIModel, tokenizer)
+_hw_model_cache: tuple | None = None      # (compiled_net, max_padded_len)
 
 
 def reset_model() -> None:
-    """Clear the cached model (useful for testing)."""
-    global _model_cache
+    """Clear the cached models (useful for testing)."""
+    global _model_cache, _hw_model_cache
     _model_cache = None
+    _hw_model_cache = None
 
 
 def _get_model():
-    """Load model on first call and cache it.  Always runs on CPU; hardware
-    compilation is wired in a separate step (requires user confirmation)."""
+    """Load model on first call and cache it (CPU)."""
     global _model_cache
     if _model_cache is not None:
         return _model_cache
@@ -46,7 +48,6 @@ def _get_model():
     from transformers import AutoConfig
 
     logger.info("[midi_backend] loading %s …", _MODEL_ID)
-    # Register custom config so from_pretrained resolves the type
     try:
         AutoConfig.register("midi_model", MIDIModelConfig)
     except Exception:
@@ -61,11 +62,124 @@ def _get_model():
     return _model_cache
 
 
-def _build_prompt(blueprint: MusicalBlueprint, roles_config: dict, tokenizer) -> np.ndarray:
+def _get_compiled_net(model, max_padded_len: int = 256):
+    """Compile model.net for TT hardware, or return None if unavailable.
+
+    Checks for available TT devices first.  On failure logs a warning and
+    returns None so the caller can fall back to the CPU path.
+    """
+    global _hw_model_cache
+    if _hw_model_cache is not None:
+        compiled, cached_len = _hw_model_cache
+        if cached_len == max_padded_len:
+            return compiled
+
+    from .hardware import detect_tt_devices
+    devices = detect_tt_devices()
+    if not devices:
+        logger.debug("[midi_backend] no TT devices found, using CPU path")
+        return None
+
+    logger.info("[midi_backend] TT devices found: %s — compiling net for hardware", devices)
+    try:
+        from .forge_backend import compile_for_hardware
+        compiled = compile_for_hardware(model, max_padded_len)
+        _hw_model_cache = (compiled, max_padded_len)
+        return compiled
+    except Exception as exc:
+        logger.warning("[midi_backend] hardware compile failed, using CPU: %s", exc)
+        return None
+
+
+def _midi_file_to_score(path) -> list:
+    """Parse a MIDI file into midi_score format for tokenizer.tokenize().
+
+    Returns [ticks_per_beat, track_events] where track_events is a flat list
+    of events in the format tokenizer.tokenize() expects:
+      note:         ["note",         tick, dur,     ch0, pitch, vel]
+      patch_change: ["patch_change", tick, ch0,     program]
+      set_tempo:    ["set_tempo",    tick, tempo_us]
+    """
+    import mido
+    mid = mido.MidiFile(str(path))
+    tpb = mid.ticks_per_beat
+    events: list = []
+
+    for track in mid.tracks:
+        tick = 0
+        pending: dict = {}           # (ch, pitch) -> (start_tick, velocity)
+        for msg in track:
+            tick += msg.time
+            if msg.type == "set_tempo":
+                events.append(["set_tempo", tick, msg.tempo])
+            elif msg.type == "program_change":
+                events.append(["patch_change", tick, msg.channel, msg.program])
+            elif msg.type == "note_on" and msg.velocity > 0:
+                pending[(msg.channel, msg.note)] = (tick, msg.velocity)
+            elif msg.type == "note_off" or (msg.type == "note_on" and msg.velocity == 0):
+                key = (msg.channel, msg.note)
+                if key in pending:
+                    start, vel = pending.pop(key)
+                    dur = max(1, tick - start)
+                    events.append(["note", start, dur, msg.channel, msg.note, vel])
+
+    events.sort(key=lambda e: e[1])
+    return [tpb, events]
+
+
+def _midi_file_to_prompt_rows(path, tokenizer, last_n_bars: int | None = None) -> list:
+    """Tokenize a MIDI file into token rows suitable for use as a prompt prefix.
+
+    last_n_bars: if set, only the final N bars of the file are included.  This
+    limits context length while providing the most musically relevant material.
+    Events are re-timed to start at tick 0 after slicing.
+
+    Returns a list of token rows (no BOS/EOS).  Empty list if the file has no
+    parseable notes.
+    """
+    midi_score = _midi_file_to_score(path)
+    tpb   = midi_score[0]
+    evts  = midi_score[1]
+
+    if not evts:
+        return []
+
+    if last_n_bars is not None:
+        last_tick   = max(e[1] for e in evts)
+        cutoff_tick = max(0, last_tick - last_n_bars * tpb * 4)
+        evts = [e for e in evts if e[1] >= cutoff_tick]
+        if evts:
+            # Re-base times so the context window starts at tick 0
+            origin = evts[0][1]
+            rebased = []
+            for e in evts:
+                e2 = list(e)
+                e2[1] -= origin
+                rebased.append(e2)
+            evts = rebased
+
+    if not evts:
+        return []
+
+    rows = tokenizer.tokenize([tpb, evts], add_bos_eos=False)
+    return rows
+
+
+def _build_prompt(
+    blueprint: MusicalBlueprint,
+    roles_config: dict,
+    tokenizer,
+    source_rows: list | None = None,
+) -> np.ndarray:
     """Return a 2-D numpy prompt array (n_events, max_token_seq) for the model.
 
     Conditioning sequence:
       BOS → set_tempo(bpm) → patch_change per active non-drum role
+      [ → source_rows  (previous MIDI context, if provided) ]
+
+    source_rows: token rows from _midi_file_to_prompt_rows().  Appended after
+    the setup tokens so the model sees the previous musical material before
+    generating new content.
     """
     max_bpm = tokenizer.event_parameters.get("bpm", 256) - 1
     bpm_val = min(int(blueprint.bpm), max_bpm)
@@ -93,6 +207,11 @@ def _build_prompt(blueprint: MusicalBlueprint, roles_config: dict, tokenizer) ->
         if t:
             rows.append(t)
 
+    # Append previous-MIDI context rows after setup tokens
+    if source_rows:
+        rows.extend(source_rows)
+        logger.debug("[midi_backend] prompt includes %d source context rows", len(source_rows))
+
     return np.array(rows, dtype=np.int64)
 
 
@@ -100,6 +219,7 @@ def _score_to_roletracks(
     midi_score: list,
     roles_config: dict,
     max_tick: int | None = None,
+    active_roles: set[str] | None = None,
 ) -> list[RoleTrack]:
     """Convert a detokenized midi_score to a list of RoleTracks.
 
@@ -107,12 +227,30 @@ def _score_to_roletracks(
       [ticks_per_beat, track0_events, track1_events, …]
     Note event format: ["note", t_ticks, dur_ticks, ch0, pitch, velocity]
       where ch0 is 0-indexed.
+
+    active_roles: if provided, tracks on channels not in this set are dropped.
+    Each role's note_range from roles_config is enforced — out-of-range notes
+    are dropped so the model cannot leak outside the intended register.
     """
-    # Build reverse map: 0-indexed channel → (role_name, program)
-    ch0_to_role: dict[int, tuple[str, int]] = {}
+    # Build reverse map: 0-indexed channel → (role_name, program, note_range)
+    ch0_to_role: dict[int, tuple[str, int, list[int]]] = {}
     for role_name, cfg in roles_config.items():
         ch1 = cfg.get("channel", 1)
-        ch0_to_role[ch1 - 1] = (role_name, cfg.get("program", 0))
+        ch0_to_role[ch1 - 1] = (
+            role_name,
+            cfg.get("program", 0),
+            cfg.get("note_range", [0, 127]),
+        )
+
+    # Restrict to requested channels only (drop uninvited roles)
+    allowed_ch0: set[int] | None = None
+    if active_roles is not None:
+        allowed_ch0 = {
+            ch1 - 1
+            for role_name, cfg in roles_config.items()
+            if role_name in active_roles
+            for ch1 in [cfg.get("channel", 1)]
+        }
 
     notes_by_ch0: dict[int, list[NoteEvent]] = {}
 
@@ -123,11 +261,19 @@ def _score_to_roletracks(
             # ["note", t_ticks, dur_ticks, ch0, pitch, velocity]
             _, t, dur, ch0, pitch, vel = event[:6]
 
+            if allowed_ch0 is not None and ch0 not in allowed_ch0:
+                continue
+
             if max_tick is not None and t >= max_tick:
                 continue
             if max_tick is not None:
                 dur = min(dur, max_tick - t)
             if dur <= 0:
+                continue
+
+            # Enforce note_range for this role
+            _, _, note_range = ch0_to_role.get(ch0, ("unknown", 0, [0, 127]))
+            if not (note_range[0] <= int(pitch) <= note_range[1]):
                 continue
 
             notes_by_ch0.setdefault(ch0, []).append(NoteEvent(
@@ -140,7 +286,7 @@ def _score_to_roletracks(
 
     tracks: list[RoleTrack] = []
     for ch0, notes in sorted(notes_by_ch0.items()):
-        role_name, program = ch0_to_role.get(ch0, ("unknown", 0))
+        role_name, program, _ = ch0_to_role.get(ch0, ("unknown", 0, [0, 127]))
         tracks.append(RoleTrack(
             role=role_name,
             channel=ch0 + 1,
@@ -157,19 +303,49 @@ def generate_from_blueprint(
     temperature: float = 1.0,
     top_p: float = 0.98,
     top_k: int = 20,
+    hw_max_padded_len: int = 256,
+    hw_context_interval: int = 4,
+    source_midi: str | None = None,
+    source_context_bars: int | None = 8,
 ) -> list[RoleTrack]:
     """Generate MIDI RoleTracks from a MusicalBlueprint.
 
     On the first call this downloads ~400 MB of model weights from HuggingFace
     and caches them in ~/.cache/huggingface/.  Subsequent calls reuse the cache.
 
-    max_events controls the generation budget (excluding the prompt).  A longer
-    budget produces more notes but takes longer on CPU.  The output is always
-    trimmed to blueprint.bars regardless of how many events are generated.
+    When TT hardware is available, model.net is compiled with forge and the
+    12-layer forward pass runs on the P300C chips; model.net_token stays on CPU.
+    Falls back to pure CPU silently if hardware is unavailable or compile fails.
+
+    max_events: generation budget (notes) beyond the prompt. Trimmed to blueprint.bars.
+    hw_max_padded_len: fixed sequence length compiled for hardware.
+    hw_context_interval: hardware forward pass is called every this many events.
+        1 = every step (accurate but slow, ~2 ev/s on P300C).
+        4 = every 4th step (default, ~5 ev/s — enough for 64 events per 13.9s loop).
+        8 = every 8th step (~9 ev/s, higher quality gap between hardware refreshes).
+    source_midi: path to a MIDI file to use as musical context for generation.
+        The file's events are tokenized and prepended to the prompt so the model
+        can continue from or respond to the existing material.
+    source_context_bars: how many bars from the end of source_midi to include.
+        None = use the whole file.  Default 8 (one full loop).
     """
     model, tokenizer = _get_model()
 
-    prompt = _build_prompt(blueprint, roles_config, tokenizer)
+    source_rows: list | None = None
+    if source_midi is not None:
+        try:
+            source_rows = _midi_file_to_prompt_rows(
+                source_midi, tokenizer, last_n_bars=source_context_bars
+            )
+            logger.info(
+                "[midi_backend] source context: %d rows from %s (last %s bars)",
+                len(source_rows), source_midi,
+                source_context_bars if source_context_bars else "all",
+            )
+        except Exception as exc:
+            logger.warning("[midi_backend] failed to load source MIDI, ignoring: %s", exc)
+
+    prompt = _build_prompt(blueprint, roles_config, tokenizer, source_rows=source_rows)
     max_tick = blueprint.bars * 4 * _TICKS_PER_BEAT
 
     logger.info(
@@ -177,21 +353,46 @@ def generate_from_blueprint(
         blueprint.bars, max_events, blueprint.bpm,
     )
 
-    with torch.inference_mode():
-        generated = model.generate(
-            prompt=prompt,
-            batch_size=1,
-            max_len=len(prompt) + max_events,
-            temp=temperature,
-            top_p=top_p,
-            top_k=top_k,
-        )
+    # Try TT hardware path; fall back to CPU on any failure
+    compiled_net = _get_compiled_net(model, hw_max_padded_len)
+
+    if compiled_net is not None:
+        logger.info("[midi_backend] using TT hardware path (compiled net, hw_interval=%d)", hw_context_interval)
+        try:
+            from .forge_backend import generate_hardware
+            generated = generate_hardware(
+                compiled_net, model, prompt,
+                max_padded_len=hw_max_padded_len,
+                max_events=max_events,
+                temp=temperature,
+                top_p=top_p,
+                top_k=top_k,
+                hw_context_interval=hw_context_interval,
+            )
+        except Exception as exc:
+            logger.warning("[midi_backend] hardware generate failed, retrying on CPU: %s", exc)
+            compiled_net = None
+
+    if compiled_net is None:
+        logger.info("[midi_backend] using CPU path")
+        with torch.inference_mode():
+            generated = model.generate(
+                prompt=prompt,
+                batch_size=1,
+                max_len=len(prompt) + max_events,
+                temp=temperature,
+                top_p=top_p,
+                top_k=top_k,
+            )
 
     # generated: (1, seq_len, max_token_seq) as numpy
     midi_seq = generated[0].tolist()
     midi_score = tokenizer.detokenize(midi_seq)
 
-    tracks = _score_to_roletracks(midi_score, roles_config, max_tick=max_tick)
+    # Only keep tracks for requested roles; enforce each role's note_range.
+    active_roles = {r for r, cfg in blueprint.roles.items() if cfg.density > 0.0}
+    tracks = _score_to_roletracks(midi_score, roles_config,
+                                   max_tick=max_tick, active_roles=active_roles)
     logger.info(
         "[midi_backend] done: %d tracks, %d total notes",
         len(tracks), sum(len(t.notes) for t in tracks),

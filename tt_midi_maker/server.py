@@ -84,16 +84,11 @@ def _set_musical_context(
 
 
 def _run_generation(blueprint: MusicalBlueprint) -> list:
-    """Generate MIDI tracks from blueprint using skytnt/midi-model.
-
-    Falls back to a one-note-per-bar stub when the backend raises so that the
-    server never crashes due to a model loading failure during development.
-    """
+    """Generate MIDI tracks using skytnt/midi-model; stub fallback on failure."""
     try:
         tracks = _generate_from_blueprint(blueprint, ROLES_CONFIG)
         if tracks:
             return tracks
-        # Empty output (e.g. model produced only EOS) — fall through to stub
         raise RuntimeError("model returned no notes")
     except Exception as exc:
         import logging
@@ -147,6 +142,8 @@ def _generate_midi(
     roles: list[str] | None = None,
     bars: int | None = None,
     output_path: str | None = None,
+    source_midi: str | None = None,
+    source_context_bars: int | None = 8,
     session_id: str = "default",
 ) -> dict:
     ctx       = get_session(session_id)
@@ -161,9 +158,31 @@ def _generate_midi(
     if bars:
         blueprint = blueprint.model_copy(update={"bars": bars})
 
-    t0            = time.time()
-    raw_tracks    = _run_generation(blueprint)
+    t0 = time.time()
+    try:
+        raw_tracks = _generate_from_blueprint(
+            blueprint, ROLES_CONFIG,
+            source_midi=source_midi,
+            source_context_bars=source_context_bars,
+        )
+        if raw_tracks:
+            pass
+        else:
+            raise RuntimeError("model returned no notes")
+    except Exception as exc:
+        import logging
+        logging.getLogger(__name__).warning(
+            "[tt-midi-maker] midi_backend failed (%s), using stub", exc,
+        )
+        raw_tracks = _run_generation(blueprint)
+
     gen_ms        = int((time.time() - t0) * 1000)
+
+    # Drop any tracks the model generated for roles that were suppressed (density=0).
+    # The model is stochastic and can emit notes on any channel regardless of prompting.
+    active_roles = {r for r, cfg in blueprint.roles.items() if cfg.density > 0.0}
+    raw_tracks = [t for t in raw_tracks if t.role in active_roles or t.role == "unknown"]
+
     clean_tracks  = _apply_coherence(raw_tracks, blueprint)
     ts            = int(time.time())
     out           = Path(output_path) if output_path else OUTPUT_DIR / f"{ts}.mid"
@@ -180,6 +199,7 @@ def _generate_midi(
         "roles_generated": [t.role for t in clean_tracks],
         "generation_ms":   gen_ms,
         "hardware_used":   hw_label,
+        "source_midi":     source_midi,
     }
 
 
@@ -244,8 +264,12 @@ def generate_midi(
     roles: list[Literal["drums", "bass", "melody", "harmony", "arp", "pad", "fx"]] | None = None,
     bars: int | None = None,
     output_path: str | None = None,
+    source_midi: str | None = None,
+    source_context_bars: int | None = 8,
 ) -> dict:
-    return _generate_midi(prompt, mode, roles, bars, output_path)
+    return _generate_midi(prompt, mode, roles, bars, output_path,
+                          source_midi=source_midi,
+                          source_context_bars=source_context_bars)
 
 
 @mcp.tool(
@@ -267,6 +291,7 @@ def continue_midi(
     file_path: str,
     bars: int = 8,
     style_hint: str | None = None,
+    context_bars: int = 8,
 ) -> dict:
     src = Path(file_path)
     if not src.exists():
@@ -276,16 +301,22 @@ def continue_midi(
     prompt = f"Continue this {existing_facts.get('style_guess', 'music')}" + (
         f", {style_hint}" if style_hint else ""
     )
-    blueprint = build_blueprint(prompt)
-    blueprint = blueprint.model_copy(update={"bars": bars})
-    raw_tracks   = _run_generation(blueprint)
-    clean_tracks = _apply_coherence(raw_tracks, blueprint)
-    # Simplified append; full RoleTrack stitching wired in follow-up
+    result = _generate_midi(
+        prompt=prompt,
+        bars=bars,
+        source_midi=str(src),
+        source_context_bars=context_bars,
+    )
     ts  = int(time.time())
     out = OUTPUT_DIR / f"{ts}_continued.mid"
-    build_midi_file(clean_tracks, blueprint.bpm, out)
-    return {"file_path": str(out), "bars_added": bars,
-            "total_bars": existing_facts.get("bars", 0) + bars}
+    # Rename to _continued suffix
+    Path(result["file_path"]).rename(out)
+    return {
+        "file_path":  str(out),
+        "bars_added": bars,
+        "total_bars": existing_facts.get("bars", 0) + bars,
+        "source":     file_path,
+    }
 
 
 @mcp.tool(

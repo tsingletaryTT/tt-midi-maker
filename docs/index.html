@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>tt-midi-maker — AI music on Tenstorrent hardware</title>
+<style>
+/* ── base ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --teal:        #4FD1C5;
+  --teal-light:  #81E6D9;
+  --pink:        #EC96B8;
+  --gold:        #F4C471;
+  --green:       #27AE60;
+  --red:         #FF6B6B;
+  --bg0:         #0B1E26;
+  --bg1:         #0F2A35;
+  --bg2:         #1A3C47;
+  --bg3:         #223344;
+  --text:        #E8F0F2;
+  --text-dim:    #8AAABB;
+  --border:      #2A4A5A;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: var(--bg0);
+  color: var(--text);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+a { color: var(--teal); text-decoration: none; }
+a:hover { color: var(--teal-light); }
+
+/* ── hero ── */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 4rem 2rem;
+  position: relative;
+  overflow: hidden;
+  background: radial-gradient(ellipse at 50% 0%, #0F3A4A 0%, var(--bg0) 70%);
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg, transparent, transparent 39px,
+    rgba(79,209,197,0.035) 39px, rgba(79,209,197,0.035) 40px
+  ),
+  repeating-linear-gradient(
+    90deg, transparent, transparent 39px,
+    rgba(79,209,197,0.035) 39px, rgba(79,209,197,0.035) 40px
+  );
+  pointer-events: none;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  background: rgba(79,209,197,.1);
+  border: 1px solid rgba(79,209,197,.3);
+  border-radius: 2rem;
+  padding: .35rem 1rem;
+  font-size: .8rem;
+  color: var(--teal);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin-bottom: 2rem;
+}
+
+.hero h1 {
+  font-size: clamp(2.4rem, 6vw, 5rem);
+  font-weight: 700;
+  letter-spacing: -.02em;
+  line-height: 1.1;
+  margin-bottom: 1.2rem;
+}
+
+.hero h1 span.accent { color: var(--teal); }
+
+.hero p.lead {
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  color: var(--text-dim);
+  max-width: 640px;
+  margin: 0 auto 2.5rem;
+}
+
+.btn {
+  display: inline-block;
+  padding: .7rem 1.8rem;
+  border-radius: .4rem;
+  font-size: .95rem;
+  font-weight: 600;
+  transition: all .2s;
+}
+.btn-primary {
+  background: var(--teal);
+  color: var(--bg0);
+}
+.btn-primary:hover { background: var(--teal-light); color: var(--bg0); }
+.btn-ghost {
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  margin-left: .75rem;
+}
+.btn-ghost:hover { border-color: var(--teal); color: var(--teal); }
+
+.hero-scroll-hint {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--text-dim);
+  font-size: .8rem;
+  opacity: .5;
+  animation: bounce 2s ease-in-out infinite;
+}
+@keyframes bounce { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(6px)} }
+
+/* ── section layout ── */
+section { padding: 5rem 2rem; }
+.container { max-width: 1100px; margin: 0 auto; }
+.section-label {
+  font-size: .75rem;
+  text-transform: uppercase;
+  letter-spacing: .15em;
+  color: var(--teal);
+  margin-bottom: .75rem;
+}
+.section-title {
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  font-weight: 700;
+  margin-bottom: 1.2rem;
+}
+.section-desc {
+  color: var(--text-dim);
+  max-width: 640px;
+  margin-bottom: 3rem;
+  font-size: 1.05rem;
+}
+
+/* ── demo player section ── */
+#demo { background: var(--bg1); }
+
+.pattern-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.pattern-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: .75rem;
+  padding: 1.5rem;
+  transition: border-color .2s, box-shadow .2s;
+  position: relative;
+  overflow: hidden;
+}
+.pattern-card:hover {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 1px rgba(79,209,197,.15), 0 8px 32px rgba(0,0,0,.4);
+}
+.pattern-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--teal), var(--pink));
+}
+.pattern-card:nth-child(2)::before { background: linear-gradient(90deg, var(--pink), var(--gold)); }
+.pattern-card:nth-child(3)::before { background: linear-gradient(90deg, var(--gold), var(--green)); }
+.pattern-card:nth-child(4)::before { background: linear-gradient(90deg, var(--green), var(--teal)); }
+
+.pattern-num {
+  font-size: .75rem;
+  color: var(--teal);
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  margin-bottom: .4rem;
+}
+.pattern-card h3 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin-bottom: .25rem;
+}
+.pattern-card p.desc {
+  font-size: .85rem;
+  color: var(--text-dim);
+  margin-bottom: 1.2rem;
+  min-height: 2.5em;
+}
+
+audio {
+  width: 100%;
+  height: 36px;
+  margin-bottom: 1rem;
+}
+audio::-webkit-media-controls-panel { background: var(--bg3); }
+
+.pattern-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+}
+.stat-pill {
+  font-size: .72rem;
+  background: rgba(255,255,255,.05);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: .2rem .65rem;
+  color: var(--text-dim);
+}
+.stat-pill.hw { border-color: rgba(79,209,197,.4); color: var(--teal); }
+.stat-pill.time { color: var(--gold); border-color: rgba(244,196,113,.3); }
+
+/* ── machine diagram ── */
+#machine {
+  background: var(--bg0);
+  overflow: hidden;
+}
+
+.machine-wrap {
+  background: var(--bg1);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  padding: 2.5rem;
+  overflow-x: auto;
+}
+
+/* SVG machine */
+.pipeline-svg {
+  width: 100%;
+  max-width: 900px;
+  display: block;
+  margin: 0 auto;
+}
+
+/* component boxes */
+.comp {
+  cursor: default;
+  transition: opacity .2s;
+}
+.comp rect.box {
+  fill: var(--bg2);
+  stroke: var(--border);
+  stroke-width: 1.5;
+  rx: 8;
+  ry: 8;
+  transition: stroke .2s;
+}
+.comp:hover rect.box { stroke: var(--teal); }
+.comp text.label {
+  fill: var(--text);
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  text-anchor: middle;
+}
+.comp text.sub {
+  fill: var(--text-dim);
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 10px;
+  text-anchor: middle;
+}
+.comp text.accent { fill: var(--teal); }
+.comp text.gold   { fill: var(--gold); }
+.comp text.pink   { fill: var(--pink); }
+.comp text.green  { fill: var(--green); }
+
+/* chip boxes */
+.chip rect.box { fill: #0C2830; stroke: rgba(79,209,197,.5); }
+.chip text.label { fill: var(--teal); font-size: 11px; }
+
+/* flow arrows */
+.arrow { stroke: rgba(79,209,197,.4); stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
+.arrow.data { stroke: rgba(79,209,197,.25); stroke-dasharray: 5 4; animation: dash 1.5s linear infinite; }
+@keyframes dash { to { stroke-dashoffset: -18; } }
+
+/* glow pulse on chips */
+.chip-glow {
+  fill: rgba(79,209,197,.08);
+  animation: pulse-glow 2.5s ease-in-out infinite;
+}
+@keyframes pulse-glow { 0%,100%{opacity:.4} 50%{opacity:1} }
+
+/* note particles (flowing right) */
+.note-particle {
+  fill: var(--teal);
+  animation: flow-right 3s linear infinite;
+}
+.note-particle:nth-child(2) { animation-delay: -.8s; fill: var(--pink); }
+.note-particle:nth-child(3) { animation-delay: -1.6s; fill: var(--gold); }
+@keyframes flow-right {
+  0%   { transform: translateX(-20px); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { transform: translateX(20px); opacity: 0; }
+}
+
+/* ── perf section ── */
+#performance { background: var(--bg1); }
+
+.perf-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+.perf-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: .75rem;
+  padding: 1.5rem;
+  text-align: center;
+}
+.perf-card .big { font-size: 2.4rem; font-weight: 700; color: var(--teal); line-height: 1; }
+.perf-card .unit { font-size: .85rem; color: var(--text-dim); margin-top: .25rem; }
+.perf-card .label { font-size: .8rem; color: var(--text-dim); margin-top: .5rem; text-transform: uppercase; letter-spacing: .08em; }
+
+.bench-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .9rem;
+  background: var(--bg2);
+  border-radius: .5rem;
+  overflow: hidden;
+}
+.bench-table th {
+  background: var(--bg3);
+  color: var(--text-dim);
+  text-align: left;
+  padding: .7rem 1rem;
+  font-weight: 500;
+  font-size: .8rem;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+.bench-table td { padding: .65rem 1rem; border-bottom: 1px solid var(--border); }
+.bench-table tr:last-child td { border-bottom: none; }
+.bench-table tr.best td { color: var(--teal); font-weight: 600; }
+.bench-table .tick { color: var(--green); }
+.bench-table .cross { color: var(--text-dim); }
+
+/* ── architecture ── */
+#architecture { background: var(--bg0); }
+
+.arch-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+@media (max-width: 700px) { .arch-grid { grid-template-columns: 1fr; } }
+
+.arch-card {
+  background: var(--bg1);
+  border: 1px solid var(--border);
+  border-radius: .75rem;
+  padding: 1.5rem;
+}
+.arch-card h3 { font-size: 1rem; margin-bottom: .75rem; }
+.arch-card h3 span { color: var(--teal); }
+.arch-card p { font-size: .875rem; color: var(--text-dim); margin-bottom: .75rem; }
+.code-block {
+  background: var(--bg0);
+  border: 1px solid var(--border);
+  border-radius: .4rem;
+  padding: .75rem 1rem;
+  font-family: 'Cascadia Code', 'Fira Code', monospace;
+  font-size: .8rem;
+  color: var(--teal-light);
+  overflow-x: auto;
+  white-space: pre;
+}
+.code-block .comment { color: var(--text-dim); }
+.code-block .key    { color: var(--teal); }
+.code-block .value  { color: var(--gold); }
+.code-block .fn     { color: var(--pink); }
+
+/* ── footer ── */
+footer {
+  background: var(--bg1);
+  border-top: 1px solid var(--border);
+  padding: 2.5rem 2rem;
+  text-align: center;
+  color: var(--text-dim);
+  font-size: .85rem;
+}
+footer a { color: var(--teal); }
+
+/* ── misc ── */
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border), transparent);
+  margin: 1.5rem 0;
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════ HERO -->
+<section class="hero">
+  <div class="hero-badge">
+    <svg width="10" height="10" viewBox="0 0 10 10"><circle cx="5" cy="5" r="5" fill="#4FD1C5" opacity=".7"><animate attributeName="r" values="5;4;5" dur="2s" repeatCount="indefinite"/></circle></svg>
+    Tenstorrent Quietbox 2 · your personal AI machine
+  </div>
+  <h1>Your art.<br><span class="accent">Your silicon.</span></h1>
+  <p class="lead">
+    The Quietbox 2 is a personal AI computer — four Tenstorrent chips on your desk, silent and always on.
+    Whatever your art is, the machine learns it, generates it, and plays it back in real time.
+    This is what it sounds like when it composes jazz.
+  </p>
+  <div>
+    <a href="#demo" class="btn btn-primary">Hear it compose</a>
+    <a href="#machine" class="btn btn-ghost">See the machine</a>
+  </div>
+  <div class="hero-scroll-hint">↓ scroll</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ DEMO -->
+<section id="demo">
+<div class="container">
+  <div class="section-label">Live demo — generated on Quietbox 2</div>
+  <h2 class="section-title">Smoke &amp; Mirrors</h2>
+  <p class="section-desc">
+    Four patterns of D-minor modal jazz, composed entirely by the machine sitting on a desk.
+    Each pattern hears the previous one before writing the next — ideas chain and develop
+    just like a musician listening back and playing again.
+    <br><br>
+    Key: D minor &nbsp;·&nbsp; BPM: 118 &nbsp;·&nbsp; Chords: Dm7 → Am7 → Bbmaj7 → A7
+    &nbsp;·&nbsp; Tenor sax + Hammond organ + walking bass + drums
+  </p>
+
+  <div class="pattern-grid">
+
+    <div class="pattern-card">
+      <div class="pattern-num">Pattern 1</div>
+      <h3>Drums intro</h3>
+      <p class="desc">Cold-start generation — model shapes the rhythmic skeleton before any melodic material exists.</p>
+      <audio controls preload="none" src="audio/p1_intro.mp3"></audio>
+      <div class="pattern-stats">
+        <span class="stat-pill hw">4× P300C</span>
+        <span class="stat-pill time">32.6s gen (incl. compile)</span>
+        <span class="stat-pill">drums: 8 notes</span>
+        <span class="stat-pill">cold start</span>
+      </div>
+      <div class="divider"></div>
+      <a href="midi/p1_intro.mid" download class="stat-pill" style="font-size:.72rem;padding:.3rem .8rem;background:rgba(79,209,197,.08);border-color:rgba(79,209,197,.3);color:var(--teal);">⬇ MIDI</a>
+    </div>
+
+    <div class="pattern-card">
+      <div class="pattern-num">Pattern 2</div>
+      <h3>Full band enters</h3>
+      <p class="desc">Model hears the drums, then writes tenor sax, Hammond organ, walking bass and kit — all at once.</p>
+      <audio controls preload="none" src="audio/p2_variation.mp3"></audio>
+      <div class="pattern-stats">
+        <span class="stat-pill hw">7.8 ev/s</span>
+        <span class="stat-pill time">12.3s gen</span>
+        <span class="stat-pill">0.76× loop</span>
+        <span class="stat-pill">84 notes</span>
+      </div>
+      <div class="divider"></div>
+      <a href="midi/p2_variation.mid" download class="stat-pill" style="font-size:.72rem;padding:.3rem .8rem;background:rgba(79,209,197,.08);border-color:rgba(79,209,197,.3);color:var(--teal);">⬇ MIDI</a>
+    </div>
+
+    <div class="pattern-card">
+      <div class="pattern-num">Pattern 3</div>
+      <h3>Development</h3>
+      <p class="desc">Seeded from Pattern 2 — the harmonic vocabulary densifies (58 Hammond voicings) while the sax line stays fluid.</p>
+      <audio controls preload="none" src="audio/p3_development.mp3"></audio>
+      <div class="pattern-stats">
+        <span class="stat-pill hw">7.7 ev/s</span>
+        <span class="stat-pill time">12.5s gen</span>
+        <span class="stat-pill">0.77× loop</span>
+        <span class="stat-pill">167 notes</span>
+      </div>
+      <div class="divider"></div>
+      <a href="midi/p3_development.mid" download class="stat-pill" style="font-size:.72rem;padding:.3rem .8rem;background:rgba(79,209,197,.08);border-color:rgba(79,209,197,.3);color:var(--teal);">⬇ MIDI</a>
+    </div>
+
+    <div class="pattern-card">
+      <div class="pattern-num">Pattern 4</div>
+      <h3>Climax variation</h3>
+      <p class="desc">128 events (vs 96 for P1–P3) — the longest pattern, densest texture, seeded from the full development in P3.</p>
+      <audio controls preload="none" src="audio/p4_climax.mp3"></audio>
+      <div class="pattern-stats">
+        <span class="stat-pill hw">7.6 ev/s</span>
+        <span class="stat-pill time">16.9s gen</span>
+        <span class="stat-pill">1.04× loop</span>
+        <span class="stat-pill">169 notes</span>
+      </div>
+      <div class="divider"></div>
+      <a href="midi/p4_climax.mid" download class="stat-pill" style="font-size:.72rem;padding:.3rem .8rem;background:rgba(79,209,197,.08);border-color:rgba(79,209,197,.3);color:var(--teal);">⬇ MIDI</a>
+    </div>
+
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ MACHINE -->
+<section id="machine">
+<div class="container">
+  <div class="section-label">Inside the Quietbox 2</div>
+  <h2 class="section-title">All the parts, working together</h2>
+  <p class="section-desc">
+    Every musical token flows through this pipeline — from a handful of parameters, through four silicon chips,
+    out to your speakers. Each component is a gear in the machine. Nothing leaves the box.
+  </p>
+
+  <div class="machine-wrap">
+    <svg class="pipeline-svg" viewBox="0 0 860 560" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="rgba(79,209,197,.5)"/>
+        </marker>
+        <filter id="glow">
+          <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+          <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <linearGradient id="chip-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#0F2A35"/>
+          <stop offset="100%" style="stop-color:#1A3C47"/>
+        </linearGradient>
+      </defs>
+
+      <!-- ── Row 1: Input params ── -->
+      <g class="comp" transform="translate(30,30)">
+        <rect class="box" width="160" height="80" rx="8"/>
+        <text class="label" x="80" y="28">Musical Parameters</text>
+        <text class="sub" x="80" y="46">D minor · BPM 118 · 8 bars</text>
+        <text class="sub accent" x="80" y="62">Dm7 → Am7 → Bbmaj7 → A7</text>
+      </g>
+
+      <!-- arrow right → Blueprint -->
+      <line class="arrow data" x1="190" y1="70" x2="238" y2="70"/>
+
+      <!-- Blueprint -->
+      <g class="comp" transform="translate(240,30)">
+        <rect class="box" width="140" height="80" rx="8"/>
+        <text class="label" x="70" y="28">Blueprint</text>
+        <text class="sub" x="70" y="48">MusicalBlueprint</text>
+        <text class="sub accent" x="70" y="64">Pydantic model</text>
+      </g>
+
+      <!-- arrow right → Prompt -->
+      <line class="arrow data" x1="380" y1="70" x2="428" y2="70"/>
+
+      <!-- Prompt builder -->
+      <g class="comp" transform="translate(430,30)">
+        <rect class="box" width="150" height="80" rx="8"/>
+        <text class="label" x="75" y="28">Prompt Builder</text>
+        <text class="sub" x="75" y="48">BOS + set_tempo</text>
+        <text class="sub" x="75" y="64">+ patch_changes</text>
+      </g>
+
+      <!-- arrow right → Source MIDI -->
+      <g>
+        <line class="arrow data" x1="580" y1="70" x2="628" y2="70"/>
+      </g>
+
+      <!-- Source MIDI context -->
+      <g class="comp" transform="translate(630,30)">
+        <rect class="box" width="150" height="80" rx="8"/>
+        <text class="label pink" x="75" y="28">Source MIDI</text>
+        <text class="sub" x="75" y="48">previous pattern</text>
+        <text class="sub" x="75" y="64">last 8 bars of context</text>
+      </g>
+
+      <!-- vertical arrow down from Prompt to TT block -->
+      <line class="arrow" x1="505" y1="110" x2="505" y2="148"/>
+
+      <!-- ── Row 2: TT Hardware block ── -->
+      <!-- Big box around chips -->
+      <rect x="30" y="150" width="750" height="200" rx="12"
+            fill="rgba(15,42,53,.8)" stroke="rgba(79,209,197,.25)" stroke-width="1.5"/>
+      <text font-family="'Segoe UI',sans-serif" font-size="11" fill="rgba(79,209,197,.6)"
+            x="46" y="168" letter-spacing="1">TENSTORRENT  HARDWARE  —  4 × P300C</text>
+
+      <!-- Compile label -->
+      <g class="comp" transform="translate(40,175)">
+        <rect class="box" width="130" height="60" rx="8"/>
+        <text class="label" x="65" y="24">forge.compile</text>
+        <text class="sub accent" x="65" y="42">12-layer LlamaModel</text>
+        <text class="sub" x="65" y="54">~45s first call</text>
+      </g>
+
+      <!-- arrow → chips group -->
+      <line class="arrow" x1="170" y1="205" x2="208" y2="205"/>
+
+      <!-- 4 chips -->
+      <g class="chip" transform="translate(210,175)">
+        <rect class="chip-glow" width="100" height="60" rx="8"/>
+        <rect class="box" width="100" height="60" rx="8"/>
+        <text class="label" x="50" y="24">P300C #0</text>
+        <text class="sub" x="50" y="40">Wormhole</text>
+        <text class="sub accent" x="50" y="54">~2.4 TFLOPS</text>
+      </g>
+      <g class="chip" transform="translate(320,175)">
+        <rect class="chip-glow" width="100" height="60" rx="8" style="animation-delay:-.6s"/>
+        <rect class="box" width="100" height="60" rx="8"/>
+        <text class="label" x="50" y="24">P300C #1</text>
+        <text class="sub" x="50" y="40">Wormhole</text>
+        <text class="sub accent" x="50" y="54">~2.4 TFLOPS</text>
+      </g>
+      <g class="chip" transform="translate(430,175)">
+        <rect class="chip-glow" width="100" height="60" rx="8" style="animation-delay:-1.2s"/>
+        <rect class="box" width="100" height="60" rx="8"/>
+        <text class="label" x="50" y="24">P300C #2</text>
+        <text class="sub" x="50" y="40">Wormhole</text>
+        <text class="sub accent" x="50" y="54">~2.4 TFLOPS</text>
+      </g>
+      <g class="chip" transform="translate(540,175)">
+        <rect class="chip-glow" width="100" height="60" rx="8" style="animation-delay:-1.8s"/>
+        <rect class="box" width="100" height="60" rx="8"/>
+        <text class="label" x="50" y="24">P300C #3</text>
+        <text class="sub" x="50" y="40">Wormhole</text>
+        <text class="sub accent" x="50" y="54">~2.4 TFLOPS</text>
+      </g>
+
+      <!-- hw_context_interval label -->
+      <text font-family="'Segoe UI',sans-serif" font-size="10" fill="#F4C471"
+            x="655" y="195">hw_context_interval = 4</text>
+      <text font-family="'Segoe UI',sans-serif" font-size="10" fill="rgba(244,196,113,.6)"
+            x="655" y="210">hardware every 4 events</text>
+      <text font-family="'Segoe UI',sans-serif" font-size="10" fill="rgba(244,196,113,.6)"
+            x="655" y="225">~500ms per hw call</text>
+
+      <!-- CPU net_token -->
+      <g class="comp" transform="translate(210,255)">
+        <rect class="box" width="430" height="60" rx="8" fill="#142030"/>
+        <text class="label gold" x="215" y="24">CPU net_token (3-layer, ~50M params)</text>
+        <text class="sub" x="215" y="42">runs between hardware refreshes</text>
+        <text class="sub" x="215" y="54">top-p / top-k sampling per token</text>
+      </g>
+
+      <!-- flowing notes along CPU band -->
+      <g transform="translate(270,280)">
+        <circle class="note-particle" r="3" cx="0" cy="0"/>
+        <circle class="note-particle" r="2.5" cx="0" cy="0"/>
+        <circle class="note-particle" r="2" cx="0" cy="0"/>
+      </g>
+
+      <!-- vertical arrow down from hw block -->
+      <line class="arrow" x1="425" y1="350" x2="425" y2="388"/>
+
+      <!-- ── Row 3: Coherence ── -->
+      <g class="comp" transform="translate(180,390)">
+        <rect class="box" width="490" height="80" rx="8"/>
+        <text class="label" x="245" y="26">Coherence Layer</text>
+        <!-- 4 passes -->
+        <rect x="20" y="36" width="100" height="28" rx="6" fill="rgba(79,209,197,.1)" stroke="rgba(79,209,197,.3)" stroke-width="1"/>
+        <text font-family="'Segoe UI',sans-serif" font-size="10" fill="#4FD1C5" text-anchor="middle" x="70" y="53">scale_quantize</text>
+
+        <rect x="130" y="36" width="100" height="28" rx="6" fill="rgba(236,150,184,.1)" stroke="rgba(236,150,184,.3)" stroke-width="1"/>
+        <text font-family="'Segoe UI',sans-serif" font-size="10" fill="#EC96B8" text-anchor="middle" x="180" y="53">chord_aware_filter</text>
+
+        <rect x="240" y="36" width="100" height="28" rx="6" fill="rgba(244,196,113,.1)" stroke="rgba(244,196,113,.3)" stroke-width="1"/>
+        <text font-family="'Segoe UI',sans-serif" font-size="10" fill="#F4C471" text-anchor="middle" x="290" y="53">humanize_velocities</text>
+
+        <rect x="350" y="36" width="100" height="28" rx="6" fill="rgba(39,174,96,.1)" stroke="rgba(39,174,96,.3)" stroke-width="1"/>
+        <text font-family="'Segoe UI',sans-serif" font-size="10" fill="#27AE60" text-anchor="middle" x="400" y="53">nudge_timing</text>
+      </g>
+
+      <!-- vertical arrow down from coherence -->
+      <line class="arrow" x1="425" y1="470" x2="425" y2="508"/>
+
+      <!-- ── Row 4: Output ── -->
+      <g class="comp" transform="translate(180,510)">
+        <rect class="box" width="200" height="40" rx="8"/>
+        <text class="label accent" x="100" y="24">GM MIDI File</text>
+      </g>
+      <line class="arrow data" x1="380" y1="530" x2="428" y2="530"/>
+      <g class="comp" transform="translate(430,510)">
+        <rect class="box" width="200" height="40" rx="8"/>
+        <text class="label gold" x="100" y="24">FluidSynth Loop Player</text>
+      </g>
+      <line class="arrow data" x1="630" y1="530" x2="678" y2="530"/>
+      <g class="comp" transform="translate(680,510)">
+        <rect class="box" width="100" height="40" rx="8"/>
+        <text class="label green" x="50" y="24">Audio out</text>
+      </g>
+
+    </svg><!-- /svg -->
+  </div><!-- /machine-wrap -->
+
+  <!-- component callout cards -->
+  <div class="perf-grid" style="margin-top:2rem">
+    <div class="arch-card">
+      <h3><span>forge.compile</span> — model compilation</h3>
+      <p>The 12-layer LlamaModel is compiled once with <code>forge.compile</code> for the 4-chip P300C mesh (~45s first call, then JIT cached). Fixed input shape <code>(1, 256, 1024)</code> — no dynamic KV cache, full sequence every call.</p>
+    </div>
+    <div class="arch-card">
+      <h3><span>hw_context_interval</span> — the key optimization</h3>
+      <p>Hardware is called every 4 events (not every step). Between calls, the CPU 3-layer <code>net_token</code> generates with the cached hidden state. This amortises the ~500ms PCIe dispatch cost and yields <strong>7.7 ev/s</strong> vs 2 ev/s naive.</p>
+    </div>
+    <div class="arch-card">
+      <h3><span>Source MIDI context</span> — musical chaining</h3>
+      <p>The last 8 bars of the previous pattern are tokenized and prepended to the next prompt. The model reads the previous music before writing new material, creating coherent progressions across all four patterns.</p>
+    </div>
+    <div class="arch-card">
+      <h3><span>Coherence layer</span> — music theory post-processing</h3>
+      <p>Four passes clean up raw model output: scale quantization (D Aeolian), chord-aware filter (keeps chord tones on beats), velocity humanization (natural dynamics), and micro-timing nudge (±10ms groove feel).</p>
+    </div>
+  </div>
+
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ PERFORMANCE -->
+<section id="performance">
+<div class="container">
+  <div class="section-label">Hardware performance — Quietbox 2</div>
+  <h2 class="section-title">The next pattern is ready before this one ends</h2>
+  <p class="section-desc">
+    The Quietbox 2 runs the 350M-parameter composition model at <strong>7.8 events per second</strong>
+    — fast enough that a full 8-bar phrase is written in 12.3s, while the previous one loops at 16.3s.
+    No cloud. No latency. Your art runs on your machine.
+  </p>
+
+  <div class="perf-grid">
+    <div class="perf-card">
+      <div class="big">7.8</div>
+      <div class="unit">events / second</div>
+      <div class="label">sustained throughput</div>
+    </div>
+    <div class="perf-card">
+      <div class="big">0.76×</div>
+      <div class="unit">loop ratio</div>
+      <div class="label">generation vs. playback time</div>
+    </div>
+    <div class="perf-card">
+      <div class="big">4×</div>
+      <div class="unit">speedup</div>
+      <div class="label">hw_interval=4 vs. interval=1</div>
+    </div>
+    <div class="perf-card">
+      <div class="big">24</div>
+      <div class="unit">hw calls / pattern</div>
+      <div class="label">96 events ÷ interval 4</div>
+    </div>
+  </div>
+
+  <table class="bench-table">
+    <thead>
+      <tr>
+        <th>hw_context_interval</th>
+        <th>max_events</th>
+        <th>generation time</th>
+        <th>ev/s</th>
+        <th>loop ratio</th>
+        <th>real-time?</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1 (every step)</td><td>64</td><td>35.3s</td><td>2</td><td>2.5×</td>
+        <td class="cross">✗ too slow</td>
+      </tr>
+      <tr class="best">
+        <td>4 (default)</td><td>96</td><td>12.3s</td><td>7.8</td><td>0.88×</td>
+        <td class="tick">✓ fits in 1 loop</td>
+      </tr>
+      <tr class="best">
+        <td>8</td><td>128</td><td>10.8s</td><td>11.9</td><td>0.77×</td>
+        <td class="tick">✓ comfortable</td>
+      </tr>
+    </tbody>
+  </table>
+
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ ARCHITECTURE -->
+<section id="architecture">
+<div class="container">
+  <div class="section-label">Open source — runs on Quietbox 2</div>
+  <h2 class="section-title">Key files</h2>
+
+  <div class="arch-grid">
+
+    <div class="arch-card">
+      <h3><span>forge_backend.py</span> — hardware generation</h3>
+      <div class="code-block"><span class="fn">generate_hardware</span>(
+  compiled_net,   <span class="comment"># forge-compiled LlamaModel</span>
+  model,          <span class="comment"># full MIDIModel (CPU)</span>
+  prompt,         <span class="comment"># seed token array</span>
+  <span class="key">hw_context_interval</span>=<span class="value">4</span>,
+  <span class="key">max_events</span>=<span class="value">96</span>,
+)</div>
+    </div>
+
+    <div class="arch-card">
+      <h3><span>midi_backend.py</span> — orchestration</h3>
+      <div class="code-block"><span class="fn">generate_from_blueprint</span>(
+  blueprint,      <span class="comment"># key/bpm/chords/roles</span>
+  roles_config,   <span class="comment"># GM channel map</span>
+  <span class="key">source_midi</span>=<span class="value">"prev.mid"</span>,
+  <span class="key">hw_context_interval</span>=<span class="value">4</span>,
+)</div>
+    </div>
+
+    <div class="arch-card">
+      <h3><span>stream_player.py</span> — live loop playback</h3>
+      <div class="code-block"><span class="fn">start_synth</span>(gain=<span class="value">2.5</span>)
+<span class="fn">loop_play</span>(<span class="value">"p1_intro.mid"</span>)
+<span class="fn">loop_queue</span>(<span class="value">"p2_variation.mid"</span>)
+<span class="comment"># transitions at loop boundary, no gap</span></div>
+    </div>
+
+    <div class="arch-card">
+      <h3><span>server.py</span> — MCP interface</h3>
+      <div class="code-block"><span class="comment"># 12 tools exposed over MCP:</span>
+<span class="fn">generate_pattern</span>   <span class="comment"># create MIDI</span>
+<span class="fn">synth_start</span>        <span class="comment"># launch FluidSynth</span>
+<span class="fn">loop_play</span>          <span class="comment"># start looping</span>
+<span class="fn">loop_queue</span>         <span class="comment"># queue next pattern</span>
+<span class="fn">loop_stop</span>          <span class="comment"># graceful or immediate</span></div>
+    </div>
+
+  </div>
+
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ CTA -->
+<section style="background:var(--bg2);padding:4rem 2rem;text-align:center;">
+  <div class="container" style="max-width:640px">
+    <div class="section-label" style="justify-content:center;display:block">Tenstorrent Quietbox 2</div>
+    <h2 style="font-size:clamp(1.6rem,3vw,2.2rem);font-weight:700;margin:1rem 0 1.2rem;">
+      Your personal AI machine,<br>for whatever your art is
+    </h2>
+    <p style="color:var(--text-dim);margin-bottom:2rem;font-size:1.05rem;">
+      Four Wormhole chips. Silent. Always on. No subscription, no cloud, no rate limits.
+      The Quietbox 2 runs models the way instruments run scales — immediately, locally, yours.
+      This project is proof: a full multi-track jazz composer, running faster than real time,
+      on hardware that fits on a shelf.
+    </p>
+    <a href="https://tenstorrent.com" target="_blank" class="btn btn-primary">Tenstorrent.com</a>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ FOOTER -->
+<footer>
+  <div class="container">
+    <p>
+      <strong style="color:var(--text)">tt-midi-maker</strong> —
+      multi-track MIDI generation on Tenstorrent Quietbox 2 ·
+      Model: <a href="https://huggingface.co/skytnt/midi-model" target="_blank">skytnt/midi-model</a> (Apache 2.0)
+    </p>
+    <p style="margin-top:.5rem;opacity:.5">
+      "Smoke &amp; Mirrors" — D minor modal jazz · Generated on Quietbox 2 · 2026-05-18
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>

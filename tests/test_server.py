@@ -47,7 +47,7 @@ def test_generate_midi_returns_file_path(tmp_path):
     from tt_midi_maker import server
     with patch.object(server, "OUTPUT_DIR", tmp_path), \
          patch("tt_midi_maker.server.build_blueprint", return_value=STUB_BLUEPRINT), \
-         patch("tt_midi_maker.server._run_generation", return_value=STUB_TRACKS):
+         patch("tt_midi_maker.server._generate_from_blueprint", return_value=STUB_TRACKS):
         result = server._generate_midi(
             prompt="test prompt", mode="loop", session_id="test3"
         )
@@ -60,7 +60,7 @@ def test_generate_midi_output_has_correct_roles(tmp_path):
     from tt_midi_maker import server
     with patch.object(server, "OUTPUT_DIR", tmp_path), \
          patch("tt_midi_maker.server.build_blueprint", return_value=STUB_BLUEPRINT), \
-         patch("tt_midi_maker.server._run_generation", return_value=STUB_TRACKS):
+         patch("tt_midi_maker.server._generate_from_blueprint", return_value=STUB_TRACKS):
         result = server._generate_midi(prompt="test", mode="loop", session_id="t4")
     assert "melody" in result["roles_generated"]
     assert "drums" in result["roles_generated"]

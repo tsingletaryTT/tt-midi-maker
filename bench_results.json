@@ -1,0 +1,389 @@
+[
+  {
+    "label": "max_events=32",
+    "max_events": 32,
+    "roles": [
+      "bass",
+      "drums"
+    ],
+    "n_roles": 2,
+    "source_midi": false,
+    "bpm": 120,
+    "bars": 8,
+    "loop_secs": 16.0,
+    "gen_secs": 3.7,
+    "notes_out": 0,
+    "ev_per_sec": 8.6,
+    "loops_needed": 0.23
+  },
+  {
+    "label": "max_events=64",
+    "max_events": 64,
+    "roles": [
+      "bass",
+      "drums"
+    ],
+    "n_roles": 2,
+    "source_midi": false,
+    "bpm": 120,
+    "bars": 8,
+    "loop_secs": 16.0,
+    "gen_secs": 5.67,
+    "notes_out": 40,
+    "ev_per_sec": 11.3,
+    "loops_needed": 0.35
+  },
+  {
+    "label": "max_events=128",
+    "max_events": 128,
+    "roles": [
+      "bass",
+      "drums"
+    ],
+    "n_roles": 2,
+    "source_midi": false,
+    "bpm": 120,
+    "bars": 8,
+    "loop_secs": 16.0,
+    "gen_secs": 9.47,
+    "notes_out": 102,
+    "ev_per_sec": 13.5,
+    "loops_needed": 0.59
+  },
+  {
+    "label": "max_events=192",
+    "max_events": 192,
+    "roles": [
+      "bass",
+      "drums"
+    ],
+    "n_roles": 2,
+    "source_midi": false,
+    "bpm": 120,
+    "bars": 8,
+    "loop_secs": 16.0,
+    "gen_secs": 13.17,
+    "notes_out": 114,
+    "ev_per_sec": 14.6,
+    "loops_needed": 0.82
+  },
+  {
+    "label": "max_events=256",
+    "max_events": 256,
+    "roles": [
+      "bass",
+      "drums"
+    ],
+    "n_roles": 2,
+    "source_midi": false,
+    "bpm": 120,
+    "bars": 8,
+    "loop_secs": 16.0,
+    "gen_secs": 17.3,
+    "notes_out": 239,
+    "ev_per_sec": 14.8,
+    "loops_needed": 1.08
+  },
+  {
+    "label": "max_events=384",
+    "max_events": 384,
+    "roles": [
+      "bass",
+      "drums"
+    ],
+    "n_roles": 2,
+    "source_midi": false,
+    "bpm": 120,
+    "bars": 8,
+    "loop_secs": 16.0,
+    "gen_secs": 25.22,
+    "notes_out": 197,
+    "ev_per_sec": 15.2,
+    "loops_needed": 1.58
+  },
+  {
+    "label": "max_events=512",
+    "max_events": 512,
+    "roles": [
+      "bass",
+      "drums"
+    ],
+    "n_roles": 2,
+    "source_midi": false,
+    "bpm": 120,
+    "bars": 8,
+    "loop_secs": 16.0,
+    "gen_secs": 33.4,
+    "notes_out": 468,
+    "ev_per_sec": 15.3,
+    "loops_needed": 2.09
+  },
+  {
+    "label": "1 role  (bass)",
+    "max_events": 256,
+    "roles": [
+      "bass"
+    ],
+    "n_roles": 1,
+    "source_midi": false,
+    "bpm": 120,
+    "bars": 8,
+    "loop_secs": 16.0,
+    "gen_secs": 17.46,
+    "notes_out": 240,
+    "ev_per_sec": 14.7,
+    "loops_needed": 1.09
+  },
+  {
+    "label": "2 roles (bass+drums)",
+    "max_events": 256,
+    "roles": [
+      "bass",
+      "drums"
+    ],
+    "n_roles": 2,
+    "source_midi": false,
+    "bpm": 120,
+    "bars": 8,
+    "loop_secs": 16.0,
+    "gen_secs": 17.34,
+    "notes_out": 185,
+    "ev_per_sec": 14.8,
+    "loops_needed": 1.08
+  },
+  {
+    "label": "3 roles (bass+drums+harmony)",
+    "max_events": 256,
+    "roles": [
+      "bass",
+      "drums",
+      "harmony"
+    ],
+    "n_roles": 3,
+    "source_midi": false,
+    "bpm": 120,
+    "bars": 8,
+    "loop_secs": 16.0,
+    "gen_secs": 17.45,
+    "notes_out": 124,
+    "ev_per_sec": 14.7,
+    "loops_needed": 1.09
+  },
+  {
+    "label": "4 roles (+melody)",
+    "max_events": 256,
+    "roles": [
+      "bass",
+      "drums",
+      "harmony",
+      "melody"
+    ],
+    "n_roles": 4,
+    "source_midi": false,
+    "bpm": 120,
+    "bars": 8,
+    "loop_secs": 16.0,
+    "gen_secs": 17.35,
+    "notes_out": 255,
+    "ev_per_sec": 14.8,
+    "loops_needed": 1.08
+  },
+  {
+    "label": "no source",
+    "max_events": 256,
+    "roles": [
+      "bass",
+      "drums",
+      "harmony"
+    ],
+    "n_roles": 3,
+    "source_midi": false,
+    "bpm": 120,
+    "bars": 8,
+    "loop_secs": 16.0,
+    "gen_secs": 19.11,
+    "notes_out": 252,
+    "ev_per_sec": 13.4,
+    "loops_needed": 1.19
+  },
+  {
+    "label": "with source (8 bars)",
+    "max_events": 256,
+    "roles": [
+      "bass",
+      "drums",
+      "harmony"
+    ],
+    "n_roles": 3,
+    "source_midi": true,
+    "bpm": 120,
+    "bars": 8,
+    "loop_secs": 16.0,
+    "gen_secs": 17.49,
+    "notes_out": 378,
+    "ev_per_sec": 14.6,
+    "loops_needed": 1.09
+  },
+  {
+    "label": "80 BPM 4 bars",
+    "max_events": 256,
+    "roles": [
+      "bass",
+      "drums",
+      "harmony"
+    ],
+    "n_roles": 3,
+    "source_midi": false,
+    "bpm": 80,
+    "bars": 4,
+    "loop_secs": 12.0,
+    "gen_secs": 17.53,
+    "notes_out": 199,
+    "ev_per_sec": 14.6,
+    "loops_needed": 1.46
+  },
+  {
+    "label": "80 BPM 8 bars",
+    "max_events": 256,
+    "roles": [
+      "bass",
+      "drums",
+      "harmony"
+    ],
+    "n_roles": 3,
+    "source_midi": false,
+    "bpm": 80,
+    "bars": 8,
+    "loop_secs": 24.0,
+    "gen_secs": 18.1,
+    "notes_out": 107,
+    "ev_per_sec": 14.1,
+    "loops_needed": 0.75
+  },
+  {
+    "label": "100 BPM 4 bars",
+    "max_events": 256,
+    "roles": [
+      "bass",
+      "drums",
+      "harmony"
+    ],
+    "n_roles": 3,
+    "source_midi": false,
+    "bpm": 100,
+    "bars": 4,
+    "loop_secs": 9.6,
+    "gen_secs": 17.59,
+    "notes_out": 77,
+    "ev_per_sec": 14.6,
+    "loops_needed": 1.83
+  },
+  {
+    "label": "100 BPM 8 bars",
+    "max_events": 256,
+    "roles": [
+      "bass",
+      "drums",
+      "harmony"
+    ],
+    "n_roles": 3,
+    "source_midi": false,
+    "bpm": 100,
+    "bars": 8,
+    "loop_secs": 19.2,
+    "gen_secs": 17.47,
+    "notes_out": 208,
+    "ev_per_sec": 14.7,
+    "loops_needed": 0.91
+  },
+  {
+    "label": "120 BPM 4 bars",
+    "max_events": 256,
+    "roles": [
+      "bass",
+      "drums",
+      "harmony"
+    ],
+    "n_roles": 3,
+    "source_midi": false,
+    "bpm": 120,
+    "bars": 4,
+    "loop_secs": 8.0,
+    "gen_secs": 17.19,
+    "notes_out": 97,
+    "ev_per_sec": 14.9,
+    "loops_needed": 2.15
+  },
+  {
+    "label": "120 BPM 8 bars",
+    "max_events": 256,
+    "roles": [
+      "bass",
+      "drums",
+      "harmony"
+    ],
+    "n_roles": 3,
+    "source_midi": false,
+    "bpm": 120,
+    "bars": 8,
+    "loop_secs": 16.0,
+    "gen_secs": 18.23,
+    "notes_out": 226,
+    "ev_per_sec": 14.0,
+    "loops_needed": 1.14
+  },
+  {
+    "label": "120 BPM 16 bars",
+    "max_events": 256,
+    "roles": [
+      "bass",
+      "drums",
+      "harmony"
+    ],
+    "n_roles": 3,
+    "source_midi": false,
+    "bpm": 120,
+    "bars": 16,
+    "loop_secs": 32.0,
+    "gen_secs": 21.08,
+    "notes_out": 249,
+    "ev_per_sec": 12.1,
+    "loops_needed": 0.66
+  },
+  {
+    "label": "140 BPM 8 bars",
+    "max_events": 256,
+    "roles": [
+      "bass",
+      "drums",
+      "harmony"
+    ],
+    "n_roles": 3,
+    "source_midi": false,
+    "bpm": 140,
+    "bars": 8,
+    "loop_secs": 13.71,
+    "gen_secs": 19.85,
+    "notes_out": 243,
+    "ev_per_sec": 12.9,
+    "loops_needed": 1.45
+  },
+  {
+    "label": "160 BPM 8 bars",
+    "max_events": 256,
+    "roles": [
+      "bass",
+      "drums",
+      "harmony"
+    ],
+    "n_roles": 3,
+    "source_midi": false,
+    "bpm": 160,
+    "bars": 8,
+    "loop_secs": 12.0,
+    "gen_secs": 19.63,
+    "notes_out": 124,
+    "ev_per_sec": 13.0,
+    "loops_needed": 1.64
+  }
+]
