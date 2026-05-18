@@ -1,7 +1,7 @@
 """
 tt-midi-maker MCP server.
 
-5 tools, 4 prompts, 4 resources, argument completions.
+8 tools, 4 prompts, 4 resources, argument completions.
 Run with: python -m tt_midi_maker
 """
 from __future__ import annotations
@@ -28,6 +28,10 @@ from .generation.hardware import detect_tt_devices, hardware_status
 from .generation.aria_backend import get_model, generate_tokens
 from .generation.tokenizer import decode_tokens_to_midi, encode_midi_file
 from .models.blueprint import MusicalBlueprint
+from .player import (
+    active_jobs, job_status, list_output_ports, list_soundfonts,
+    play as _player_play, stop as _player_stop,
+)
 from .prompt_engine import build_blueprint
 from .session import MusicalContext, clear_session, get_session, set_session
 
@@ -320,6 +324,95 @@ Reads the file; does not modify it.""",
 )
 def chat_with_midi(file_path: str, question: str) -> dict:
     return _chat_with_midi(file_path, question)
+
+
+@mcp.tool(
+    title="List MIDI Devices",
+    description="""Enumerate all available MIDI output destinations.
+
+Returns two lists:
+  alsa_ports   — ALSA sequencer ports: USB MIDI devices, Bluetooth MIDI devices,
+                 virtual ports (e.g. fluidsynth server mode, DAW loopbacks).
+                 Plug in a USB MIDI device or pair a BT device and call this again.
+  soundfonts   — .sf2 SoundFont files found on this system for FluidSynth playback.
+
+Use port names from alsa_ports as the `port` argument to play_midi.""",
+    annotations=ToolAnnotations(
+        readOnlyHint=True, destructiveHint=False,
+        idempotentHint=True, openWorldHint=True,
+    ),
+)
+def list_midi_devices() -> dict:
+    import shutil
+    return {
+        "alsa_ports": list_output_ports(),
+        "soundfonts": list_soundfonts(),
+        "fluidsynth_available": bool(shutil.which("fluidsynth")),
+        "active_jobs": active_jobs(),
+    }
+
+
+@mcp.tool(
+    title="Play MIDI File",
+    description="""Play a MIDI file through FluidSynth (software GM synth) or any
+ALSA MIDI port — USB hardware synths, Bluetooth MIDI devices, DAW loopbacks, etc.
+
+BACKENDS:
+  fluidsynth  (default) — software synthesis via FluidR3 GM SoundFont → system audio.
+              No hardware needed. Works immediately on any machine with speakers.
+  alsa        — sends raw MIDI to a sequencer port. Use list_midi_devices to find
+              port names. Requires a connected hardware or virtual MIDI device.
+
+PER-CHANNEL ROUTING (channel_map):
+  Route each MIDI channel to a different output port. Keys are 1-indexed channel
+  numbers (as strings), values are ALSA port names from list_midi_devices.
+  Example: {"1": "USB Synth:0", "2": "USB Synth:0", "10": "BT Drum Machine:1"}
+  Channels not in the map fall back to the `port` argument.
+  Unmapped channels with no fallback port are silently dropped.
+
+  tt-midi-maker GM channel layout:
+    1=melody  2=bass  3=harmony  4=arp  5=pad  9=fx  10=drums
+
+RETURNS: job_id — pass to stop_playback to cancel; job finishes automatically.""",
+    annotations=ToolAnnotations(
+        readOnlyHint=False, destructiveHint=False,
+        idempotentHint=False, openWorldHint=True,
+    ),
+)
+def play_midi(
+    file_path: str,
+    backend: Literal["fluidsynth", "alsa"] = "fluidsynth",
+    port: str | None = None,
+    channel_map: dict[str, str] | None = None,
+    soundfont: str | None = None,
+    gain: float = 2.0,
+    blocking: bool = False,
+) -> dict:
+    return _player_play(
+        file_path=file_path,
+        backend=backend,
+        port=port,
+        channel_map=channel_map,
+        soundfont=soundfont,
+        gain=gain,
+        blocking=blocking,
+    )
+
+
+@mcp.tool(
+    title="Stop MIDI Playback",
+    description="""Stop a background MIDI playback job started by play_midi.
+
+Pass the job_id returned by play_midi. Playback stops within ~100 ms.
+If playback has already finished, returns the final status without error.
+Call list_midi_devices to see currently active jobs (returned in active_jobs field).""",
+    annotations=ToolAnnotations(
+        readOnlyHint=False, destructiveHint=False,
+        idempotentHint=True, openWorldHint=False,
+    ),
+)
+def stop_playback(job_id: str) -> dict:
+    return _player_stop(job_id)
 
 
 # ---------------------------------------------------------------------------
