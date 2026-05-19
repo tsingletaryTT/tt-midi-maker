@@ -21,7 +21,7 @@ from mcp.types import (
 from .analyzer import describe_midi as _analyze, chat_about_midi
 from .assembler import build_midi_file, TICKS_PER_BEAT
 from .coherence.harmony import chord_aware_filter
-from .coherence.humanize import humanize_velocities, nudge_timing
+from .coherence.humanize import humanize_velocities, nudge_timing, scale_velocity_by_role
 from .coherence.scale import build_scale_set, parse_key, scale_quantize
 from .errors import MidiMakerError
 from .generation.hardware import detect_tt_devices, hardware_status
@@ -129,6 +129,7 @@ def _apply_coherence(tracks, blueprint: MusicalBlueprint) -> list:
             notes, blueprint.chord_progression,
             ticks_per_bar, ticks_per_beat, scale_set,
         )
+        notes = scale_velocity_by_role(notes, track.role)
         notes = humanize_velocities(notes)
         notes = nudge_timing(notes)
         from dataclasses import replace
