@@ -86,7 +86,8 @@ def _set_musical_context(
 def _run_generation(blueprint: MusicalBlueprint) -> list:
     """Generate MIDI tracks using skytnt/midi-model; stub fallback on failure."""
     try:
-        tracks = _generate_from_blueprint(blueprint, ROLES_CONFIG)
+        tracks = _generate_from_blueprint(blueprint, ROLES_CONFIG,
+                                          max_attempts=3, judge_threshold=0.55)
         if tracks:
             return tracks
         raise RuntimeError("model returned no notes")
@@ -165,6 +166,7 @@ def _generate_midi(
             blueprint, ROLES_CONFIG,
             source_midi=source_midi,
             source_context_bars=source_context_bars,
+            max_attempts=3, judge_threshold=0.55,
         )
         if raw_tracks:
             pass

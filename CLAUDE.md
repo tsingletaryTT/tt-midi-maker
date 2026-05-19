@@ -4,7 +4,7 @@ Multi-track MIDI generation from text prompts using Tenstorrent hardware.
 Exposes generation as a fully-featured MCP server with local audio playback.
 
 ## Pipeline
-Prompt → LLM blueprint → skytnt/midi-model (LlamaModel, forge-compiled on TT hardware) → coherence layer → GM MIDI → MCP
+Prompt → LLM blueprint → skytnt/midi-model (LlamaModel, forge-compiled on TT hardware) → coherence layer → quality judge → GM MIDI → MCP
 
 ## Generation backend
 - `tt_midi_maker/generation/midi_backend.py` — orchestration; auto-selects hardware or CPU path
@@ -54,6 +54,39 @@ the hardware 12-layer net is called to refresh the context vector.  Between refr
 
 Recommended for real-time loop generation: `max_events=96, hw_context_interval=4` (fits in 1 loop).
 The stride-mismatch bug that caused CPU fallback at max_events≥256 is also fixed.
+
+## Quality judge
+
+`tt_midi_maker/coherence/judge.py` — rule-based quality filter applied after generation.
+
+**Rule-based metrics per track:**
+- `notes_per_bar`: density — flags sparse (<0.5 npb) or machine-gun (>30 npb)
+- `pitch_span`: semitone range — melody/bass flagged if <4 (monotonous) or >36 (scattered)
+- `unique_pitches`: distinct notes — melody flagged if <3
+- `mean_interval` / `max_interval`: average and max semitone jumps in melody — >8 mean or >24 max flagged
+- `direction_reversal_ratio`: fraction of intervals that reverse direction — >75% = melodic zigzag
+- `silence_ratio`: fraction of loop with no notes — <8% = no breathing room, >96% = nearly silent
+- `cluster_ratio`: fraction of notes landing within 24 ticks (half-beat) of another — >65% = rhythmic pile-up
+- `register_overlap_semitones`: how many semitones bass top invades melody bottom — >6 flagged
+
+**Scoring:** `rule_score = max(0, 1 - 0.12 * n_issues)`. A pattern with 4 issues scores 0.52 (FAIL).
+
+**Re-rolling** is wired into `generate_from_blueprint` via `max_attempts` and `judge_threshold` params.
+All demo scripts set `max_attempts=3, judge_threshold=0.55` — the model re-rolls up to 3 times and keeps
+the best-scoring attempt. Adds 1–2 extra generation passes when needed (~20–40s on hardware).
+
+**Perplexity scoring** (`score_perplexity()` in judge.py): two batched forward passes through the model —
+`model.forward()` then `model.forward_token()` — returns mean NLL of event-type tokens.
+Lower = model more expected the sequence. Used by `scripts/analyze_quality.py --no-ppl` off.
+
+**One-time audit:**
+```bash
+python scripts/analyze_quality.py --no-ppl   # fast rule-based only (no model loading)
+python scripts/analyze_quality.py            # full analysis including perplexity
+```
+Writes JSON to `docs/quality_report.json`. Audit of 22 existing patterns: 19/22 passed (86%).
+Most common issues: rhythmic clustering, melodic zigzag direction reversals, silence_ratio=0%.
+Single-voice monosynth patterns scored best (2× perfect 1.00, 1× 0.88 for one jarring leap).
 
 ## Source MIDI context
 `generate_from_blueprint(bp, roles_config, source_midi=path, source_context_bars=8)` accepts a path to a previous MIDI file. The last N bars are tokenized and prepended to the prompt so the model can continue from or respond to existing material. Bad paths are silently ignored. `demo_postrock.py` uses this to chain patterns so each generation builds on the previous one.

@@ -134,6 +134,7 @@ def generate(
         hw_context_interval=hw_context_interval,
         source_midi=source_midi,
         source_context_bars=8,
+        max_attempts=3, judge_threshold=0.55,
     )
     dt = time.time() - t0
 

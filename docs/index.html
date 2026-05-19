@@ -1351,6 +1351,85 @@ output = <span class="fn">compiled</span>(tokens)</div>
 </div>
 </section>
 
+<!-- ═══════════════════════════════════════════════════════ QUALITY JUDGE -->
+<section id="quality" style="background:var(--bg-card);border-top:1px solid var(--border)">
+<div class="container">
+  <div class="section-label">Musical quality filtering</div>
+  <h2 class="section-title">The model doesn't know what sounds good</h2>
+  <p class="section-desc">
+    Raw transformer output is probabilistic — the model generates tokens it finds likely given the
+    context, not tokens that form a musical phrase. The result without filtering is what it sounds
+    like: rhythmic pile-ups, melodic zigzag, silence-free walls of notes. The quality judge exists
+    to catch this before it reaches your speakers.
+  </p>
+
+  <div class="grid-3" style="margin-top:2.5rem">
+    <div class="card">
+      <div class="card-label">Rule-based metrics</div>
+      <h3 style="color:var(--text);margin:.5rem 0 1rem;font-size:1.1rem">8 musical correctness checks</h3>
+      <ul style="color:var(--text-dim);font-size:.9rem;line-height:1.8;padding-left:1.2rem;margin:0">
+        <li>Notes per bar — too sparse or machine-gun</li>
+        <li>Pitch span — monotonous or scattered</li>
+        <li>Mean / max interval — random leaps vs stepwise motion</li>
+        <li>Direction reversals — melodic zigzag detector</li>
+        <li>Silence ratio — breathing room check</li>
+        <li>Rhythmic clustering — half-beat pile-up</li>
+        <li>Register overlap — bass invading melody's range</li>
+        <li>Unique pitches — repetition floor</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Re-rolling</div>
+      <h3 style="color:var(--text);margin:.5rem 0 1rem;font-size:1.1rem">Best of N candidates</h3>
+      <p style="color:var(--text-dim);font-size:.9rem;line-height:1.7;margin:0 0 1rem">
+        Every generation call scores the result against the rules.
+        Patterns below threshold are discarded and regenerated — up to 3
+        attempts per pattern, keeping the highest-scoring result.
+      </p>
+      <p style="color:var(--text-dim);font-size:.9rem;line-height:1.7;margin:0">
+        Audit of 22 committed patterns: <strong style="color:var(--teal)">86% pass rate</strong>
+        before re-rolling was enabled. The single-voice monosynth format
+        scored highest — two patterns at 1.00 (no issues detected).
+      </p>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Perplexity scoring</div>
+      <h3 style="color:var(--text);margin:.5rem 0 1rem;font-size:1.1rem">Model self-evaluation</h3>
+      <p style="color:var(--text-dim);font-size:.9rem;line-height:1.7;margin:0 0 1rem">
+        Beyond rules: the model evaluates its own output.
+        Two batched forward passes compute mean negative log-probability
+        of event-type tokens — how "surprised" the model is by the sequence it generated.
+      </p>
+      <p style="color:var(--text-dim);font-size:.9rem;line-height:1.7;margin:0">
+        Lower NLL means the model found the sequence plausible.
+        High NLL often correlates with audible jumble.
+        Available as a secondary signal via <code style="color:var(--teal)">scripts/analyze_quality.py</code>.
+      </p>
+    </div>
+  </div>
+
+  <div style="margin-top:2.5rem;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:1.5rem">
+    <div style="color:var(--text-dim);font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;margin-bottom:1rem">Most common quality failures across 22 patterns</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem">
+      <div style="background:var(--bg-card);border-radius:6px;padding:1rem">
+        <div style="color:var(--teal);font-weight:600;margin-bottom:.4rem">Rhythmic clustering</div>
+        <div style="color:var(--text-dim);font-size:.85rem">Notes landing within 24 ticks (half a beat) of each other. Results in a "stacked" sound where rhythm blurs into a block chord feel.</div>
+      </div>
+      <div style="background:var(--bg-card);border-radius:6px;padding:1rem">
+        <div style="color:var(--teal);font-weight:600;margin-bottom:.4rem">Melodic zigzag</div>
+        <div style="color:var(--text-dim);font-size:.85rem">&gt;75% of melodic intervals reverse direction. Sounds like a random walk — up–down–up–down with no phrase shape.</div>
+      </div>
+      <div style="background:var(--bg-card);border-radius:6px;padding:1rem">
+        <div style="color:var(--teal);font-weight:600;margin-bottom:.4rem">No breathing room</div>
+        <div style="color:var(--text-dim);font-size:.85rem">Silence ratio below 8%. When notes fill every tick with no rests, the track loses dynamics and all musical phrasing.</div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
 <!-- ═══════════════════════════════════════════════════════ MCP SERVER -->
 <section id="mcp">
 <div class="container">

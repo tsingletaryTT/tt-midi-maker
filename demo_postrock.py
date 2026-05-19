@@ -120,6 +120,7 @@ def generate_pattern(
     tracks = generate_from_blueprint(
         bp, ROLES_CONFIG, max_events=max_events,
         source_midi=source_midi, source_context_bars=source_context_bars,
+        max_attempts=3, judge_threshold=0.55,
     )
     if not tracks:
         logger.warning("model returned empty — skipping %s", filename)

@@ -130,6 +130,8 @@ def generate(
         hw_context_interval=2,   # refresh hardware context every 2 steps for quality
         source_midi=source_midi,
         source_context_bars=4,
+        max_attempts=3,
+        judge_threshold=0.55,
     )
     dt = time.time() - t0
 

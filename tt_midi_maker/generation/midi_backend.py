@@ -320,6 +320,8 @@ def generate_from_blueprint(
     hw_context_interval: int = 4,
     source_midi: str | None = None,
     source_context_bars: int | None = 8,
+    max_attempts: int = 1,
+    judge_threshold: float = 0.55,
 ) -> list[RoleTrack]:
     """Generate MIDI RoleTracks from a MusicalBlueprint.
 
@@ -341,8 +343,19 @@ def generate_from_blueprint(
         can continue from or respond to the existing material.
     source_context_bars: how many bars from the end of source_midi to include.
         None = use the whole file.  Default 8 (one full loop).
+    max_attempts: if > 1, apply rule-based judge after generation and re-roll up to
+        this many total tries when the pattern scores below judge_threshold.
+        Default 1 = no re-rolling (original behaviour).
+    judge_threshold: rule_score floor for acceptance when max_attempts > 1.
+        Range 0.0–1.0; 0.55 accepts patterns with up to ~4 rule violations.
     """
     model, tokenizer = _get_model()
+
+    # Rule-based judge used for re-rolling when max_attempts > 1
+    _judge = None
+    if max_attempts > 1:
+        from ..coherence.judge import judge_tracks as _judge_tracks
+        _judge = _judge_tracks
 
     source_rows: list | None = None
     if source_midi is not None:
@@ -371,49 +384,78 @@ def generate_from_blueprint(
 
     # Compute which MIDI channels (0-indexed) are active in this blueprint.
     active_channels = _compute_active_channels(blueprint, roles_config)
-
-    if compiled_net is not None:
-        logger.info("[midi_backend] using TT hardware path (compiled net, hw_interval=%d)", hw_context_interval)
-        try:
-            from .forge_backend import generate_hardware
-            generated = generate_hardware(
-                compiled_net, model, prompt,
-                max_padded_len=hw_max_padded_len,
-                max_events=max_events,
-                temp=temperature,
-                top_p=top_p,
-                top_k=top_k,
-                hw_context_interval=hw_context_interval,
-                disable_patch_change=True,
-                disable_control_change=True,
-                allowed_channels=active_channels,
-            )
-        except Exception as exc:
-            logger.warning("[midi_backend] hardware generate failed, retrying on CPU: %s", exc)
-            compiled_net = None
-
-    if compiled_net is None:
-        logger.info("[midi_backend] using CPU path")
-        # model.generate() has no equivalent masking (disable_patch_change/allowed_channels);
-        # channel bleed is caught downstream by _score_to_roletracks active_roles filter.
-        with torch.inference_mode():
-            generated = model.generate(
-                prompt=prompt,
-                batch_size=1,
-                max_len=len(prompt) + max_events,
-                temp=temperature,
-                top_p=top_p,
-                top_k=top_k,
-            )
-
-    # generated: (1, seq_len, max_token_seq) as numpy
-    midi_seq = generated[0].tolist()
-    midi_score = tokenizer.detokenize(midi_seq)
-
-    # Only keep tracks for requested roles; enforce each role's note_range.
     active_roles = {r for r, cfg in blueprint.roles.items() if cfg.density > 0.0}
-    tracks = _score_to_roletracks(midi_score, roles_config,
-                                   max_tick=max_tick, active_roles=active_roles)
+
+    best_tracks: list[RoleTrack] = []
+    best_score: float = -1.0
+
+    for attempt in range(max_attempts):
+        if compiled_net is not None:
+            logger.info("[midi_backend] using TT hardware path (compiled net, hw_interval=%d)", hw_context_interval)
+            try:
+                from .forge_backend import generate_hardware
+                generated = generate_hardware(
+                    compiled_net, model, prompt,
+                    max_padded_len=hw_max_padded_len,
+                    max_events=max_events,
+                    temp=temperature,
+                    top_p=top_p,
+                    top_k=top_k,
+                    hw_context_interval=hw_context_interval,
+                    disable_patch_change=True,
+                    disable_control_change=True,
+                    allowed_channels=active_channels,
+                )
+            except Exception as exc:
+                logger.warning("[midi_backend] hardware generate failed, retrying on CPU: %s", exc)
+                compiled_net = None
+
+        if compiled_net is None:
+            logger.info("[midi_backend] using CPU path")
+            # model.generate() has no equivalent masking (disable_patch_change/allowed_channels);
+            # channel bleed is caught downstream by _score_to_roletracks active_roles filter.
+            with torch.inference_mode():
+                generated = model.generate(
+                    prompt=prompt,
+                    batch_size=1,
+                    max_len=len(prompt) + max_events,
+                    temp=temperature,
+                    top_p=top_p,
+                    top_k=top_k,
+                )
+
+        # Decode and convert to RoleTracks
+        midi_seq = generated[0].tolist()
+        midi_score = tokenizer.detokenize(midi_seq)
+        tracks = _score_to_roletracks(midi_score, roles_config,
+                                       max_tick=max_tick, active_roles=active_roles)
+
+        # Quality gate: judge and optionally re-roll
+        if _judge is not None:
+            report = _judge(tracks, bars=blueprint.bars, bpm=blueprint.bpm,
+                            pass_threshold=judge_threshold)
+            if report.rule_score > best_score:
+                best_score = report.rule_score
+                best_tracks = tracks
+
+            if report.passed:
+                logger.info(
+                    "[midi_backend] judge: attempt %d/%d PASS (score=%.2f)",
+                    attempt + 1, max_attempts, report.rule_score,
+                )
+                break
+            else:
+                issues_short = " | ".join(report.issues[:3])
+                logger.info(
+                    "[midi_backend] judge: attempt %d/%d score=%.2f — re-rolling: %s",
+                    attempt + 1, max_attempts, report.rule_score, issues_short,
+                )
+        else:
+            best_tracks = tracks
+            break
+
+    tracks = best_tracks or tracks  # fallback: keep last attempt if judge never ran
+
     logger.info(
         "[midi_backend] done: %d tracks, %d total notes",
         len(tracks), sum(len(t.notes) for t in tracks),

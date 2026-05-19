@@ -4,7 +4,7 @@ Multi-track MIDI generation from text prompts, accelerated by Tenstorrent hardwa
 exposed as a fully-featured [MCP](https://modelcontextprotocol.io) server.
 
 ```
-Prompt → LLM blueprint → Aria MIDI transformer (tt-forge) → coherence layer → GM MIDI
+Prompt → LLM blueprint → Aria MIDI transformer (tt-forge) → coherence layer → quality judge → GM MIDI
 ```
 
 ---
@@ -404,7 +404,8 @@ tt_midi_maker/
 │   ├── scale.py           Scale quantisation (7 modes, probabilistic)
 │   ├── harmony.py         Chord-aware note filtering (strong beats)
 │   ├── humanize.py        Velocity humanisation + timing nudge
-│   └── stitching.py       Crossfade phrase stitching
+│   ├── stitching.py       Crossfade phrase stitching
+│   └── judge.py           Rule-based quality judge + perplexity scoring
 └── generation/
     ├── hardware.py        tt-smi device detection
     ├── tokenizer.py       MidiTok REMI+ wrapper (encode/decode)
@@ -430,6 +431,11 @@ Prompt + MusicalContext
    harmony.py        filter off-beat non-chord tones
    humanize.py       ±velocity + timing jitter
    stitching.py      crossfade when appending to existing tracks
+        │
+        ▼  quality judge (up to max_attempts re-rolls):
+   judge.py          density, pitch span, intervals, silence, clustering,
+                     direction reversals, register overlap → rule_score 0–1
+                     if score < threshold: discard, re-generate
         │
         ▼
    assembler.py  ──────────────────▶  Type-1 .mid file
