@@ -171,6 +171,9 @@ def generate_hardware(
     top_p: float = 0.98,
     top_k: int = 20,
     hw_context_interval: int = 4,
+    disable_patch_change: bool = True,
+    disable_control_change: bool = True,
+    allowed_channels: "set[int] | None" = None,
 ) -> np.ndarray:
     """Generate MIDI events using TT-compiled net + CPU net_token.
 
@@ -201,6 +204,13 @@ def generate_hardware(
         temp / top_p / top_k: sampling hyperparameters.
         hw_context_interval: hardware is called every this many generated events.
             1 = every step (original); 4 = every 4th step (default, 4× speedup).
+        disable_patch_change: if True, patch_change events are masked out after the
+            prompt so the model cannot override instrument assignments mid-generation.
+        disable_control_change: if True, control_change events (CC) are excluded from
+            generation, reducing clutter in the output.
+        allowed_channels: set of 0-indexed MIDI channel numbers the model may generate
+            notes on. When provided, the "channel" parameter token is restricted to
+            this set for note events. None means all 16 channels are allowed.
 
     Returns:
         (1, final_seq_len, max_token_seq) int64 numpy array.
@@ -282,13 +292,29 @@ def generate_hardware(
             if end:
                 mask[0, tokenizer.pad_id] = 1
             elif i == 0:
-                mask[0, list(tokenizer.event_ids.values()) + [tokenizer.eos_id]] = 1
+                # Build the allowed event-id list, optionally excluding
+                # patch_change and control_change to keep the model on task.
+                allowed_event_ids = list(tokenizer.event_ids.values()) + [tokenizer.eos_id]
+                if disable_patch_change:
+                    allowed_event_ids = [e for e in allowed_event_ids
+                                         if tokenizer.id_events.get(e) != "patch_change"]
+                if disable_control_change:
+                    allowed_event_ids = [e for e in allowed_event_ids
+                                         if tokenizer.id_events.get(e) != "control_change"]
+                mask[0, allowed_event_ids] = 1
             else:
                 param_names = tokenizer.events[event_name]
                 if i > len(param_names):
                     mask[0, tokenizer.pad_id] = 1
                 else:
-                    mask[0, tokenizer.parameter_ids[param_names[i - 1]]] = 1
+                    param = param_names[i - 1]
+                    param_ids = tokenizer.parameter_ids[param]
+                    if param == "channel" and allowed_channels is not None:
+                        # Restrict note channel to active roles only; prevents
+                        # the model from bleeding onto unassigned MIDI channels.
+                        param_ids = [param_ids[c] for c in sorted(allowed_channels)
+                                     if c < len(param_ids)]
+                    mask[0, param_ids] = 1
             mask = mask.unsqueeze(1)
 
             x_tok = None if i == 0 else next_token_seq[:, -1:]

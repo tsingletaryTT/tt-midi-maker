@@ -384,3 +384,106 @@ def test_generate_from_blueprint_uses_hardware_when_available(monkeypatch):
                                                           "note_range": [60, 96],
                                                           "density_default": 1.0}})
     assert hw_called[0], "hardware generate_hardware was not called"
+
+
+# ── Vocabulary masking tests ──────────────────────────────────────────────────
+
+def _make_tokenizer():
+    from tt_midi_maker.generation.skytnt_tokenizer import MIDITokenizerV1
+    return MIDITokenizerV1()
+
+
+def _collect_allowed_events(tokenizer, mask_1d: torch.Tensor) -> set:
+    """Return set of event names whose event-id token is allowed in mask."""
+    allowed = set()
+    for event_name, eid in tokenizer.event_ids.items():
+        if mask_1d[eid].item():
+            allowed.add(event_name)
+    return allowed
+
+
+def _collect_allowed_channels(tokenizer, mask_1d: torch.Tensor) -> set:
+    """Return set of channel values (0-indexed) whose token is allowed."""
+    ch_ids = tokenizer.parameter_ids["channel"]
+    return {c for c, tok in enumerate(ch_ids) if mask_1d[tok].item()}
+
+
+def _build_mask(tokenizer, end, i, event_name, disable_patch_change,
+                disable_control_change, allowed_channels):
+    """Reproduce the mask-building logic from the generate_hardware inner loop."""
+    mask = torch.zeros((1, tokenizer.vocab_size), dtype=torch.int64)
+    if end:
+        mask[0, tokenizer.pad_id] = 1
+    elif i == 0:
+        allowed_event_ids = list(tokenizer.event_ids.values()) + [tokenizer.eos_id]
+        if disable_patch_change:
+            allowed_event_ids = [e for e in allowed_event_ids
+                                 if tokenizer.id_events.get(e) != "patch_change"]
+        if disable_control_change:
+            allowed_event_ids = [e for e in allowed_event_ids
+                                 if tokenizer.id_events.get(e) != "control_change"]
+        mask[0, allowed_event_ids] = 1
+    else:
+        param_names = tokenizer.events[event_name]
+        if i > len(param_names):
+            mask[0, tokenizer.pad_id] = 1
+        else:
+            param = param_names[i - 1]
+            param_ids = tokenizer.parameter_ids[param]
+            if param == "channel" and allowed_channels is not None:
+                param_ids = [param_ids[c] for c in sorted(allowed_channels)
+                             if c < len(param_ids)]
+            mask[0, param_ids] = 1
+    return mask[0]
+
+
+def test_disable_patch_change_removes_patch_change_from_event_mask():
+    tok = _make_tokenizer()
+    mask = _build_mask(tok, end=False, i=0, event_name="",
+                       disable_patch_change=True, disable_control_change=False,
+                       allowed_channels=None)
+    allowed = _collect_allowed_events(tok, mask)
+    assert "patch_change" not in allowed
+    assert "note" in allowed
+    assert "set_tempo" in allowed
+
+
+def test_disable_control_change_removes_cc_from_event_mask():
+    tok = _make_tokenizer()
+    mask = _build_mask(tok, end=False, i=0, event_name="",
+                       disable_patch_change=False, disable_control_change=True,
+                       allowed_channels=None)
+    allowed = _collect_allowed_events(tok, mask)
+    assert "control_change" not in allowed
+    assert "note" in allowed
+
+
+def test_no_disable_flags_allows_all_events():
+    tok = _make_tokenizer()
+    mask = _build_mask(tok, end=False, i=0, event_name="",
+                       disable_patch_change=False, disable_control_change=False,
+                       allowed_channels=None)
+    allowed = _collect_allowed_events(tok, mask)
+    assert "patch_change" in allowed
+    assert "control_change" in allowed
+    assert "note" in allowed
+
+
+def test_allowed_channels_restricts_note_channel_param():
+    tok = _make_tokenizer()
+    # "note" params: ["time1","time2","track","duration","channel","pitch","velocity"]
+    # "channel" is at index 4 → appears at i=5
+    mask = _build_mask(tok, end=False, i=5, event_name="note",
+                       disable_patch_change=True, disable_control_change=True,
+                       allowed_channels={0, 2})
+    allowed_ch = _collect_allowed_channels(tok, mask)
+    assert allowed_ch == {0, 2}, f"expected {{0, 2}}, got {allowed_ch}"
+
+
+def test_allowed_channels_none_allows_all_channels():
+    tok = _make_tokenizer()
+    mask = _build_mask(tok, end=False, i=5, event_name="note",
+                       disable_patch_change=True, disable_control_change=True,
+                       allowed_channels=None)
+    allowed_ch = _collect_allowed_channels(tok, mask)
+    assert len(allowed_ch) == 16
