@@ -487,3 +487,87 @@ def test_allowed_channels_none_allows_all_channels():
                        allowed_channels=None)
     allowed_ch = _collect_allowed_channels(tok, mask)
     assert len(allowed_ch) == 16
+
+
+def test_generate_hardware_respects_disable_patch_change(monkeypatch):
+    """Verify generate_hardware() itself masks patch_change when flag is True."""
+    from tt_midi_maker.generation.skytnt_tokenizer import MIDITokenizerV1
+    from tt_midi_maker.generation import forge_backend
+
+    tok = MIDITokenizerV1()
+    patch_change_id = tok.event_ids["patch_change"]
+    sampled_event_masks = []
+
+    # Minimal fake model
+    import types, torch.nn as nn
+
+    class FakeNetModule(nn.Module):
+        def __init__(self):
+            super().__init__()
+            # generate_hardware calls model.net.embed_tokens(input_tensor).sum(dim=-2)
+            # input_tensor shape: (1, seq, max_token_seq) — embed_tokens must map
+            # token IDs to floats.  We use hidden_size=32 to keep the test light.
+            self.config = types.SimpleNamespace(hidden_size=32, num_hidden_layers=1)
+            self.embed_tokens = nn.Embedding(tok.vocab_size, 32)
+
+        def forward(self, inputs_embeds=None, use_cache=False):
+            b, s, h = inputs_embeds.shape
+            out = types.SimpleNamespace(last_hidden_state=inputs_embeds)
+            return out
+
+    class FakeModel:
+        def __init__(self):
+            self.tokenizer = tok
+            self._net_module = FakeNetModule()
+
+        @property
+        def net(self):
+            return self._net_module
+
+        @net.setter
+        def net(self, v):
+            self._net_module = v
+
+        def forward_token(self, h_in, x_tok, cache=None):
+            # Return uniform logits — sampling will pick argmax of the masked scores
+            return torch.ones(1, 1, tok.vocab_size)
+
+        def sample_top_p_k(self, scores, top_p, top_k):
+            # Record the mask that was applied (scores = softmax * mask, so nonzero = allowed)
+            event_i_mask = (scores[0, 0] > 0)
+            sampled_event_masks.append(event_i_mask.clone())
+            # Return the EOS token to end generation quickly
+            return torch.tensor([[tok.eos_id]])
+
+    # Fake compiled_net: returns zeros of the right shape
+    class FakeCompiledNet:
+        def __call__(self, x_emb):
+            return x_emb  # pass-through; shape matches hidden expectations
+
+    model = FakeModel()
+    compiled_net = FakeCompiledNet()
+
+    # Build a minimal prompt: just BOS
+    prompt = np.array([[tok.bos_id] + [tok.pad_id] * (tok.max_token_seq - 1)], dtype=np.int64)
+
+    # Run generate_hardware with disable_patch_change=True.
+    # sample_top_p_k returns EOS at i==0, recording one mask then stopping.
+    from tt_midi_maker.generation.forge_backend import generate_hardware
+    generate_hardware(
+        compiled_net, model, prompt,
+        max_padded_len=16,
+        max_events=1,
+        disable_patch_change=True,
+        disable_control_change=False,
+        allowed_channels=None,
+    )
+
+    assert len(sampled_event_masks) >= 1, "sample_top_p_k was never called"
+    event_mask = sampled_event_masks[0]
+    assert not event_mask[patch_change_id].item(), (
+        f"patch_change token {patch_change_id} was allowed in the mask "
+        f"even though disable_patch_change=True"
+    )
+    # Verify note events ARE still allowed
+    note_id = tok.event_ids["note"]
+    assert event_mask[note_id].item(), "note token should still be allowed"

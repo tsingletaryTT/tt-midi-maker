@@ -312,8 +312,15 @@ def generate_hardware(
                     if param == "channel" and allowed_channels is not None:
                         # Restrict note channel to active roles only; prevents
                         # the model from bleeding onto unassigned MIDI channels.
-                        param_ids = [param_ids[c] for c in sorted(allowed_channels)
-                                     if c < len(param_ids)]
+                        # Guard against an empty filter result: if no channel IDs
+                        # survive (e.g. allowed_channels is an empty set, or all
+                        # channel indices exceed the tokenizer's channel vocab),
+                        # keep the original full list rather than leaving the mask
+                        # all-zeros — an all-zero mask produces NaN in softmax.
+                        filtered = [param_ids[c] for c in sorted(allowed_channels)
+                                    if c < len(param_ids)]
+                        if filtered:
+                            param_ids = filtered
                     mask[0, param_ids] = 1
             mask = mask.unsqueeze(1)
 
