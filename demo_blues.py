@@ -1,22 +1,21 @@
 #!/usr/bin/env python3
 """
-"Midnight in East Texas" — a three-pattern E minor blues.
+"Midnight in East Texas" — straight-ahead blues.
 
 Musical design
 --------------
-Key:    E minor (blues pentatonic: E G A Bb B D)
-BPM:    88  (medium shuffle — room to breathe)
-Bars:   8   (~10.9 s loop at 88 BPM)
-Chords: E7 → A7 → E7 → B7   (8-bar blues cycle)
-        Dominant 7ths throughout — that suspended, unresolved tension
-        that defines the blues.
+Key:    A minor  (A C D E G — the blues pentatonic lives here)
+BPM:    92       (medium shuffle)
+Bars:   8        (two passes through the 4-chord cycle)
+Chords: A7 → D7 → A7 → E7   (the 12-bar heart, compressed to 4 chords)
 
 Instruments
 -----------
-  melody   — Electric guitar (jazz, program 26)  E2–G5
-  harmony  — Hammond organ (drawbar, program 16)  C3–C5
-  bass     — Electric bass finger (program 33)    E1–E3
+  melody   — Electric Guitar (jazz, program 27)   A2–E5  (lead guitar)
+  harmony  — Acoustic Grand Piano (program 0)     A2–A5  (blues piano comp)
+  bass     — Acoustic Bass (program 32)            A1–A3  (upright bass feel)
   drums    — Standard kit (channel 10)
+  Classic Chicago blues band: guitar + piano + upright bass + kit.
 """
 from __future__ import annotations
 
@@ -54,22 +53,18 @@ from tt_midi_maker.generation.hardware import detect_tt_devices
 from tt_midi_maker.generation.midi_backend import generate_from_blueprint
 from tt_midi_maker.models.blueprint import MusicalBlueprint, RoleConfig
 
-# ── Musical parameters ─────────────────────────────────────────────────────────
-
-KEY    = "E minor"
-BPM    = 88
+KEY    = "A minor"
+BPM    = 92
 BARS   = 8
-CHORDS = ["E7", "A7", "E7", "B7"]
+CHORDS = ["A7", "D7", "A7", "E7"]
 
 LOOP_SECS = BARS * 4 * (60.0 / BPM)
 
-# ── GM program overrides ───────────────────────────────────────────────────────
-
-GUITAR_PROGRAM = 26   # Electric Guitar (jazz)
-GUITAR_RANGE   = [40, 79]  # E2 – G5
-HAMMOND_PROGRAM = 16  # Drawbar Organ
-BASS_PROGRAM    = 33  # Electric Bass (finger)
-BASS_RANGE      = [28, 52]  # E1 – E3
+GUITAR_PROGRAM = 27   # Electric Guitar (jazz) — cleaner blues tone
+GUITAR_RANGE   = [45, 76]  # A2 – E5
+PIANO_PROGRAM  = 0    # Acoustic Grand Piano — blues piano comp
+BASS_PROGRAM   = 32   # Acoustic Bass
+BASS_RANGE     = [33, 57]  # A1 – A3
 
 SUITE_ROLES: dict = {}
 for name, cfg in ROLES_CONFIG.items():
@@ -77,7 +72,7 @@ for name, cfg in ROLES_CONFIG.items():
     if name == "melody":
         overrides = {"program": GUITAR_PROGRAM, "note_range": GUITAR_RANGE}
     elif name == "harmony":
-        overrides = {"program": HAMMOND_PROGRAM}
+        overrides = {"program": PIANO_PROGRAM}
     elif name == "bass":
         overrides = {"program": BASS_PROGRAM, "note_range": BASS_RANGE}
     SUITE_ROLES[name] = {**cfg, **overrides}
@@ -142,7 +137,7 @@ def generate(
         if t.role == "melody":
             stamped.append(replace(t, program=GUITAR_PROGRAM))
         elif t.role == "harmony":
-            stamped.append(replace(t, program=HAMMOND_PROGRAM))
+            stamped.append(replace(t, program=PIANO_PROGRAM))
         elif t.role == "bass":
             stamped.append(replace(t, program=BASS_PROGRAM))
         else:
@@ -166,7 +161,7 @@ def bar(char="═", width=60):
 
 def main():
     bar("═")
-    print("  tt-midi-maker  ▸  Midnight in East Texas  (E minor blues)")
+    print("  tt-midi-maker  ▸  Midnight in East Texas  (A minor blues)")
     bar("═")
 
     devices = detect_tt_devices()
@@ -175,27 +170,22 @@ def main():
     print(f"  Key     : {KEY}   BPM: {BPM}")
     print(f"  Chords  : {' → '.join(CHORDS)}")
     print(f"  Loop    : {LOOP_SECS:.1f}s per {BARS}-bar phrase")
+    print(f"  Roles   : guitar + piano + bass + drums")
     print(f"  Output  : {OUTPUT_DIR}")
     bar()
 
-    f1 = generate(
-        ["bass", "drums", "harmony", "melody"],
-        "p1_intro.mid",
-        label="Pattern 1 — full band, cold start",
-    )
-    f2 = generate(
-        ["bass", "drums", "harmony", "melody"],
-        "p2_groove.mid",
-        source_midi=f1,
-        label="Pattern 2 — groove (seeded from P1)",
-    )
-    f3 = generate(
-        ["bass", "drums", "harmony", "melody"],
-        "p3_resolution.mid",
-        source_midi=f2,
-        label="Pattern 3 — resolution (seeded from P2)",
-        max_events=112,
-    )
+    # all 4 roles required — melody (ch0=0) anchors multi-channel generation
+    ROLES = ["bass", "drums", "harmony", "melody"]
+
+    f1 = generate(ROLES, "p1_intro.mid",
+                  label="Pattern 1 — intro (cold start)")
+    f2 = generate(ROLES, "p2_groove.mid",
+                  source_midi=f1,
+                  label="Pattern 2 — groove (seeded from P1)")
+    f3 = generate(ROLES, "p3_resolution.mid",
+                  source_midi=f2,
+                  label="Pattern 3 — resolution (seeded from P2)",
+                  max_events=112)
 
     bar("═")
     valid = [f for f in [f1, f2, f3] if f]
