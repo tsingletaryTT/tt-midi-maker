@@ -593,6 +593,15 @@ footer a { color: var(--teal); }
   background: linear-gradient(90deg, transparent, var(--border), transparent);
   margin: 1.5rem 0;
 }
+/* ── piano roll ── */
+.piano-roll {
+  width: 100%;
+  height: 64px;
+  border-radius: 6px;
+  display: block;
+  margin: .75rem 0 .5rem;
+  object-fit: fill;
+}
 </style>
 </head>
 <body>
@@ -638,6 +647,7 @@ footer a { color: var(--teal); }
       <h3>Drums intro</h3>
       <p class="desc">Cold-start generation — model shapes the rhythmic skeleton before any melodic material exists.</p>
       <audio controls preload="none" src="audio/p1_intro.mp3"></audio>
+      <img class="piano-roll" src="assets/piano-rolls/p1_intro.svg" alt="piano roll" loading="lazy">
       <div class="pattern-stats">
         <span class="stat-pill hw">4× P300C</span>
         <span class="stat-pill time">32.6s gen (incl. compile)</span>
@@ -653,6 +663,7 @@ footer a { color: var(--teal); }
       <h3>Full band enters</h3>
       <p class="desc">Model hears the drums, then writes tenor sax, Hammond organ, walking bass and kit — all at once.</p>
       <audio controls preload="none" src="audio/p2_variation.mp3"></audio>
+      <img class="piano-roll" src="assets/piano-rolls/p2_variation.svg" alt="piano roll" loading="lazy">
       <div class="pattern-stats">
         <span class="stat-pill hw">7.8 ev/s</span>
         <span class="stat-pill time">12.3s gen</span>
@@ -668,6 +679,7 @@ footer a { color: var(--teal); }
       <h3>Development</h3>
       <p class="desc">Seeded from Pattern 2 — the harmonic vocabulary densifies (58 Hammond voicings) while the sax line stays fluid.</p>
       <audio controls preload="none" src="audio/p3_development.mp3"></audio>
+      <img class="piano-roll" src="assets/piano-rolls/p3_development.svg" alt="piano roll" loading="lazy">
       <div class="pattern-stats">
         <span class="stat-pill hw">7.7 ev/s</span>
         <span class="stat-pill time">12.5s gen</span>
@@ -683,6 +695,7 @@ footer a { color: var(--teal); }
       <h3>Climax variation</h3>
       <p class="desc">128 events (vs 96 for P1–P3) — the longest pattern, densest texture, seeded from the full development in P3.</p>
       <audio controls preload="none" src="audio/p4_climax.mp3"></audio>
+      <img class="piano-roll" src="assets/piano-rolls/p4_climax.svg" alt="piano roll" loading="lazy">
       <div class="pattern-stats">
         <span class="stat-pill hw">7.6 ev/s</span>
         <span class="stat-pill time">16.9s gen</span>
@@ -718,6 +731,7 @@ footer a { color: var(--teal); }
       <h3>Exposition — cold start</h3>
       <p class="desc">Piano melody emerges (14n) over string chord cushion (43n). Sparse but present — Baroque opening.</p>
       <audio controls preload="none" src="audio/aria-d-minor/p1_exposition.mp3"></audio>
+      <img class="piano-roll" src="assets/piano-rolls/aria-d-minor/p1_exposition.svg" alt="piano roll" loading="lazy">
       <div class="pattern-stats">
         <span class="stat-pill hw">4× P300C</span>
         <span class="stat-pill time">48.8s gen</span>
@@ -732,6 +746,7 @@ footer a { color: var(--teal); }
       <h3>Development</h3>
       <p class="desc">Seeded from P1 — the piano opens up (38n), strings swell into full chord support (70n).</p>
       <audio controls preload="none" src="audio/aria-d-minor/p2_development.mp3"></audio>
+      <img class="piano-roll" src="assets/piano-rolls/aria-d-minor/p2_development.svg" alt="piano roll" loading="lazy">
       <div class="pattern-stats">
         <span class="stat-pill hw">4.2 ev/s</span>
         <span class="stat-pill time">37.7s gen</span>
@@ -747,6 +762,7 @@ footer a { color: var(--teal); }
       <h3>Recapitulation</h3>
       <p class="desc">The return — familiar material in new light, the A7→Dm cadence settling into place.</p>
       <audio controls preload="none" src="audio/aria-d-minor/p3_recapitulation.mp3"></audio>
+      <img class="piano-roll" src="assets/piano-rolls/aria-d-minor/p3_recapitulation.svg" alt="piano roll" loading="lazy">
       <div class="pattern-stats">
         <span class="stat-pill hw">3.9 ev/s</span>
         <span class="stat-pill time">41.1s gen</span>
@@ -780,6 +796,7 @@ footer a { color: var(--teal); }
       <h3>Intro — cold start</h3>
       <p class="desc">Sparse opening: guitar feeling out the changes, piano touches, a light shuffle. Delta blues in embryo.</p>
       <audio controls preload="none" src="audio/midnight-blues/p1_intro.mp3"></audio>
+      <img class="piano-roll" src="assets/piano-rolls/midnight-blues/p1_intro.svg" alt="piano roll" loading="lazy">
       <div class="pattern-stats">
         <span class="stat-pill hw">4× P300C</span>
         <span class="stat-pill time">47.7s gen</span>
@@ -794,6 +811,7 @@ footer a { color: var(--teal); }
       <h3>Groove</h3>
       <p class="desc">Seeded from P1 — guitar and piano both open up, the kit locks in. Pentatonic lines settle into the shuffle.</p>
       <audio controls preload="none" src="audio/midnight-blues/p2_groove.mp3"></audio>
+      <img class="piano-roll" src="assets/piano-rolls/midnight-blues/p2_groove.svg" alt="piano roll" loading="lazy">
       <div class="pattern-stats">
         <span class="stat-pill hw">4.4 ev/s</span>
         <span class="stat-pill time">28.9s gen</span>
@@ -809,6 +827,7 @@ footer a { color: var(--teal); }
       <h3>Resolution</h3>
       <p class="desc">Guitar, piano, and kit all locked in. Pentatonic lines ring clean — no blue note dissonance, pure Delta feel.</p>
       <audio controls preload="none" src="audio/midnight-blues/p3_resolution.mp3"></audio>
+      <img class="piano-roll" src="assets/piano-rolls/midnight-blues/p3_resolution.svg" alt="piano roll" loading="lazy">
       <div class="pattern-stats">
         <span class="stat-pill hw">4.2 ev/s</span>
         <span class="stat-pill time">38.0s gen</span>
@@ -842,6 +861,7 @@ footer a { color: var(--teal); }
       <h3>Opening</h3>
       <p class="desc">Cold-start: a single string note, a bass touch, barely anything. Silence as texture.</p>
       <audio controls preload="none" src="audio/slow-light/p1_opening.mp3"></audio>
+      <img class="piano-roll" src="assets/piano-rolls/slow-light/p1_opening.svg" alt="piano roll" loading="lazy">
       <div class="pattern-stats">
         <span class="stat-pill hw">4× P300C</span>
         <span class="stat-pill time">32.2s gen</span>
@@ -856,6 +876,7 @@ footer a { color: var(--teal); }
       <h3>Drift</h3>
       <p class="desc">Seeded from P1 — all four voices gain presence. The pad opens. The strings breathe.</p>
       <audio controls preload="none" src="audio/slow-light/p2_drift.mp3"></audio>
+      <img class="piano-roll" src="assets/piano-rolls/slow-light/p2_drift.svg" alt="piano roll" loading="lazy">
       <div class="pattern-stats">
         <span class="stat-pill hw">7.8 ev/s</span>
         <span class="stat-pill time">12.3s gen</span>
@@ -871,6 +892,7 @@ footer a { color: var(--teal); }
       <h3>Dissolution</h3>
       <p class="desc">Richest texture: strings carry the melody (18n), pad fully voiced (22n), bass and kit threading through.</p>
       <audio controls preload="none" src="audio/slow-light/p3_dissolution.mp3"></audio>
+      <img class="piano-roll" src="assets/piano-rolls/slow-light/p3_dissolution.svg" alt="piano roll" loading="lazy">
       <div class="pattern-stats">
         <span class="stat-pill hw">7.8 ev/s</span>
         <span class="stat-pill time">10.3s gen</span>
@@ -904,6 +926,7 @@ footer a { color: var(--teal); }
       <h3>Head</h3>
       <p class="desc">Sparse opening: bass walking, piano touches chord changes, light kit. The changes assert themselves.</p>
       <audio controls preload="none" src="audio/bebop-quick-changes/p1_head.mp3"></audio>
+      <img class="piano-roll" src="assets/piano-rolls/bebop-quick-changes/p1_head.svg" alt="piano roll" loading="lazy">
       <div class="pattern-stats">
         <span class="stat-pill hw">4× P300C</span>
         <span class="stat-pill time">48.3s gen</span>
@@ -918,6 +941,7 @@ footer a { color: var(--teal); }
       <h3>First chorus</h3>
       <p class="desc">Seeded from head — piano opens up (89n), kit locks in hard. The bebop machine is warming up.</p>
       <audio controls preload="none" src="audio/bebop-quick-changes/p2_solo1.mp3"></audio>
+      <img class="piano-roll" src="assets/piano-rolls/bebop-quick-changes/p2_solo1.svg" alt="piano roll" loading="lazy">
       <div class="pattern-stats">
         <span class="stat-pill hw">4.4 ev/s</span>
         <span class="stat-pill time">29.3s gen</span>
@@ -933,6 +957,7 @@ footer a { color: var(--teal); }
       <h3>Second chorus</h3>
       <p class="desc">Full throttle — piano is dense (85n), drums relentless (52n), bass walking the turnaround. Chromatic lines intact.</p>
       <audio controls preload="none" src="audio/bebop-quick-changes/p3_solo2.mp3"></audio>
+      <img class="piano-roll" src="assets/piano-rolls/bebop-quick-changes/p3_solo2.svg" alt="piano roll" loading="lazy">
       <div class="pattern-stats">
         <span class="stat-pill hw">4.2 ev/s</span>
         <span class="stat-pill time">38.5s gen</span>
