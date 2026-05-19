@@ -88,12 +88,20 @@ def test_bass_velocity_range():
         assert lo <= n.velocity <= hi
 
 
+def test_drums_velocity_range():
+    lo, hi = _ROLE_VELOCITY_RANGES["drums"]
+    notes = [_note(1), _note(64), _note(127)]
+    result = scale_velocity_by_role(notes, "drums")
+    for n in result:
+        assert lo <= n.velocity <= hi, f"drums note vel {n.velocity} outside [{lo},{hi}]"
+
+
 def test_unknown_role_uses_default_range():
+    lo, hi = 60, 100  # documented fallback for unrecognized roles
     notes = [_note(1), _note(127)]
     result = scale_velocity_by_role(notes, "unknown_role")
-    assert len(result) == 2
-    for n in result:
-        assert 1 <= n.velocity <= 127
+    assert result[0].velocity == lo, f"vel=1 should map to fallback lo={lo}"
+    assert result[1].velocity == hi, f"vel=127 should map to fallback hi={hi}"
 
 
 def test_empty_notes_returns_empty():

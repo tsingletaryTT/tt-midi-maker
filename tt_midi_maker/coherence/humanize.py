@@ -39,7 +39,7 @@ def scale_velocity_by_role(
         not mutated.
     """
     if not notes:
-        return notes
+        return []
     velocity_ranges = ranges or _ROLE_VELOCITY_RANGES
     lo, hi = velocity_ranges.get(role, (60, 100))
     result = []
