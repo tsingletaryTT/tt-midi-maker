@@ -49,7 +49,7 @@ import yaml
 _CONFIG_DIR = Path(__file__).parent / "config"
 ROLES_CONFIG: dict = yaml.safe_load((_CONFIG_DIR / "roles.yaml").read_text())["roles"]
 
-SUITE_NAME = "cpu-monosynth"
+SUITE_NAME = "monosynth"
 OUTPUT_DIR = Path(__file__).parent / "examples" / SUITE_NAME
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
