@@ -1,6 +1,6 @@
 {
   "suite": "Quick Changes",
-  "description": "A three-pattern bebop jazz suite in Bb major. Alto saxophone rides over piano comping and walking bass at a true bebop tempo of 200 BPM. Each 8-bar loop is just 4.8 seconds — the hardware generates the next pattern before the current one finishes.",
+  "description": "A three-pattern bebop jazz suite in Bb major. Piano trio texture emerged: piano comping over walking bass and ride cymbal at 200 BPM. Chromatic approach notes and bebop passing tones preserved (scale strictness 0.25, semitone tolerance 1). Medium bebop swing (0.63 ratio).",
   "generated": "2026-05-19",
   "hardware": "4× Tenstorrent P300C chips (tt-forge)",
   "model": "skytnt/midi-model (LlamaModel, 12-layer, ~350M params)",
@@ -15,15 +15,22 @@
   },
 
   "generation_parameters": {
-    "hw_context_interval": 4,
+    "hw_context_interval": 2,
     "max_padded_len": 256,
     "temperature": 1.0,
     "top_p": 0.98,
     "top_k": 20
   },
 
+  "coherence_settings": {
+    "scale_strictness": 0.25,
+    "chord_semitone_tolerance": 1,
+    "swing_ratio": 0.63,
+    "swing": "medium bebop swing — off-beat eighths at 63% of beat"
+  },
+
   "instruments": {
-    "melody": {"role": "alto saxophone", "gm_program": 65, "note_range": "Db3–Ab5"},
+    "melody": {"role": "alto saxophone (inactive — piano took melodic role)", "gm_program": 65, "note_range": "Db3–Ab5"},
     "harmony": {"role": "acoustic grand piano", "gm_program": 0, "note_range": "Bb1–Bb5"},
     "bass":    {"role": "acoustic bass", "gm_program": 32, "note_range": "Bb1–F3"},
     "drums":   {"role": "drum kit", "gm_program": 0, "channel": 10}
@@ -34,39 +41,39 @@
       "file": "p1_head.mid",
       "label": "Pattern 1 — head (cold start)",
       "source": null,
-      "max_events": 96,
-      "generation_time_sec": 31.9,
-      "ev_per_sec": 3.0,
-      "loop_ratio": 3.32,
-      "note": "Loop ratio >1 because 200 BPM loops are only 4.8s. Model still generates 96 events — just faster than they'd play.",
-      "tracks": {"melody": 31, "bass": 1, "harmony": 10}
+      "max_events": 128,
+      "generation_time_sec": 30.0,
+      "ev_per_sec": 4.3,
+      "loop_ratio": 3.13,
+      "note": "Piano trio texture: bass walking line, piano comping, kit. Chromatic passing tones preserved.",
+      "tracks": {"bass": 3, "piano": 13, "drums": 16}
     },
     {
       "file": "p2_solo1.mid",
       "label": "Pattern 2 — first chorus (seeded from P1)",
       "source": "p1_head.mid",
-      "max_events": 96,
-      "generation_time_sec": 12.2,
-      "ev_per_sec": 7.9,
-      "loop_ratio": 1.27,
-      "tracks": {"melody": 36, "bass": 1, "harmony": 13}
+      "max_events": 128,
+      "generation_time_sec": 29.3,
+      "ev_per_sec": 4.4,
+      "loop_ratio": 3.05,
+      "tracks": {"bass": 11, "piano": 59, "drums": 76}
     },
     {
       "file": "p3_solo2.mid",
       "label": "Pattern 3 — second chorus (seeded from P2)",
       "source": "p2_solo1.mid",
-      "max_events": 112,
-      "generation_time_sec": 14.3,
-      "ev_per_sec": 7.8,
-      "loop_ratio": 1.49,
-      "tracks": {"melody": 38, "bass": 1, "harmony": 12}
+      "max_events": 160,
+      "generation_time_sec": 38.4,
+      "ev_per_sec": 4.2,
+      "loop_ratio": 4.00,
+      "tracks": {"bass": 14, "piano": 101, "drums": 146}
     }
   ],
 
   "performance_notes": {
     "forge_compile_time_sec": 0,
-    "jit_cache": "121/121 hits (compiled in blues session immediately prior)",
-    "hw_calls_per_pattern": 24,
+    "jit_cache": "121/121 hits",
+    "hw_calls_per_pattern": 64,
     "hw_call_latency_ms": 500,
     "cpu_fallback": false
   }

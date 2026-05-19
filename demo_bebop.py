@@ -52,7 +52,7 @@ OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 from tt_midi_maker.assembler import TICKS_PER_BEAT, build_midi_file
 from tt_midi_maker.coherence.harmony import chord_aware_filter
-from tt_midi_maker.coherence.humanize import humanize_velocities, nudge_timing
+from tt_midi_maker.coherence.humanize import humanize_velocities, nudge_timing, swing_timing
 from tt_midi_maker.coherence.scale import build_scale_set, parse_key, scale_quantize
 from tt_midi_maker.generation.hardware import detect_tt_devices
 from tt_midi_maker.generation.midi_backend import generate_from_blueprint
@@ -105,11 +105,14 @@ def _apply_coherence(tracks, bp: MusicalBlueprint) -> list:
     scale_set  = build_scale_set(root, mode)
     out = []
     for track in tracks:
-        notes = scale_quantize(track.notes, bp.key)
+        # Bebop uses heavy chromaticism — very low strictness to preserve approach notes
+        notes = scale_quantize(track.notes, bp.key, strictness=0.25)
+        # Chromatic approach notes are within 1 semitone of chord tones — leave them
         notes = chord_aware_filter(notes, bp.chord_progression,
-                                   4 * TICKS_PER_BEAT, TICKS_PER_BEAT, scale_set)
+                                   4 * TICKS_PER_BEAT, TICKS_PER_BEAT, scale_set,
+                                   semitone_tolerance=1)
         notes = humanize_velocities(notes)
-        notes = nudge_timing(notes)
+        notes = swing_timing(notes, swing_ratio=0.63)   # medium bebop swing
         out.append(replace(track, notes=notes))
     return out
 
@@ -186,20 +189,22 @@ def main():
     f1 = generate(
         ["bass", "drums", "harmony", "melody"],
         "p1_head.mid",
+        max_events=128, hw_context_interval=2,
         label="Pattern 1 — head (cold start)",
     )
     f2 = generate(
         ["bass", "drums", "harmony", "melody"],
         "p2_solo1.mid",
         source_midi=f1,
+        max_events=128, hw_context_interval=2,
         label="Pattern 2 — first chorus (seeded from P1)",
     )
     f3 = generate(
         ["bass", "drums", "harmony", "melody"],
         "p3_solo2.mid",
         source_midi=f2,
+        max_events=160, hw_context_interval=2,
         label="Pattern 3 — second chorus (seeded from P2)",
-        max_events=112,
     )
 
     bar("═")

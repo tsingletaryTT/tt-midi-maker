@@ -49,8 +49,15 @@ def chord_aware_filter(
     ticks_per_bar: int,
     ticks_per_beat: int,
     scale_set: frozenset[int],
+    semitone_tolerance: int = 0,
 ) -> list[NoteEvent]:
-    """Snap off-chord-tones on strong beats to nearest chord tone. Drums skipped."""
+    """Snap off-chord-tones on strong beats to nearest chord tone. Drums skipped.
+
+    semitone_tolerance: notes already within this many semitones of any chord
+        tone are left alone (they are passing tones or approach notes).
+        0 = snap all off-chord notes (original, good for classical).
+        1 = allow notes within 1 semitone of a chord tone (blues, jazz).
+    """
     result = []
     for note in notes:
         if note.channel == 10 or not is_strong_beat(note.start_tick, ticks_per_beat):
@@ -60,6 +67,15 @@ def chord_aware_filter(
         if note.pitch % 12 in chord_tones:
             result.append(note)
             continue
+        # Check tolerance: is this note close enough to a chord tone to leave alone?
+        if semitone_tolerance > 0:
+            min_dist = min(
+                min(abs((note.pitch % 12) - ct), 12 - abs((note.pitch % 12) - ct))
+                for ct in chord_tones
+            )
+            if min_dist <= semitone_tolerance:
+                result.append(note)
+                continue
         best, best_dist = note.pitch, float("inf")
         for delta in range(-6, 7):
             candidate = note.pitch + delta

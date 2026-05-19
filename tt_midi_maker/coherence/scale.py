@@ -3,13 +3,17 @@ from dataclasses import replace
 from ..models.track import NoteEvent
 
 SCALE_INTERVALS: dict[str, list[int]] = {
-    "major":      [0, 2, 4, 5, 7, 9, 11],
-    "minor":      [0, 2, 3, 5, 7, 8, 10],
-    "dorian":     [0, 2, 3, 5, 7, 9, 10],
-    "phrygian":   [0, 1, 3, 5, 7, 8, 10],
-    "lydian":     [0, 2, 4, 6, 7, 9, 11],
-    "mixolydian": [0, 2, 4, 5, 7, 9, 10],
-    "locrian":    [0, 1, 3, 5, 6, 8, 10],
+    "major":             [0, 2, 4, 5, 7, 9, 11],
+    "minor":             [0, 2, 3, 5, 7, 8, 10],
+    # Blues scale: root, b3, 4, b5, 5, b7 — the b5 "blue note" is essential
+    "blues":             [0, 3, 5, 6, 7, 10],
+    "pentatonic_minor":  [0, 3, 5, 7, 10],
+    "pentatonic_major":  [0, 2, 4, 7, 9],
+    "dorian":            [0, 2, 3, 5, 7, 9, 10],
+    "phrygian":          [0, 1, 3, 5, 7, 8, 10],
+    "lydian":            [0, 2, 4, 6, 7, 9, 11],
+    "mixolydian":        [0, 2, 4, 5, 7, 9, 10],
+    "locrian":           [0, 1, 3, 5, 6, 8, 10],
 }
 
 ROOT_NAMES: dict[str, int] = {
@@ -50,9 +54,19 @@ def scale_quantize(
     notes: list[NoteEvent],
     key: str,
     strictness: float = 0.8,
+    override_mode: str | None = None,
 ) -> list[NoteEvent]:
-    """Snap off-scale notes to nearest scale tone. Drums (ch 10) are skipped."""
+    """Snap off-scale notes to nearest scale tone. Drums (ch 10) are skipped.
+
+    override_mode: use a different mode than the key string specifies.
+        E.g. pass "blues" for blues/jazz to preserve blue notes and chromaticism.
+        Pass "pentatonic_minor" for sparer filtering.
+    strictness: probability [0,1] that an off-scale note gets snapped.
+        1.0 = always snap (classical), 0.0 = never snap (bypass), 0.3 = blues.
+    """
     root, mode = parse_key(key)
+    if override_mode is not None and override_mode in SCALE_INTERVALS:
+        mode = override_mode
     scale_set = build_scale_set(root, mode)
     result = []
     for note in notes:

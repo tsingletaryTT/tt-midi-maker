@@ -2,6 +2,8 @@ import random
 from dataclasses import replace
 from ..models.track import NoteEvent
 
+TICKS_PER_BEAT = 480
+
 
 def humanize_velocities(
     notes: list[NoteEvent],
@@ -38,3 +40,41 @@ def nudge_timing(
         else replace(note, start_tick=max(0, note.start_tick + random.randint(-max_ticks, max_ticks)))
         for note in notes
     ]
+
+
+def swing_timing(
+    notes: list[NoteEvent],
+    swing_ratio: float = 0.67,
+    ticks_per_beat: int = TICKS_PER_BEAT,
+) -> list[NoteEvent]:
+    """Shift off-beat eighth notes to create swing feel. Drums are skipped.
+
+    In straight time, off-beat eighths land at beat + ticks_per_beat/2 (beat/2).
+    In swing, they land at beat + ticks_per_beat * swing_ratio.
+
+    swing_ratio=0.67 → triplet feel (2:1 long-short), classic jazz/blues shuffle.
+    swing_ratio=0.63 → medium swing, bebop/Latin.
+    swing_ratio=0.50 → straight (no effect).
+
+    Notes within ±tol ticks of the straight off-beat position are snapped to
+    the swung position. All other notes are left untouched.
+    """
+    if not notes or swing_ratio <= 0.5:
+        return notes
+
+    eighth      = ticks_per_beat // 2                   # 240: straight off-beat
+    swung       = int(ticks_per_beat * swing_ratio)     # 320 at 0.67
+    tol         = eighth // 3                           # ±80 ticks = "near off-beat"
+
+    result = []
+    for note in notes:
+        if note.channel == 10:
+            result.append(note)
+            continue
+        beat_phase = note.start_tick % ticks_per_beat
+        if abs(beat_phase - eighth) <= tol:
+            beat_base = note.start_tick - beat_phase
+            result.append(replace(note, start_tick=max(0, beat_base + swung)))
+        else:
+            result.append(note)
+    return result

@@ -1,0 +1,80 @@
+{
+  "suite": "Aria in D Minor",
+  "description": "A three-pattern Baroque/Classical piece in D minor. Acoustic piano carries the melody over sustained string ensemble chords, with contrabass basso continuo. Strict scale adherence brings the harmonic minor leading tone (C#) to life on cadence points.",
+  "generated": "2026-05-19",
+  "hardware": "4× Tenstorrent P300C chips (tt-forge)",
+  "model": "skytnt/midi-model (LlamaModel, 12-layer, ~350M params)",
+
+  "musical_parameters": {
+    "key": "D minor",
+    "bpm": 76,
+    "bars": 8,
+    "loop_duration_sec": 25.3,
+    "chord_progression": ["Dm", "F", "Gm", "A7"],
+    "style": "classical / Baroque continuo"
+  },
+
+  "generation_parameters": {
+    "hw_context_interval": 2,
+    "max_padded_len": 256,
+    "temperature": 1.0,
+    "top_p": 0.98,
+    "top_k": 20
+  },
+
+  "coherence_settings": {
+    "scale_strictness": 0.9,
+    "chord_semitone_tolerance": 0,
+    "timing": "nudge ±12 ticks (expressive rubato)",
+    "swing": "none"
+  },
+
+  "instruments": {
+    "melody": {"role": "acoustic grand piano", "gm_program": 0, "note_range": "D4–D7"},
+    "harmony": {"role": "string ensemble 1", "gm_program": 48, "note_range": "A2–A5"},
+    "bass":    {"role": "contrabass (inactive — model generated melody+harmony only)", "gm_program": 43, "note_range": "D1–A3"},
+    "drums":   {"role": "none (excluded from this piece)", "channel": "—"}
+  },
+
+  "patterns": [
+    {
+      "file": "p1_exposition.mid",
+      "label": "Pattern 1 — exposition (cold start)",
+      "source": null,
+      "max_events": 128,
+      "generation_time_sec": 59.3,
+      "ev_per_sec": 2.2,
+      "loop_ratio": 2.35,
+      "note": "First call includes forge compile (~33s). Piano-and-strings continuo texture emerged naturally.",
+      "tracks": {"piano": 35, "strings": 8}
+    },
+    {
+      "file": "p2_development.mid",
+      "label": "Pattern 2 — development (seeded from P1)",
+      "source": "p1_exposition.mid",
+      "max_events": 160,
+      "generation_time_sec": 39.2,
+      "ev_per_sec": 4.1,
+      "loop_ratio": 1.55,
+      "tracks": {"piano": 33, "strings": 8}
+    },
+    {
+      "file": "p3_recapitulation.mid",
+      "label": "Pattern 3 — recapitulation (seeded from P2)",
+      "source": "p2_development.mid",
+      "max_events": 160,
+      "generation_time_sec": 40.4,
+      "ev_per_sec": 4.0,
+      "loop_ratio": 1.60,
+      "tracks": {"piano": 31, "strings": 8}
+    }
+  ],
+
+  "performance_notes": {
+    "forge_compile_time_sec": 33,
+    "jit_cache": "0/121 hits on P1 (first session), 121/121 on P2–P3",
+    "hw_calls_per_pattern": 64,
+    "hw_call_latency_ms": 500,
+    "cpu_fallback": false
+  }
+}

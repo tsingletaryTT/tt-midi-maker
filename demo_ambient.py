@@ -102,11 +102,12 @@ def _apply_coherence(tracks, bp: MusicalBlueprint) -> list:
     scale_set  = build_scale_set(root, mode)
     out = []
     for track in tracks:
-        notes = scale_quantize(track.notes, bp.key)
+        # Ambient: strict scale (0.9) for clean harmonic consonance, no swing
+        notes = scale_quantize(track.notes, bp.key, strictness=0.9)
         notes = chord_aware_filter(notes, bp.chord_progression,
                                    4 * TICKS_PER_BEAT, TICKS_PER_BEAT, scale_set)
-        notes = humanize_velocities(notes)
-        notes = nudge_timing(notes)
+        notes = humanize_velocities(notes, variation=5)  # subtle velocity variation
+        notes = nudge_timing(notes, max_ticks=16)         # wider micro-timing for float
         out.append(replace(track, notes=notes))
     return out
 
@@ -180,26 +181,25 @@ def main():
     print(f"  Output  : {OUTPUT_DIR}")
     bar()
 
-    # Ambient uses lower max_events — slow BPM means fewer events fill the bars
     f1 = generate(
         ["bass", "drums", "harmony", "melody"],
         "p1_opening.mid",
         label="Pattern 1 — opening (cold start)",
-        max_events=80,
+        max_events=96,
     )
     f2 = generate(
         ["bass", "drums", "harmony", "melody"],
         "p2_drift.mid",
         source_midi=f1,
         label="Pattern 2 — drift (seeded from P1)",
-        max_events=80,
+        max_events=96,
     )
     f3 = generate(
         ["bass", "drums", "harmony", "melody"],
         "p3_dissolution.mid",
         source_midi=f2,
         label="Pattern 3 — dissolution (seeded from P2)",
-        max_events=64,
+        max_events=80,
     )
 
     bar("═")

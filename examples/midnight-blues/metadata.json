@@ -1,6 +1,6 @@
 {
   "suite": "Midnight in East Texas",
-  "description": "A three-pattern A minor blues generated on Tenstorrent P300C hardware. Electric guitar leads over upright bass and a shuffled kit — straight-ahead Chicago blues with no keyboard fuss.",
+  "description": "A three-pattern A minor blues. Electric guitar leads with blues-scale phrasing (b5 blue notes preserved), piano comping, and a shuffled kit. The coherence layer now applies triplet swing (2:1 ratio) to off-beat eighth notes — the shuffle feel is structural, not random jitter.",
   "generated": "2026-05-19",
   "hardware": "4× Tenstorrent P300C chips (tt-forge)",
   "model": "skytnt/midi-model (LlamaModel, 12-layer, ~350M params)",
@@ -15,17 +15,25 @@
   },
 
   "generation_parameters": {
-    "hw_context_interval": 4,
+    "hw_context_interval": 2,
     "max_padded_len": 256,
     "temperature": 1.0,
     "top_p": 0.98,
     "top_k": 20
   },
 
+  "coherence_settings": {
+    "scale_mode": "blues [0,3,5,6,7,10] — b5 blue note preserved",
+    "scale_strictness": 0.3,
+    "chord_semitone_tolerance": 1,
+    "swing_ratio": 0.67,
+    "swing": "triplet shuffle — off-beat eighths snapped to 2/3 beat position"
+  },
+
   "instruments": {
     "melody": {"role": "electric guitar (jazz)", "gm_program": 27, "note_range": "A2–E5"},
-    "harmony": {"role": "acoustic grand piano (inactive)", "gm_program": 0, "note_range": "—"},
-    "bass":    {"role": "acoustic bass", "gm_program": 32, "note_range": "A1–A3"},
+    "harmony": {"role": "acoustic grand piano", "gm_program": 0, "note_range": "C3–C5"},
+    "bass":    {"role": "acoustic bass (inactive — model generated guitar+piano+drums)", "gm_program": 32, "note_range": "A1–A3"},
     "drums":   {"role": "drum kit", "gm_program": 0, "channel": 10}
   },
 
@@ -34,39 +42,39 @@
       "file": "p1_intro.mid",
       "label": "Pattern 1 — intro (cold start)",
       "source": null,
-      "max_events": 96,
-      "generation_time_sec": 31.7,
-      "ev_per_sec": 3.0,
-      "loop_ratio": 1.52,
-      "note": "First call includes forge compile (~28s). Guitar-forward blues — model naturally omitted piano comping.",
-      "tracks": {"melody": 21, "bass": 8, "drums": 14}
+      "max_events": 128,
+      "generation_time_sec": 30.0,
+      "ev_per_sec": 4.3,
+      "loop_ratio": 1.43,
+      "note": "JIT cache warm from prior classical session. Blues scale with b5 blue note now active.",
+      "tracks": {"guitar": 14, "piano": 12, "drums": 42}
     },
     {
       "file": "p2_groove.mid",
       "label": "Pattern 2 — groove (seeded from P1)",
       "source": "p1_intro.mid",
-      "max_events": 96,
-      "generation_time_sec": 12.1,
-      "ev_per_sec": 7.9,
-      "loop_ratio": 0.58,
-      "tracks": {"melody": 65, "bass": 14, "drums": 39}
+      "max_events": 128,
+      "generation_time_sec": 29.4,
+      "ev_per_sec": 4.4,
+      "loop_ratio": 1.41,
+      "tracks": {"guitar": 31, "piano": 46, "drums": 57}
     },
     {
       "file": "p3_resolution.mid",
       "label": "Pattern 3 — resolution (seeded from P2)",
       "source": "p2_groove.mid",
-      "max_events": 112,
-      "generation_time_sec": 14.3,
-      "ev_per_sec": 7.8,
-      "loop_ratio": 0.68,
-      "tracks": {"melody": 90, "bass": 26, "drums": 71}
+      "max_events": 160,
+      "generation_time_sec": 38.5,
+      "ev_per_sec": 4.2,
+      "loop_ratio": 1.84,
+      "tracks": {"guitar": 31, "piano": 45, "drums": 57}
     }
   ],
 
   "performance_notes": {
-    "forge_compile_time_sec": 28,
-    "jit_cache": "121/121 hits on second and third patterns",
-    "hw_calls_per_pattern": 24,
+    "forge_compile_time_sec": 0,
+    "jit_cache": "121/121 hits",
+    "hw_calls_per_pattern": 64,
     "hw_call_latency_ms": 500,
     "cpu_fallback": false
   }
