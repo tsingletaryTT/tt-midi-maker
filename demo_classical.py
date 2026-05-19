@@ -13,13 +13,13 @@ Chords: Dm → F → Gm → A7   (i – III – iv – V7)
 
 Instruments
 -----------
-  melody   — Acoustic Grand Piano (program 0)    D4–D7  (singing treble line)
-  harmony  — String Ensemble 1   (program 48)    A2–A5  (lush string chords)
-  bass     — Contrabass          (program 43)    D1–A3  (bowed bass continuo)
+  melody   — String Ensemble 1  (program 48)    D4–D7  (strings carry the soprano line)
+  harmony  — Acoustic Grand Piano (program 0)   D2–D5  (piano comps below strings)
+  bass     — Contrabass          (program 43)   D1–A3  (bowed bass continuo)
   drums    — Silent (density 0)  — no percussion in this piece
 
-A solo keyboard with bowed strings: the Baroque continuo texture.
-The three patterns develop from a sparse opening through fuller voicings.
+Role assignment: strings on the melody channel (ch1) so the model actively generates
+them. Piano comps on harmony (ch3). Both roles audible at velocity 75-105.
 """
 from __future__ import annotations
 
@@ -64,20 +64,30 @@ CHORDS = ["Dm", "F", "Gm", "A7"]
 
 LOOP_SECS = BARS * 4 * (60.0 / BPM)
 
-PIANO_PROGRAM     = 0    # Acoustic Grand Piano
-PIANO_RANGE       = [62, 98]  # D4 – D7  (singing treble register)
-STRING_PROGRAM    = 48   # String Ensemble 1
-STRING_RANGE      = [45, 69]  # A2 – A5  (full orchestral string range)
+STRING_PROGRAM    = 48   # String Ensemble 1 — soprano melody line
+STRING_RANGE      = [62, 98]  # D4 – D7  (high singing register for strings)
+PIANO_PROGRAM     = 0    # Acoustic Grand Piano — comps below strings
+PIANO_RANGE       = [38, 74]  # D2 – D5  (mid-register comp)
 CONTRABASS_PROGRAM = 43  # Contrabass (bowed)
 CONTRABASS_RANGE  = [26, 57]  # D1 – A3  (full bass register)
+
+# Custom velocity windows: both melody and harmony need to be audible at this BPM
+VELOCITY_RANGES = {
+    "melody":  (75, 105),  # strings — prominent but not harsh
+    "harmony": (75, 100),  # piano comp — audible alongside strings
+    "bass":    (50,  75),  # contrabass — supportive foundation
+    "drums":   (60, 100),  # unused (no drums in this piece)
+}
 
 SUITE_ROLES: dict = {}
 for name, cfg in ROLES_CONFIG.items():
     overrides: dict = {}
     if name == "melody":
-        overrides = {"program": PIANO_PROGRAM, "note_range": PIANO_RANGE}
-    elif name == "harmony":
+        # Strings on the melody channel (ch1) — model generates ch1 most actively
         overrides = {"program": STRING_PROGRAM, "note_range": STRING_RANGE}
+    elif name == "harmony":
+        # Piano comping on harmony channel (ch3)
+        overrides = {"program": PIANO_PROGRAM, "note_range": PIANO_RANGE}
     elif name == "bass":
         overrides = {"program": CONTRABASS_PROGRAM, "note_range": CONTRABASS_RANGE}
     SUITE_ROLES[name] = {**cfg, **overrides}
@@ -106,7 +116,7 @@ def _apply_coherence(tracks, bp: MusicalBlueprint) -> list:
         notes = chord_aware_filter(notes, bp.chord_progression,
                                    4 * TICKS_PER_BEAT, TICKS_PER_BEAT, scale_set,
                                    semitone_tolerance=0)
-        notes = scale_velocity_by_role(notes, track.role)
+        notes = scale_velocity_by_role(notes, track.role, ranges=VELOCITY_RANGES)
         notes = humanize_velocities(notes, variation=10, phrase_contour=True)
         notes = nudge_timing(notes, max_ticks=12)   # subtle expressive timing
         out.append(replace(track, notes=notes))
@@ -144,9 +154,9 @@ def generate(
     stamped = []
     for t in tracks:
         if t.role == "melody":
-            stamped.append(replace(t, program=PIANO_PROGRAM))
-        elif t.role == "harmony":
             stamped.append(replace(t, program=STRING_PROGRAM))
+        elif t.role == "harmony":
+            stamped.append(replace(t, program=PIANO_PROGRAM))
         elif t.role == "bass":
             stamped.append(replace(t, program=CONTRABASS_PROGRAM))
         else:
@@ -179,7 +189,7 @@ def main():
     print(f"  Key     : {KEY}   BPM: {BPM}")
     print(f"  Chords  : {' → '.join(CHORDS)}")
     print(f"  Loop    : {LOOP_SECS:.1f}s per {BARS}-bar phrase")
-    print(f"  Roles   : piano + strings + contrabass (no drums)")
+    print(f"  Roles   : strings (melody) + piano (harmony) + contrabass (no drums)")
     print(f"  Output  : {OUTPUT_DIR}")
     bar()
 
