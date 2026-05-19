@@ -26,8 +26,13 @@ from .errors import MidiMakerError
 
 # ── constants ────────────────────────────────────────────────────────────────
 
-DEFAULT_SOUNDFONT = Path("/usr/share/sounds/sf2/FluidR3_GM.sf2")
-_SOUNDFONT_DIRS   = [Path("/usr/share/sounds/sf2"), Path.home() / ".local/share/sounds/sf2"]
+DEFAULT_SOUNDFONT = Path("/usr/share/sounds/sf3/MuseScore_General.sf3")
+_SOUNDFONT_DIRS   = [
+    Path("/usr/share/sounds/sf3"),
+    Path("/usr/share/sounds/sf2"),
+    Path.home() / ".local/share/sounds/sf3",
+    Path.home() / ".local/share/sounds/sf2",
+]
 _RTMIDI_BACKEND   = "mido.backends.rtmidi"
 
 # ── job registry ─────────────────────────────────────────────────────────────
@@ -59,11 +64,12 @@ def list_output_ports() -> list[dict]:
 
 
 def list_soundfonts() -> list[str]:
-    """Discover .sf2 files in standard locations."""
+    """Discover .sf2 and .sf3 soundfont files in standard locations."""
     found = []
     for d in _SOUNDFONT_DIRS:
         if d.is_dir():
             found.extend(str(p) for p in d.glob("*.sf2"))
+            found.extend(str(p) for p in d.glob("*.sf3"))
     return sorted(found)
 
 

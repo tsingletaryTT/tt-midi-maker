@@ -25,7 +25,7 @@ import mido
 from .assembler import TICKS_PER_BEAT
 from .errors import MidiMakerError
 
-DEFAULT_SOUNDFONT = Path("/usr/share/sounds/sf2/FluidR3_GM.sf2")
+DEFAULT_SOUNDFONT = Path("/usr/share/sounds/sf3/MuseScore_General.sf3")
 _RTMIDI_BACKEND = "mido.backends.rtmidi"
 
 
