@@ -157,14 +157,46 @@ def test_build_prompt_includes_set_tempo():
 
 
 def test_build_prompt_no_drums_patch_change():
+    """Drums channel should never get a patch_change; all other configured channels always do.
+
+    After the all-channel conditioning change, _build_prompt emits patch_change for every
+    non-drum role in roles_config regardless of density.  This keeps the model aware of the
+    full instrument palette even when some roles have density=0.  The drums invariant
+    (channel 10 / ch9) still holds.
+    """
     from tt_midi_maker.generation.midi_backend import _build_prompt
     from tt_midi_maker.generation.skytnt_tokenizer import MIDITokenizerV1
     tok = MIDITokenizerV1()
-    bp = _make_blueprint(active_roles=["drums"])  # only drums
+    bp = _make_blueprint(active_roles=["drums"])  # only drums active; others density=0
     prompt = _build_prompt(bp, ROLES_CONFIG, tok)
     patch_id = tok.event_ids["patch_change"]
-    found = any(row[0] == patch_id for row in prompt.tolist())
-    assert not found, "drums should not get a patch_change"
+
+    # Drums (ch9, 0-indexed) must never appear in a patch_change row
+    drum_ch0 = ROLES_CONFIG["drums"]["channel"] - 1  # 9
+    for row in prompt.tolist():
+        if row[0] == patch_id:
+            # channel token is at index 4 in patch_change rows
+            ch_token = row[4]
+            ch_ids = tok.parameter_ids["channel"]
+            for c, cid in enumerate(ch_ids):
+                if cid == ch_token:
+                    assert c != drum_ch0, f"drums (ch{drum_ch0}) must not appear in patch_change"
+                    break
+
+    # All non-drum roles in ROLES_CONFIG should have a patch_change (even density=0)
+    non_drum_roles = {n: c for n, c in ROLES_CONFIG.items() if c["channel"] != 10}
+    for role_name, cfg in non_drum_roles.items():
+        expected_ch0 = cfg["channel"] - 1
+        found_ch = False
+        for row in prompt.tolist():
+            if row[0] == patch_id:
+                ch_token = row[4]
+                ch_ids = tok.parameter_ids["channel"]
+                for c, cid in enumerate(ch_ids):
+                    if cid == ch_token and c == expected_ch0:
+                        found_ch = True
+                        break
+        assert found_ch, f"{role_name} (ch{expected_ch0}) missing patch_change in prompt"
 
 
 def test_build_prompt_includes_patch_for_melody():

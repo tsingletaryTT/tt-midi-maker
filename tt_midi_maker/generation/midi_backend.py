@@ -161,7 +161,7 @@ def _midi_file_to_prompt_rows(path, tokenizer, last_n_bars: int | None = None) -
     if not evts:
         return []
 
-    rows = tokenizer.tokenize([tpb, evts], add_bos_eos=False)
+    rows = tokenizer.tokenize([tpb, evts], add_bos_eos=False, add_default_instr=True)
     return rows
 
 
@@ -192,17 +192,16 @@ def _build_prompt(
     if t:
         rows.append(t)
 
-    # patch_change for each active melodic/harmonic role
-    for role_name, role_cfg in blueprint.roles.items():
-        if role_cfg.density <= 0.0:
-            continue
-        cfg = roles_config.get(role_name, {})
-        ch1 = cfg.get("channel", 1)      # 1-indexed
-        ch0 = ch1 - 1                    # 0-indexed (what the model uses)
-        if ch1 == 10:                    # drums live on ch9 (0-idx); no patch needed
+    # Send patch_change for ALL configured roles so the model knows the full
+    # instrument palette upfront. Density-zero roles still need their channel
+    # pre-assigned so disable_channels masking keeps the model from leaking
+    # onto unintended channels.
+    for role_name, cfg in roles_config.items():
+        ch1 = cfg.get("channel", 1)
+        ch0 = ch1 - 1                    # 0-indexed
+        if ch1 == 10:                    # drums live on ch9; no patch needed
             continue
         prog = cfg.get("program", 0)
-        # patch_change: time1, time2, track, channel, patch
         t = tokenizer.event2tokens(["patch_change", 0, 0, ch0 + 1, ch0, prog])
         if t:
             rows.append(t)
@@ -296,6 +295,20 @@ def _score_to_roletracks(
     return tracks
 
 
+def _compute_active_channels(
+    blueprint: "MusicalBlueprint",
+    roles_config: dict,
+) -> set:
+    """Return 0-indexed MIDI channel set for roles with density > 0."""
+    active: set[int] = set()
+    for role_name, role_cfg in blueprint.roles.items():
+        if role_cfg.density > 0.0:
+            cfg = roles_config.get(role_name, {})
+            ch1 = cfg.get("channel", 1)
+            active.add(ch1 - 1)   # 0-indexed
+    return active
+
+
 def generate_from_blueprint(
     blueprint: MusicalBlueprint,
     roles_config: dict,
@@ -356,6 +369,9 @@ def generate_from_blueprint(
     # Try TT hardware path; fall back to CPU on any failure
     compiled_net = _get_compiled_net(model, hw_max_padded_len)
 
+    # Compute which MIDI channels (0-indexed) are active in this blueprint.
+    active_channels = _compute_active_channels(blueprint, roles_config)
+
     if compiled_net is not None:
         logger.info("[midi_backend] using TT hardware path (compiled net, hw_interval=%d)", hw_context_interval)
         try:
@@ -368,6 +384,9 @@ def generate_from_blueprint(
                 top_p=top_p,
                 top_k=top_k,
                 hw_context_interval=hw_context_interval,
+                disable_patch_change=True,
+                disable_control_change=True,
+                allowed_channels=active_channels,
             )
         except Exception as exc:
             logger.warning("[midi_backend] hardware generate failed, retrying on CPU: %s", exc)
