@@ -629,81 +629,65 @@ footer a { color: var(--teal); }
 <!-- ═══════════════════════════════════════════════════════ DEMO -->
 <section id="demo">
 <div class="container">
-  <div class="section-label">Live demo — generated on Quietbox 2</div>
-  <h2 class="section-title">Smoke &amp; Mirrors</h2>
+  <div class="section-label">Demo suite — E minor Berlin School</div>
+  <h2 class="section-title">Silicon Road</h2>
   <p class="section-desc">
-    Four patterns of D-minor modal jazz, composed entirely by the machine sitting on a desk.
-    Each pattern hears the previous one before writing the next — ideas chain and develop
-    just like a musician listening back and playing again.
+    After Tangerine Dream's <em>Hyperborea</em> (1983). Sawtooth lead over warm pad chords
+    and a sequenced synth bass — no drums, just drift and texture.
+    Each pattern is seeded from the previous, so motifs carry forward across the three movements.
     <br><br>
-    Key: D minor &nbsp;·&nbsp; BPM: 118 &nbsp;·&nbsp; Chords: Dm7 → Am7 → Bbmaj7 → A7
-    &nbsp;·&nbsp; Tenor sax + Hammond organ + walking bass + drums
+    Key: E minor &nbsp;·&nbsp; BPM: 84 &nbsp;·&nbsp; Chords: Em7 → Cmaj7 → Am7 → Bm7
+    &nbsp;·&nbsp; Lead 2 Sawtooth + Pad 2 Warm + Synth Bass 1
   </p>
 
   <div class="pattern-grid">
 
     <div class="pattern-card">
       <div class="pattern-num">Pattern 1</div>
-      <h3>Drums intro</h3>
-      <p class="desc">Cold-start generation — model shapes the rhythmic skeleton before any melodic material exists.</p>
-      <audio controls preload="none" src="audio/p1_intro.mp3"></audio>
-      <img class="piano-roll" src="assets/piano-rolls/p1_intro.svg" alt="piano roll" loading="lazy">
+      <h3>Void</h3>
+      <p class="desc">Cold start — sparse emergence. Bass and pad establish the harmonic field before the lead appears.</p>
+      <audio controls preload="none" src="audio/silicon-road/p1_void.mp3"></audio>
+      <img class="piano-roll" src="assets/piano-rolls/silicon-road/p1_void.svg" alt="piano roll" loading="lazy">
       <div class="pattern-stats">
         <span class="stat-pill hw">4× P300C</span>
-        <span class="stat-pill time">32.6s gen (incl. compile)</span>
-        <span class="stat-pill">drums: 8 notes</span>
+        <span class="stat-pill time">48.5s gen (incl. compile)</span>
+        <span class="stat-pill">lead:6n  bass:47n  pad:7n</span>
         <span class="stat-pill">cold start</span>
       </div>
       <div class="divider"></div>
-      <a href="midi/p1_intro.mid" download class="stat-pill" style="font-size:.72rem;padding:.3rem .8rem;background:rgba(79,209,197,.08);border-color:rgba(79,209,197,.3);color:var(--teal);">⬇ MIDI</a>
+      <a href="midi/silicon-road/p1_void.mid" download class="stat-pill" style="font-size:.72rem;padding:.3rem .8rem;background:rgba(79,209,197,.08);border-color:rgba(79,209,197,.3);color:var(--teal);">⬇ MIDI</a>
     </div>
 
     <div class="pattern-card">
       <div class="pattern-num">Pattern 2</div>
-      <h3>Full band enters</h3>
-      <p class="desc">Model hears the drums, then writes tenor sax, Hammond organ, walking bass and kit — all at once.</p>
-      <audio controls preload="none" src="audio/p2_variation.mp3"></audio>
-      <img class="piano-roll" src="assets/piano-rolls/p2_variation.svg" alt="piano roll" loading="lazy">
+      <h3>Drift</h3>
+      <p class="desc">Seeded from the void — sawtooth lead opens up (52 notes), pads fill in, bass locks the pulse.</p>
+      <audio controls preload="none" src="audio/silicon-road/p2_drift.mp3"></audio>
+      <img class="piano-roll" src="assets/piano-rolls/silicon-road/p2_drift.svg" alt="piano roll" loading="lazy">
       <div class="pattern-stats">
-        <span class="stat-pill hw">7.8 ev/s</span>
-        <span class="stat-pill time">12.3s gen</span>
-        <span class="stat-pill">0.76× loop</span>
-        <span class="stat-pill">84 notes</span>
+        <span class="stat-pill hw">4.2 ev/s</span>
+        <span class="stat-pill time">37.9s gen</span>
+        <span class="stat-pill">1.66× loop</span>
+        <span class="stat-pill">lead:52n  bass:40n  pad:44n</span>
       </div>
       <div class="divider"></div>
-      <a href="midi/p2_variation.mid" download class="stat-pill" style="font-size:.72rem;padding:.3rem .8rem;background:rgba(79,209,197,.08);border-color:rgba(79,209,197,.3);color:var(--teal);">⬇ MIDI</a>
+      <a href="midi/silicon-road/p2_drift.mid" download class="stat-pill" style="font-size:.72rem;padding:.3rem .8rem;background:rgba(79,209,197,.08);border-color:rgba(79,209,197,.3);color:var(--teal);">⬇ MIDI</a>
     </div>
 
     <div class="pattern-card">
       <div class="pattern-num">Pattern 3</div>
-      <h3>Development</h3>
-      <p class="desc">Seeded from Pattern 2 — the harmonic vocabulary densifies (58 Hammond voicings) while the sax line stays fluid.</p>
-      <audio controls preload="none" src="audio/p3_development.mp3"></audio>
-      <img class="piano-roll" src="assets/piano-rolls/p3_development.svg" alt="piano roll" loading="lazy">
+      <h3>Shore</h3>
+      <p class="desc">Arrival — lead and pad interweave (42n + 32n), bass anchors. The motifs from drift resolve here.</p>
+      <audio controls preload="none" src="audio/silicon-road/p3_shore.mp3"></audio>
+      <img class="piano-roll" src="assets/piano-rolls/silicon-road/p3_shore.svg" alt="piano roll" loading="lazy">
       <div class="pattern-stats">
-        <span class="stat-pill hw">7.7 ev/s</span>
-        <span class="stat-pill time">12.5s gen</span>
-        <span class="stat-pill">0.77× loop</span>
-        <span class="stat-pill">167 notes</span>
+        <span class="stat-pill hw">3.9 ev/s</span>
+        <span class="stat-pill time">41.1s gen</span>
+        <span class="stat-pill">1.80× loop</span>
+        <span class="stat-pill">lead:42n  bass:34n  pad:32n</span>
       </div>
       <div class="divider"></div>
-      <a href="midi/p3_development.mid" download class="stat-pill" style="font-size:.72rem;padding:.3rem .8rem;background:rgba(79,209,197,.08);border-color:rgba(79,209,197,.3);color:var(--teal);">⬇ MIDI</a>
-    </div>
-
-    <div class="pattern-card">
-      <div class="pattern-num">Pattern 4</div>
-      <h3>Climax variation</h3>
-      <p class="desc">128 events (vs 96 for P1–P3) — the longest pattern, densest texture, seeded from the full development in P3.</p>
-      <audio controls preload="none" src="audio/p4_climax.mp3"></audio>
-      <img class="piano-roll" src="assets/piano-rolls/p4_climax.svg" alt="piano roll" loading="lazy">
-      <div class="pattern-stats">
-        <span class="stat-pill hw">7.6 ev/s</span>
-        <span class="stat-pill time">16.9s gen</span>
-        <span class="stat-pill">1.04× loop</span>
-        <span class="stat-pill">169 notes</span>
-      </div>
-      <div class="divider"></div>
-      <a href="midi/p4_climax.mid" download class="stat-pill" style="font-size:.72rem;padding:.3rem .8rem;background:rgba(79,209,197,.08);border-color:rgba(79,209,197,.3);color:var(--teal);">⬇ MIDI</a>
+      <a href="midi/silicon-road/p3_shore.mid" download class="stat-pill" style="font-size:.72rem;padding:.3rem .8rem;background:rgba(79,209,197,.08);border-color:rgba(79,209,197,.3);color:var(--teal);">⬇ MIDI</a>
     </div>
 
   </div>
@@ -966,6 +950,75 @@ footer a { color: var(--teal); }
       </div>
       <div class="divider"></div>
       <a href="midi/bebop-quick-changes/p3_solo2.mid" download class="stat-pill" style="font-size:.72rem;padding:.3rem .8rem;background:rgba(79,209,197,.08);border-color:rgba(79,209,197,.3);color:var(--teal);">⬇ MIDI</a>
+    </div>
+
+  </div>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ MONOSYNTH -->
+<section id="monosynth" style="background:var(--bg1);">
+<div class="container">
+  <div class="section-label">Demo suite — C major chiptune monosynth</div>
+  <h2 class="section-title">Monosynth</h2>
+  <p class="section-desc">
+    Single-voice generation — one instrument, one channel, no accompaniment.
+    Lead 1 Square (GM 80) over a C major pentatonic framework at 120 BPM.
+    All other roles are silenced so the model concentrates entirely on the melodic line.
+    Each pattern seeds the next, so motifs evolve across the three takes.
+    <br><br>
+    Key: C major (pentatonic) &nbsp;·&nbsp; BPM: 120 &nbsp;·&nbsp; Chords: Cmaj7 → Am7 → Fmaj7 → G7
+    &nbsp;·&nbsp; Lead 1 Square — melody only
+  </p>
+
+  <div class="pattern-grid">
+
+    <div class="pattern-card">
+      <div class="pattern-num">Pattern 1</div>
+      <h3>Theme</h3>
+      <p class="desc">Cold start — 45 notes, single voice, no accompaniment. Pure melodic thinking.</p>
+      <audio controls preload="none" src="audio/monosynth/p1_theme.mp3"></audio>
+      <img class="piano-roll" src="assets/piano-rolls/monosynth/p1_theme.svg" alt="piano roll" loading="lazy">
+      <div class="pattern-stats">
+        <span class="stat-pill hw">4× P300C</span>
+        <span class="stat-pill time">41.4s gen (incl. compile)</span>
+        <span class="stat-pill">45 notes</span>
+        <span class="stat-pill">cold start</span>
+      </div>
+      <div class="divider"></div>
+      <a href="midi/monosynth/p1_theme.mid" download class="stat-pill" style="font-size:.72rem;padding:.3rem .8rem;background:rgba(79,209,197,.08);border-color:rgba(79,209,197,.3);color:var(--teal);">⬇ MIDI</a>
+    </div>
+
+    <div class="pattern-card">
+      <div class="pattern-num">Pattern 2</div>
+      <h3>Variation</h3>
+      <p class="desc">Seeded from the theme — 38 notes, melodic variation on the opening phrase.</p>
+      <audio controls preload="none" src="audio/monosynth/p2_variation.mp3"></audio>
+      <img class="piano-roll" src="assets/piano-rolls/monosynth/p2_variation.svg" alt="piano roll" loading="lazy">
+      <div class="pattern-stats">
+        <span class="stat-pill hw">4.5 ev/s</span>
+        <span class="stat-pill time">21.4s gen</span>
+        <span class="stat-pill">2.68× loop</span>
+        <span class="stat-pill">38 notes</span>
+      </div>
+      <div class="divider"></div>
+      <a href="midi/monosynth/p2_variation.mid" download class="stat-pill" style="font-size:.72rem;padding:.3rem .8rem;background:rgba(79,209,197,.08);border-color:rgba(79,209,197,.3);color:var(--teal);">⬇ MIDI</a>
+    </div>
+
+    <div class="pattern-card">
+      <div class="pattern-num">Pattern 3</div>
+      <h3>Development</h3>
+      <p class="desc">Seeded from variation — 44 notes, the line develops further before returning to the root.</p>
+      <audio controls preload="none" src="audio/monosynth/p3_development.mp3"></audio>
+      <img class="piano-roll" src="assets/piano-rolls/monosynth/p3_development.svg" alt="piano roll" loading="lazy">
+      <div class="pattern-stats">
+        <span class="stat-pill hw">4.3 ev/s</span>
+        <span class="stat-pill time">22.1s gen</span>
+        <span class="stat-pill">2.76× loop</span>
+        <span class="stat-pill">44 notes</span>
+      </div>
+      <div class="divider"></div>
+      <a href="midi/monosynth/p3_development.mid" download class="stat-pill" style="font-size:.72rem;padding:.3rem .8rem;background:rgba(79,209,197,.08);border-color:rgba(79,209,197,.3);color:var(--teal);">⬇ MIDI</a>
     </div>
 
   </div>
@@ -1521,7 +1574,7 @@ output = <span class="fn">compiled</span>(tokens)</div>
     <!-- Workflow 3: Multi-pattern chaining -->
     <div class="workflow-card">
       <h4>Multi-pattern chaining</h4>
-      <div class="wf-sub">Each pattern hears the previous — how Smoke &amp; Mirrors was made</div>
+      <div class="wf-sub">Each pattern hears the previous — how Silicon Road and every suite was made</div>
       <svg class="flow-svg" viewBox="0 0 300 190" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <marker id="wa3" markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto">
@@ -1963,7 +2016,7 @@ output = <span class="fn">compiled</span>(tokens)</div>
       Compiled by <a href="https://github.com/tenstorrent/tt-forge-fe" target="_blank">tt-forge</a>
     </p>
     <p style="margin-top:.5rem;opacity:.5">
-      Smoke &amp; Mirrors · Aria in D Minor · Midnight in East Texas · Slow Light · Quick Changes — generated on Quietbox 2 · 2026-05-19
+      Silicon Road · Aria in D Minor · Midnight in East Texas · Slow Light · Quick Changes · Monosynth — generated on Quietbox 2 · 2026-05-19
     </p>
   </div>
 </footer>
