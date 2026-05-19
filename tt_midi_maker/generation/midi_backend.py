@@ -174,7 +174,7 @@ def _build_prompt(
     """Return a 2-D numpy prompt array (n_events, max_token_seq) for the model.
 
     Conditioning sequence:
-      BOS → set_tempo(bpm) → patch_change per active non-drum role
+      BOS → set_tempo(bpm) → patch_change per configured non-drum role
       [ → source_rows  (previous MIDI context, if provided) ]
 
     source_rows: token rows from _midi_file_to_prompt_rows().  Appended after
@@ -298,7 +298,7 @@ def _score_to_roletracks(
 def _compute_active_channels(
     blueprint: "MusicalBlueprint",
     roles_config: dict,
-) -> set:
+) -> "set[int]":
     """Return 0-indexed MIDI channel set for roles with density > 0."""
     active: set[int] = set()
     for role_name, role_cfg in blueprint.roles.items():
@@ -394,6 +394,8 @@ def generate_from_blueprint(
 
     if compiled_net is None:
         logger.info("[midi_backend] using CPU path")
+        # model.generate() has no equivalent masking (disable_patch_change/allowed_channels);
+        # channel bleed is caught downstream by _score_to_roletracks active_roles filter.
         with torch.inference_mode():
             generated = model.generate(
                 prompt=prompt,
