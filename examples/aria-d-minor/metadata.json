@@ -1,6 +1,6 @@
 {
   "suite": "Aria in D Minor",
-  "description": "A three-pattern Baroque/Classical piece in D minor. Acoustic piano carries the melody over sustained string ensemble chords, with contrabass basso continuo. Strict scale adherence brings the harmonic minor leading tone (C#) to life on cadence points.",
+  "description": "A three-pattern Baroque/Classical piece in D minor. Acoustic piano carries the melody over sustained string ensemble chords, with contrabass basso continuo. Strict scale adherence brings the harmonic minor leading tone (C#) to life on cadence points. Vocabulary masking (disable_patch_change, disable_control_change) and all-channel prompt conditioning ensure clean instrument separation. Per-role velocity shaping (melody 80-110, harmony 55-80, bass 50-75) adds dynamic depth.",
   "generated": "2026-05-19",
   "hardware": "4× Tenstorrent P300C chips (tt-forge)",
   "model": "skytnt/midi-model (LlamaModel, 12-layer, ~350M params)",
@@ -42,31 +42,31 @@
       "label": "Pattern 1 — exposition (cold start)",
       "source": null,
       "max_events": 128,
-      "generation_time_sec": 59.3,
-      "ev_per_sec": 2.2,
-      "loop_ratio": 2.35,
+      "generation_time_sec": 48.3,
+      "ev_per_sec": 2.6,
+      "loop_ratio": 1.91,
       "note": "First call includes forge compile (~33s). Piano-and-strings continuo texture emerged naturally.",
-      "tracks": {"piano": 35, "strings": 8}
+      "tracks": {"melody": 29, "bass": 7}
     },
     {
       "file": "p2_development.mid",
       "label": "Pattern 2 — development (seeded from P1)",
       "source": "p1_exposition.mid",
       "max_events": 160,
-      "generation_time_sec": 39.2,
-      "ev_per_sec": 4.1,
-      "loop_ratio": 1.55,
-      "tracks": {"piano": 33, "strings": 8}
+      "generation_time_sec": 38.3,
+      "ev_per_sec": 4.2,
+      "loop_ratio": 1.51,
+      "tracks": {"melody": 32, "bass": 8}
     },
     {
       "file": "p3_recapitulation.mid",
       "label": "Pattern 3 — recapitulation (seeded from P2)",
       "source": "p2_development.mid",
       "max_events": 160,
-      "generation_time_sec": 40.4,
+      "generation_time_sec": 40.2,
       "ev_per_sec": 4.0,
-      "loop_ratio": 1.60,
-      "tracks": {"piano": 31, "strings": 8}
+      "loop_ratio": 1.59,
+      "tracks": {"melody": 35, "bass": 9, "harmony": 5}
     }
   ],
 
@@ -75,6 +75,13 @@
     "jit_cache": "0/121 hits on P1 (first session), 121/121 on P2–P3",
     "hw_calls_per_pattern": 64,
     "hw_call_latency_ms": 500,
-    "cpu_fallback": false
+    "cpu_fallback": false,
+    "quality_features": {
+      "disable_patch_change": true,
+      "disable_control_change": true,
+      "channel_masking": true,
+      "velocity_shaping": true,
+      "add_default_instr": true
+    }
   }
 }

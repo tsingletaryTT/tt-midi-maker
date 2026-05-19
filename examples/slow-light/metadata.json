@@ -1,6 +1,6 @@
 {
   "suite": "Slow Light",
-  "description": "A three-pattern spacey ambient piece in Eb major. String ensemble melody, warm pad harmony, and synth bass emerge sparsely and grow across three chained patterns. Strict scale adherence and gentle micro-timing create a floating, consonant texture.",
+  "description": "A three-pattern spacey ambient piece in Eb major. String ensemble melody, warm pad harmony, and synth bass emerge sparsely and grow across three chained patterns. Strict scale adherence and gentle micro-timing create a floating, consonant texture. Vocabulary masking (disable_patch_change, disable_control_change) and all-channel prompt conditioning ensure clean instrument separation. Per-role velocity shaping (melody 80-110, harmony 55-80, bass 50-75) adds dynamic depth.",
   "generated": "2026-05-19",
   "hardware": "4× Tenstorrent P300C chips (tt-forge)",
   "model": "skytnt/midi-model (LlamaModel, 12-layer, ~350M params)",
@@ -42,11 +42,11 @@
       "label": "Pattern 1 — opening (cold start)",
       "source": null,
       "max_events": 96,
-      "generation_time_sec": 13.0,
-      "ev_per_sec": 7.4,
-      "loop_ratio": 0.42,
+      "generation_time_sec": 32.2,
+      "ev_per_sec": 3.0,
+      "loop_ratio": 1.04,
       "note": "Very sparse opening — all four parts present but minimal. Typical ambient cold start.",
-      "tracks": {"strings": 1, "bass": 1, "pad": 3, "drums": 4}
+      "tracks": {"melody": 16, "bass": 1, "harmony": 26, "drums": 9}
     },
     {
       "file": "p2_drift.mid",
@@ -56,17 +56,17 @@
       "generation_time_sec": 12.3,
       "ev_per_sec": 7.8,
       "loop_ratio": 0.40,
-      "tracks": {"strings": 16, "bass": 7, "pad": 28, "drums": 13}
+      "tracks": {"melody": 18, "bass": 1, "harmony": 23, "drums": 8}
     },
     {
       "file": "p3_dissolution.mid",
       "label": "Pattern 3 — dissolution (seeded from P2)",
       "source": "p2_drift.mid",
       "max_events": 80,
-      "generation_time_sec": 10.4,
-      "ev_per_sec": 7.7,
+      "generation_time_sec": 10.3,
+      "ev_per_sec": 7.8,
       "loop_ratio": 0.33,
-      "tracks": {"strings": 33, "bass": 18, "pad": 42, "drums": 22}
+      "tracks": {"melody": 18, "bass": 1, "harmony": 22, "drums": 8}
     }
   ],
 
@@ -75,6 +75,13 @@
     "jit_cache": "121/121 hits",
     "hw_calls_per_pattern": 24,
     "hw_call_latency_ms": 500,
-    "cpu_fallback": false
+    "cpu_fallback": false,
+    "quality_features": {
+      "disable_patch_change": true,
+      "disable_control_change": true,
+      "channel_masking": true,
+      "velocity_shaping": true,
+      "add_default_instr": true
+    }
   }
 }

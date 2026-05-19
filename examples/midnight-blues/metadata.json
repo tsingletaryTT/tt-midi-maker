@@ -1,6 +1,6 @@
 {
   "suite": "Midnight in East Texas",
-  "description": "A three-pattern A minor blues. Electric guitar leads with blues-scale phrasing (b5 blue notes preserved), piano comping, and a shuffled kit. The coherence layer now applies triplet swing (2:1 ratio) to off-beat eighth notes — the shuffle feel is structural, not random jitter.",
+  "description": "A three-pattern A minor blues. Electric guitar leads with blues-scale phrasing (b5 blue notes preserved), piano comping, and a shuffled kit. The coherence layer applies triplet swing (2:1 ratio) to off-beat eighth notes — the shuffle feel is structural, not random jitter. Vocabulary masking (disable_patch_change, disable_control_change) and all-channel prompt conditioning ensure clean instrument separation. Per-role velocity shaping (melody 80-110, harmony 55-80, bass 50-75) adds dynamic depth.",
   "generated": "2026-05-19",
   "hardware": "4× Tenstorrent P300C chips (tt-forge)",
   "model": "skytnt/midi-model (LlamaModel, 12-layer, ~350M params)",
@@ -43,21 +43,21 @@
       "label": "Pattern 1 — intro (cold start)",
       "source": null,
       "max_events": 128,
-      "generation_time_sec": 30.0,
-      "ev_per_sec": 4.3,
-      "loop_ratio": 1.43,
-      "note": "JIT cache warm from prior classical session. Blues scale with b5 blue note now active.",
-      "tracks": {"guitar": 14, "piano": 12, "drums": 42}
+      "generation_time_sec": 48.2,
+      "ev_per_sec": 2.7,
+      "loop_ratio": 2.31,
+      "note": "JIT cache warm from prior classical session. Blues scale with b5 blue note active.",
+      "tracks": {"melody": 14, "bass": 11, "harmony": 20, "drums": 58}
     },
     {
       "file": "p2_groove.mid",
       "label": "Pattern 2 — groove (seeded from P1)",
       "source": "p1_intro.mid",
       "max_events": 128,
-      "generation_time_sec": 29.4,
+      "generation_time_sec": 29.2,
       "ev_per_sec": 4.4,
-      "loop_ratio": 1.41,
-      "tracks": {"guitar": 31, "piano": 46, "drums": 57}
+      "loop_ratio": 1.40,
+      "tracks": {"melody": 37, "bass": 48, "harmony": 21, "drums": 99}
     },
     {
       "file": "p3_resolution.mid",
@@ -67,7 +67,7 @@
       "generation_time_sec": 38.5,
       "ev_per_sec": 4.2,
       "loop_ratio": 1.84,
-      "tracks": {"guitar": 31, "piano": 45, "drums": 57}
+      "tracks": {"melody": 79, "bass": 59, "harmony": 70, "drums": 126}
     }
   ],
 
@@ -76,6 +76,13 @@
     "jit_cache": "121/121 hits",
     "hw_calls_per_pattern": 64,
     "hw_call_latency_ms": 500,
-    "cpu_fallback": false
+    "cpu_fallback": false,
+    "quality_features": {
+      "disable_patch_change": true,
+      "disable_control_change": true,
+      "channel_masking": true,
+      "velocity_shaping": true,
+      "add_default_instr": true
+    }
   }
 }

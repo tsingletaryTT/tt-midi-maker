@@ -1,6 +1,6 @@
 {
   "suite": "Quick Changes",
-  "description": "A three-pattern bebop jazz suite in Bb major. Piano trio texture emerged: piano comping over walking bass and ride cymbal at 200 BPM. Chromatic approach notes and bebop passing tones preserved (scale strictness 0.25, semitone tolerance 1). Medium bebop swing (0.63 ratio).",
+  "description": "A three-pattern bebop jazz suite in Bb major. Piano trio texture emerged: piano comping over walking bass and ride cymbal at 200 BPM. Chromatic approach notes and bebop passing tones preserved (scale strictness 0.25, semitone tolerance 1). Medium bebop swing (0.63 ratio). Vocabulary masking (disable_patch_change, disable_control_change) and all-channel prompt conditioning ensure clean instrument separation. Per-role velocity shaping (melody 80-110, harmony 55-80, bass 50-75) adds dynamic depth.",
   "generated": "2026-05-19",
   "hardware": "4× Tenstorrent P300C chips (tt-forge)",
   "model": "skytnt/midi-model (LlamaModel, 12-layer, ~350M params)",
@@ -42,11 +42,11 @@
       "label": "Pattern 1 — head (cold start)",
       "source": null,
       "max_events": 128,
-      "generation_time_sec": 30.0,
-      "ev_per_sec": 4.3,
-      "loop_ratio": 3.13,
+      "generation_time_sec": 48.3,
+      "ev_per_sec": 2.6,
+      "loop_ratio": 5.03,
       "note": "Piano trio texture: bass walking line, piano comping, kit. Chromatic passing tones preserved.",
-      "tracks": {"bass": 3, "piano": 13, "drums": 16}
+      "tracks": {"bass": 5, "harmony": 55, "drums": 42}
     },
     {
       "file": "p2_solo1.mid",
@@ -56,17 +56,17 @@
       "generation_time_sec": 29.3,
       "ev_per_sec": 4.4,
       "loop_ratio": 3.05,
-      "tracks": {"bass": 11, "piano": 59, "drums": 76}
+      "tracks": {"bass": 6, "harmony": 89, "drums": 52}
     },
     {
       "file": "p3_solo2.mid",
       "label": "Pattern 3 — second chorus (seeded from P2)",
       "source": "p2_solo1.mid",
       "max_events": 160,
-      "generation_time_sec": 38.4,
+      "generation_time_sec": 38.5,
       "ev_per_sec": 4.2,
-      "loop_ratio": 4.00,
-      "tracks": {"bass": 14, "piano": 101, "drums": 146}
+      "loop_ratio": 4.01,
+      "tracks": {"bass": 6, "harmony": 85, "drums": 52}
     }
   ],
 
@@ -75,6 +75,13 @@
     "jit_cache": "121/121 hits",
     "hw_calls_per_pattern": 64,
     "hw_call_latency_ms": 500,
-    "cpu_fallback": false
+    "cpu_fallback": false,
+    "quality_features": {
+      "disable_patch_change": true,
+      "disable_control_change": true,
+      "channel_masking": true,
+      "velocity_shaping": true,
+      "add_default_instr": true
+    }
   }
 }
