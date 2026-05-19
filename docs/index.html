@@ -696,6 +696,186 @@ footer a { color: var(--teal); }
 </div>
 </section>
 
+<!-- ═══════════════════════════════════════════════════════ BLUES -->
+<section id="blues" style="background:var(--bg0);">
+<div class="container">
+  <div class="section-label">Demo suite — E minor blues</div>
+  <h2 class="section-title">Midnight in East Texas</h2>
+  <p class="section-desc">
+    Electric guitar leads over Hammond comping at a shuffled 88 BPM.
+    Three patterns, each hearing the last — the groove thickens and the
+    harmony fills out as the chords cycle: E7 → A7 → E7 → B7.
+  </p>
+  <div class="pattern-grid">
+
+    <div class="pattern-card">
+      <div class="pattern-num">Pattern 1</div>
+      <h3>Full band, cold start</h3>
+      <p class="desc">The machine opens with what it knows: guitar melody, Hammond comping, sparse shuffle kit.</p>
+      <audio controls preload="none" src="audio/midnight-blues/p1_intro.mp3"></audio>
+      <div class="pattern-stats">
+        <span class="stat-pill hw">4× P300C</span>
+        <span class="stat-pill time">41.4s gen (incl. compile)</span>
+        <span class="stat-pill">guitar: 10n  Hammond: 44n</span>
+      </div>
+      <div class="divider"></div>
+      <a href="midi/midnight-blues/p1_intro.mid" download class="stat-pill" style="font-size:.72rem;padding:.3rem .8rem;background:rgba(79,209,197,.08);border-color:rgba(79,209,197,.3);color:var(--teal);">⬇ MIDI</a>
+    </div>
+
+    <div class="pattern-card">
+      <div class="pattern-num">Pattern 2</div>
+      <h3>Groove</h3>
+      <p class="desc">Seeded from P1 — the Hammond fills out (110 notes) and the guitar starts finding the blues phrasing.</p>
+      <audio controls preload="none" src="audio/midnight-blues/p2_groove.mp3"></audio>
+      <div class="pattern-stats">
+        <span class="stat-pill hw">7.8 ev/s</span>
+        <span class="stat-pill time">12.2s gen</span>
+        <span class="stat-pill">0.56× loop</span>
+        <span class="stat-pill">guitar: 17n  Hammond: 110n</span>
+      </div>
+      <div class="divider"></div>
+      <a href="midi/midnight-blues/p2_groove.mid" download class="stat-pill" style="font-size:.72rem;padding:.3rem .8rem;background:rgba(79,209,197,.08);border-color:rgba(79,209,197,.3);color:var(--teal);">⬇ MIDI</a>
+    </div>
+
+    <div class="pattern-card">
+      <div class="pattern-num">Pattern 3</div>
+      <h3>Resolution</h3>
+      <p class="desc">Dense Hammond texture (175 voicings) with the guitar line threading through — the blues machine in full voice.</p>
+      <audio controls preload="none" src="audio/midnight-blues/p3_resolution.mp3"></audio>
+      <div class="pattern-stats">
+        <span class="stat-pill hw">7.8 ev/s</span>
+        <span class="stat-pill time">14.4s gen</span>
+        <span class="stat-pill">0.66× loop</span>
+        <span class="stat-pill">guitar: 24n  Hammond: 175n</span>
+      </div>
+      <div class="divider"></div>
+      <a href="midi/midnight-blues/p3_resolution.mid" download class="stat-pill" style="font-size:.72rem;padding:.3rem .8rem;background:rgba(79,209,197,.08);border-color:rgba(79,209,197,.3);color:var(--teal);">⬇ MIDI</a>
+    </div>
+
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ AMBIENT -->
+<section id="ambient" style="background:var(--bg1);">
+<div class="container">
+  <div class="section-label">Demo suite — Eb major ambient</div>
+  <h2 class="section-title">Slow Light</h2>
+  <p class="section-desc">
+    62 BPM. Warm synth bass lines over sustained pads, no percussion, no urgency.
+    Each 8-bar loop is 31 seconds — time expands.
+    Chords: Ebmaj7 → Cm7 → Abmaj7 → Bb. Three patterns, each drifting further.
+  </p>
+  <div class="pattern-grid">
+
+    <div class="pattern-card">
+      <div class="pattern-num">Pattern 1</div>
+      <h3>Opening</h3>
+      <p class="desc">Cold-start sparse generation — at 62 BPM the model naturally composes slow, breath-like phrases.</p>
+      <audio controls preload="none" src="audio/slow-light/p1_opening.mp3"></audio>
+      <div class="pattern-stats">
+        <span class="stat-pill hw">4× P300C</span>
+        <span class="stat-pill time">29.9s gen</span>
+        <span class="stat-pill">synth bass: 15n  pad: 3n</span>
+      </div>
+      <div class="divider"></div>
+      <a href="midi/slow-light/p1_opening.mid" download class="stat-pill" style="font-size:.72rem;padding:.3rem .8rem;background:rgba(79,209,197,.08);border-color:rgba(79,209,197,.3);color:var(--teal);">⬇ MIDI</a>
+    </div>
+
+    <div class="pattern-card">
+      <div class="pattern-num">Pattern 2</div>
+      <h3>Drift</h3>
+      <p class="desc">Seeded from the opening — the bass becomes the melody (56 notes), pads swell behind it. Spacious.</p>
+      <audio controls preload="none" src="audio/slow-light/p2_drift.mp3"></audio>
+      <div class="pattern-stats">
+        <span class="stat-pill hw">8.0 ev/s</span>
+        <span class="stat-pill time">10.0s gen</span>
+        <span class="stat-pill">0.32× loop</span>
+        <span class="stat-pill">synth bass: 56n  pad: 7n</span>
+      </div>
+      <div class="divider"></div>
+      <a href="midi/slow-light/p2_drift.mid" download class="stat-pill" style="font-size:.72rem;padding:.3rem .8rem;background:rgba(79,209,197,.08);border-color:rgba(79,209,197,.3);color:var(--teal);">⬇ MIDI</a>
+    </div>
+
+    <div class="pattern-card">
+      <div class="pattern-num">Pattern 3</div>
+      <h3>Dissolution</h3>
+      <p class="desc">The longest bass line (80 notes), most sustained pad voicings — the piece has fully found its space.</p>
+      <audio controls preload="none" src="audio/slow-light/p3_dissolution.mp3"></audio>
+      <div class="pattern-stats">
+        <span class="stat-pill hw">7.8 ev/s</span>
+        <span class="stat-pill time">8.2s gen</span>
+        <span class="stat-pill">0.26× loop</span>
+        <span class="stat-pill">synth bass: 80n  pad: 13n</span>
+      </div>
+      <div class="divider"></div>
+      <a href="midi/slow-light/p3_dissolution.mid" download class="stat-pill" style="font-size:.72rem;padding:.3rem .8rem;background:rgba(79,209,197,.08);border-color:rgba(79,209,197,.3);color:var(--teal);">⬇ MIDI</a>
+    </div>
+
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ BEBOP -->
+<section id="bebop" style="background:var(--bg0);">
+<div class="container">
+  <div class="section-label">Demo suite — Bb major bebop</div>
+  <h2 class="section-title">Quick Changes</h2>
+  <p class="section-desc">
+    200 BPM. Alto saxophone over piano comping, acoustic bass, and a swinging kit.
+    The classic bebop turnaround: Bbmaj7 → G7 → Cm7 → F7. At this tempo each
+    8-bar loop is only 4.8 seconds — three choruses of continuous improvisation.
+  </p>
+  <div class="pattern-grid">
+
+    <div class="pattern-card">
+      <div class="pattern-num">Pattern 1</div>
+      <h3>Head</h3>
+      <p class="desc">Cold-start theme statement — alto sax finds its way through the changes, piano comps behind it.</p>
+      <audio controls preload="none" src="audio/bebop-quick-changes/p1_head.mp3"></audio>
+      <div class="pattern-stats">
+        <span class="stat-pill hw">4× P300C</span>
+        <span class="stat-pill time">31.9s gen (incl. compile)</span>
+        <span class="stat-pill">sax: 31n  piano: 10n</span>
+      </div>
+      <div class="divider"></div>
+      <a href="midi/bebop-quick-changes/p1_head.mid" download class="stat-pill" style="font-size:.72rem;padding:.3rem .8rem;background:rgba(79,209,197,.08);border-color:rgba(79,209,197,.3);color:var(--teal);">⬇ MIDI</a>
+    </div>
+
+    <div class="pattern-card">
+      <div class="pattern-num">Pattern 2</div>
+      <h3>First chorus</h3>
+      <p class="desc">Seeded from the head — the sax line evolves (36 notes), Piano comp stays tight and rhythmic.</p>
+      <audio controls preload="none" src="audio/bebop-quick-changes/p2_solo1.mp3"></audio>
+      <div class="pattern-stats">
+        <span class="stat-pill hw">7.9 ev/s</span>
+        <span class="stat-pill time">12.2s gen</span>
+        <span class="stat-pill">1.27× loop</span>
+        <span class="stat-pill">sax: 36n  piano: 13n</span>
+      </div>
+      <div class="divider"></div>
+      <a href="midi/bebop-quick-changes/p2_solo1.mid" download class="stat-pill" style="font-size:.72rem;padding:.3rem .8rem;background:rgba(79,209,197,.08);border-color:rgba(79,209,197,.3);color:var(--teal);">⬇ MIDI</a>
+    </div>
+
+    <div class="pattern-card">
+      <div class="pattern-num">Pattern 3</div>
+      <h3>Second chorus</h3>
+      <p class="desc">The model has heard two choruses — the sax phrases are denser now (38n, 112 events total), bebop vocabulary emerging.</p>
+      <audio controls preload="none" src="audio/bebop-quick-changes/p3_solo2.mp3"></audio>
+      <div class="pattern-stats">
+        <span class="stat-pill hw">7.8 ev/s</span>
+        <span class="stat-pill time">14.3s gen</span>
+        <span class="stat-pill">1.49× loop</span>
+        <span class="stat-pill">sax: 38n  piano: 12n</span>
+      </div>
+      <div class="divider"></div>
+      <a href="midi/bebop-quick-changes/p3_solo2.mid" download class="stat-pill" style="font-size:.72rem;padding:.3rem .8rem;background:rgba(79,209,197,.08);border-color:rgba(79,209,197,.3);color:var(--teal);">⬇ MIDI</a>
+    </div>
+
+  </div>
+</div>
+</section>
+
 <!-- ═══════════════════════════════════════════════════════ MACHINE -->
 <section id="machine">
 <div class="container">

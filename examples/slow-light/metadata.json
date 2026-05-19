@@ -1,0 +1,73 @@
+{
+  "suite": "Slow Light",
+  "description": "A three-pattern spacey ambient piece in Eb major. Synth bass carries the melodic weight while warm pads sustain long chords. Very slow at 62 BPM — each 8-bar loop runs 15.5 seconds.",
+  "generated": "2026-05-19",
+  "hardware": "4× Tenstorrent P300C chips (tt-forge)",
+  "model": "skytnt/midi-model (LlamaModel, 12-layer, ~350M params)",
+
+  "musical_parameters": {
+    "key": "Eb major",
+    "bpm": 62,
+    "bars": 8,
+    "loop_duration_sec": 30.97,
+    "chord_progression": ["Ebmaj7", "Cm7", "Abmaj7", "Bb"],
+    "style": "ambient"
+  },
+
+  "generation_parameters": {
+    "hw_context_interval": 4,
+    "max_padded_len": 256,
+    "temperature": 1.0,
+    "top_p": 0.98,
+    "top_k": 20
+  },
+
+  "instruments": {
+    "melody": {"role": "string ensemble 1", "gm_program": 48, "note_range": "Eb3–Eb6"},
+    "harmony": {"role": "pad 2 warm", "gm_program": 89, "note_range": "Bb1–Bb4"},
+    "bass":    {"role": "synth bass 1", "gm_program": 38, "note_range": "Eb1–G3"},
+    "drums":   {"role": "drum kit", "gm_program": 0, "channel": 10}
+  },
+
+  "patterns": [
+    {
+      "file": "p1_opening.mid",
+      "label": "Pattern 1 — opening (cold start)",
+      "source": null,
+      "max_events": 80,
+      "generation_time_sec": 29.9,
+      "ev_per_sec": 2.7,
+      "loop_ratio": 0.97,
+      "note": "Model naturally generates sparse ambient textures at 62 BPM. Bass carries the melodic role.",
+      "tracks": {"bass": 15, "harmony": 3}
+    },
+    {
+      "file": "p2_drift.mid",
+      "label": "Pattern 2 — drift (seeded from P1)",
+      "source": "p1_opening.mid",
+      "max_events": 80,
+      "generation_time_sec": 10.0,
+      "ev_per_sec": 8.0,
+      "loop_ratio": 0.32,
+      "tracks": {"bass": 56, "harmony": 7}
+    },
+    {
+      "file": "p3_dissolution.mid",
+      "label": "Pattern 3 — dissolution (seeded from P2)",
+      "source": "p2_drift.mid",
+      "max_events": 64,
+      "generation_time_sec": 8.2,
+      "ev_per_sec": 7.8,
+      "loop_ratio": 0.26,
+      "tracks": {"bass": 80, "harmony": 13}
+    }
+  ],
+
+  "performance_notes": {
+    "forge_compile_time_sec": 0,
+    "jit_cache": "121/121 hits (compiled in blues session immediately prior)",
+    "hw_calls_per_pattern": 20,
+    "hw_call_latency_ms": 500,
+    "cpu_fallback": false
+  }
+}

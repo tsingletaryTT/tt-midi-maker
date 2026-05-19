@@ -1,0 +1,73 @@
+{
+  "suite": "Quick Changes",
+  "description": "A three-pattern bebop jazz suite in Bb major. Alto saxophone rides over piano comping and walking bass at a true bebop tempo of 200 BPM. Each 8-bar loop is just 4.8 seconds — the hardware generates the next pattern before the current one finishes.",
+  "generated": "2026-05-19",
+  "hardware": "4× Tenstorrent P300C chips (tt-forge)",
+  "model": "skytnt/midi-model (LlamaModel, 12-layer, ~350M params)",
+
+  "musical_parameters": {
+    "key": "Bb major",
+    "bpm": 200,
+    "bars": 8,
+    "loop_duration_sec": 9.6,
+    "chord_progression": ["Bbmaj7", "G7", "Cm7", "F7"],
+    "style": "bebop jazz"
+  },
+
+  "generation_parameters": {
+    "hw_context_interval": 4,
+    "max_padded_len": 256,
+    "temperature": 1.0,
+    "top_p": 0.98,
+    "top_k": 20
+  },
+
+  "instruments": {
+    "melody": {"role": "alto saxophone", "gm_program": 65, "note_range": "Db3–Ab5"},
+    "harmony": {"role": "acoustic grand piano", "gm_program": 0, "note_range": "Bb1–Bb5"},
+    "bass":    {"role": "acoustic bass", "gm_program": 32, "note_range": "Bb1–F3"},
+    "drums":   {"role": "drum kit", "gm_program": 0, "channel": 10}
+  },
+
+  "patterns": [
+    {
+      "file": "p1_head.mid",
+      "label": "Pattern 1 — head (cold start)",
+      "source": null,
+      "max_events": 96,
+      "generation_time_sec": 31.9,
+      "ev_per_sec": 3.0,
+      "loop_ratio": 3.32,
+      "note": "Loop ratio >1 because 200 BPM loops are only 4.8s. Model still generates 96 events — just faster than they'd play.",
+      "tracks": {"melody": 31, "bass": 1, "harmony": 10}
+    },
+    {
+      "file": "p2_solo1.mid",
+      "label": "Pattern 2 — first chorus (seeded from P1)",
+      "source": "p1_head.mid",
+      "max_events": 96,
+      "generation_time_sec": 12.2,
+      "ev_per_sec": 7.9,
+      "loop_ratio": 1.27,
+      "tracks": {"melody": 36, "bass": 1, "harmony": 13}
+    },
+    {
+      "file": "p3_solo2.mid",
+      "label": "Pattern 3 — second chorus (seeded from P2)",
+      "source": "p2_solo1.mid",
+      "max_events": 112,
+      "generation_time_sec": 14.3,
+      "ev_per_sec": 7.8,
+      "loop_ratio": 1.49,
+      "tracks": {"melody": 38, "bass": 1, "harmony": 12}
+    }
+  ],
+
+  "performance_notes": {
+    "forge_compile_time_sec": 0,
+    "jit_cache": "121/121 hits (compiled in blues session immediately prior)",
+    "hw_calls_per_pattern": 24,
+    "hw_call_latency_ms": 500,
+    "cpu_fallback": false
+  }
+}

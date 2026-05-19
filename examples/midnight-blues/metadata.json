@@ -1,0 +1,73 @@
+{
+  "suite": "Midnight in East Texas",
+  "description": "A three-pattern E minor blues generated on Tenstorrent P300C hardware. Electric guitar leads over Hammond organ comping, walking bass, and a shuffled kit.",
+  "generated": "2026-05-19",
+  "hardware": "4× Tenstorrent P300C chips (tt-forge)",
+  "model": "skytnt/midi-model (LlamaModel, 12-layer, ~350M params)",
+
+  "musical_parameters": {
+    "key": "E minor",
+    "bpm": 88,
+    "bars": 8,
+    "loop_duration_sec": 21.8,
+    "chord_progression": ["E7", "A7", "E7", "B7"],
+    "style": "blues"
+  },
+
+  "generation_parameters": {
+    "hw_context_interval": 4,
+    "max_padded_len": 256,
+    "temperature": 1.0,
+    "top_p": 0.98,
+    "top_k": 20
+  },
+
+  "instruments": {
+    "melody": {"role": "electric guitar (jazz)", "gm_program": 26, "note_range": "E2–G5"},
+    "harmony": {"role": "Hammond organ", "gm_program": 16, "note_range": "C3–C5"},
+    "bass":    {"role": "electric bass (finger)", "gm_program": 33, "note_range": "E1–E3"},
+    "drums":   {"role": "drum kit", "gm_program": 0, "channel": 10}
+  },
+
+  "patterns": [
+    {
+      "file": "p1_intro.mid",
+      "label": "Pattern 1 — full band (cold start)",
+      "source": null,
+      "max_events": 96,
+      "generation_time_sec": 41.4,
+      "ev_per_sec": 2.3,
+      "loop_ratio": 1.90,
+      "note": "First call includes forge compile (~33s). Subsequent patterns use 121/121 JIT cache hits.",
+      "tracks": {"melody": 10, "bass": 1, "harmony": 44}
+    },
+    {
+      "file": "p2_groove.mid",
+      "label": "Pattern 2 — groove (seeded from P1)",
+      "source": "p1_intro.mid",
+      "max_events": 96,
+      "generation_time_sec": 12.2,
+      "ev_per_sec": 7.8,
+      "loop_ratio": 0.56,
+      "tracks": {"melody": 17, "bass": 1, "harmony": 110}
+    },
+    {
+      "file": "p3_resolution.mid",
+      "label": "Pattern 3 — resolution (seeded from P2)",
+      "source": "p2_groove.mid",
+      "max_events": 112,
+      "generation_time_sec": 14.4,
+      "ev_per_sec": 7.8,
+      "loop_ratio": 0.66,
+      "tracks": {"melody": 24, "bass": 1, "harmony": 175}
+    }
+  ],
+
+  "performance_notes": {
+    "forge_compile_time_sec": 33,
+    "jit_cache": "121/121 hits on second and third patterns",
+    "hw_calls_per_pattern": 24,
+    "hw_call_latency_ms": 500,
+    "cpu_fallback": false
+  }
+}
