@@ -4,6 +4,51 @@ from ..models.track import NoteEvent
 
 TICKS_PER_BEAT = 480
 
+# Per-role velocity windows.  Mirrors a typical mix hierarchy:
+#   melody > drums > harmony > bass (ceiling order)
+# scale_velocity_by_role() maps [1,127] → [lo, hi] before humanize_velocities()
+# applies jitter, so the jitter pass refines within the already-shaped window.
+_ROLE_VELOCITY_RANGES: dict[str, tuple[int, int]] = {
+    "melody":  (80, 110),   # lead voice — prominent in the mix
+    "harmony": (55,  80),   # supporting pads/comps — below melody
+    "bass":    (50,  75),   # anchoring, steady, below harmony
+    "drums":   (60, 100),   # wide dynamic range kept as-is
+}
+
+
+def scale_velocity_by_role(
+    notes: list[NoteEvent],
+    role: str,
+    ranges: dict | None = None,
+) -> list[NoteEvent]:
+    """Remap note velocities into a role-appropriate window.
+
+    Normalizes the input velocity (1–127) to a [0,1] fraction then maps it
+    into [lo, hi] for the given role. Call this before humanize_velocities()
+    so the jitter pass refines within the already-shaped window.
+
+    Args:
+        notes:  Input NoteEvent list (may be empty).
+        role:   Role name — one of 'melody', 'harmony', 'bass', 'drums'.
+                Unknown roles fall back to the default range (60, 100).
+        ranges: Optional override dict mapping role → (lo, hi).  When
+                provided, replaces _ROLE_VELOCITY_RANGES entirely.
+
+    Returns:
+        New list of NoteEvents with remapped velocities; original list is
+        not mutated.
+    """
+    if not notes:
+        return notes
+    velocity_ranges = ranges or _ROLE_VELOCITY_RANGES
+    lo, hi = velocity_ranges.get(role, (60, 100))
+    result = []
+    for note in notes:
+        frac = (note.velocity - 1) / 126.0          # 0.0 at vel=1, 1.0 at vel=127
+        new_vel = int(lo + frac * (hi - lo))
+        result.append(replace(note, velocity=max(1, min(127, new_vel))))
+    return result
+
 
 def humanize_velocities(
     notes: list[NoteEvent],
