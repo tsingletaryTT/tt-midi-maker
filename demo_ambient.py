@@ -49,7 +49,7 @@ OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 from tt_midi_maker.assembler import TICKS_PER_BEAT, build_midi_file
 from tt_midi_maker.coherence.harmony import chord_aware_filter
-from tt_midi_maker.coherence.humanize import humanize_velocities, nudge_timing
+from tt_midi_maker.coherence.humanize import humanize_velocities, nudge_timing, scale_velocity_by_role
 from tt_midi_maker.coherence.scale import build_scale_set, parse_key, scale_quantize
 from tt_midi_maker.generation.hardware import detect_tt_devices
 from tt_midi_maker.generation.midi_backend import generate_from_blueprint
@@ -106,6 +106,7 @@ def _apply_coherence(tracks, bp: MusicalBlueprint) -> list:
         notes = scale_quantize(track.notes, bp.key, strictness=0.9)
         notes = chord_aware_filter(notes, bp.chord_progression,
                                    4 * TICKS_PER_BEAT, TICKS_PER_BEAT, scale_set)
+        notes = scale_velocity_by_role(notes, track.role)
         notes = humanize_velocities(notes, variation=5)  # subtle velocity variation
         notes = nudge_timing(notes, max_ticks=16)         # wider micro-timing for float
         out.append(replace(track, notes=notes))
