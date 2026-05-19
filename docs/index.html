@@ -486,6 +486,36 @@ audio::-webkit-media-controls-panel { background: var(--bg3); }
 }
 .resource-card p { font-size: .8rem; color: var(--text-dim); }
 
+/* ── mcp workflow diagrams ── */
+.workflow-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+.workflow-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: .75rem;
+  padding: 1.2rem 1.4rem 1rem;
+}
+.workflow-card h4 {
+  font-size: .9rem;
+  font-weight: 700;
+  margin-bottom: .25rem;
+  color: var(--teal-light);
+}
+.workflow-card .wf-sub {
+  font-size: .75rem;
+  color: var(--text-dim);
+  margin-bottom: .9rem;
+}
+.flow-svg {
+  width: 100%;
+  display: block;
+  overflow: visible;
+}
+
 /* ── styles catalog section ── */
 #styles { background: var(--bg0); }
 
@@ -677,7 +707,7 @@ footer a { color: var(--teal); }
   </p>
 
   <div class="machine-wrap">
-    <svg class="pipeline-svg" viewBox="0 0 860 720" xmlns="http://www.w3.org/2000/svg">
+    <svg class="pipeline-svg" viewBox="0 0 880 634" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
           <polygon points="0 0, 8 3, 0 6" fill="rgba(79,209,197,.5)"/>
@@ -687,175 +717,203 @@ footer a { color: var(--teal); }
         </marker>
       </defs>
 
-      <!-- ── Row 1: Input params ── -->
-      <g class="comp" transform="translate(30,30)">
-        <rect class="box" width="160" height="80" rx="8"/>
-        <text class="label" x="80" y="28">Musical Parameters</text>
-        <text class="sub" x="80" y="46">D minor · BPM 118 · 8 bars</text>
-        <text class="sub accent" x="80" y="62">Dm7 → Am7 → Bbmaj7 → A7</text>
+      <!-- ── Row 1: Input params (y=24, h=80) ── -->
+      <g class="comp" transform="translate(28,24)">
+        <rect class="box" width="162" height="80" rx="8"/>
+        <text class="label" x="81" y="28">Musical Parameters</text>
+        <text class="sub" x="81" y="46">D minor · BPM 118 · 8 bars</text>
+        <text class="sub accent" x="81" y="62">Dm7 → Am7 → Bbmaj7 → A7</text>
       </g>
-      <line class="arrow data" x1="190" y1="70" x2="238" y2="70"/>
+      <line class="arrow data" x1="190" y1="64" x2="202" y2="64"/>
 
-      <g class="comp" transform="translate(240,30)">
+      <g class="comp" transform="translate(204,24)">
         <rect class="box" width="140" height="80" rx="8"/>
         <text class="label" x="70" y="28">Blueprint</text>
         <text class="sub" x="70" y="48">MusicalBlueprint</text>
         <text class="sub accent" x="70" y="64">Pydantic model</text>
       </g>
-      <line class="arrow data" x1="380" y1="70" x2="428" y2="70"/>
+      <line class="arrow data" x1="344" y1="64" x2="356" y2="64"/>
 
-      <g class="comp" transform="translate(430,30)">
-        <rect class="box" width="150" height="80" rx="8"/>
-        <text class="label" x="75" y="28">Prompt Builder</text>
-        <text class="sub" x="75" y="48">BOS + set_tempo</text>
-        <text class="sub" x="75" y="64">+ patch_changes</text>
-      </g>
-      <line class="arrow data" x1="580" y1="70" x2="628" y2="70"/>
-
-      <g class="comp" transform="translate(630,30)">
-        <rect class="box" width="150" height="80" rx="8"/>
-        <text class="label pink" x="75" y="28">Source MIDI</text>
-        <text class="sub" x="75" y="48">previous pattern</text>
-        <text class="sub" x="75" y="64">last 8 bars of context</text>
+      <g class="comp" transform="translate(358,24)">
+        <rect class="box" width="152" height="80" rx="8"/>
+        <text class="label" x="76" y="28">Prompt Builder</text>
+        <text class="sub" x="76" y="48">BOS + set_tempo</text>
+        <text class="sub" x="76" y="64">+ patch_changes</text>
       </g>
 
-      <!-- vertical arrow down → HW block -->
-      <line class="arrow" x1="505" y1="110" x2="505" y2="148"/>
+      <g class="comp" transform="translate(530,24)">
+        <rect class="box" width="152" height="80" rx="8"/>
+        <text class="label pink" x="76" y="28">Source MIDI</text>
+        <text class="sub" x="76" y="48">previous pattern</text>
+        <text class="sub" x="76" y="64">last 8 bars of context</text>
+      </g>
+      <!-- dashed arrow: Prompt Builder optionally uses Source MIDI -->
+      <line class="arrow data" x1="510" y1="64" x2="528" y2="64"/>
 
-      <!-- ── Row 2: TT Hardware block ── -->
-      <rect x="30" y="150" width="750" height="210" rx="12"
-            fill="rgba(15,42,53,.8)" stroke="rgba(79,209,197,.25)" stroke-width="1.5"/>
+      <!-- vertical arrows into HW block -->
+      <line class="arrow" x1="434" y1="104" x2="434" y2="128"/>
+      <line class="arrow data" x1="606" y1="104" x2="606" y2="128"/>
+
+      <!-- ── Row 2: TT Hardware block (y=122, h=190) ── -->
+      <rect x="20" y="122" width="840" height="190" rx="12"
+            fill="rgba(15,42,53,.85)" stroke="rgba(79,209,197,.3)" stroke-width="1.5"/>
       <text font-family="'Segoe UI',sans-serif" font-size="11" fill="rgba(79,209,197,.6)"
-            x="46" y="168" letter-spacing="1">TENSTORRENT  HARDWARE  —  4 × P300C</text>
+            x="38" y="140" letter-spacing="1">TENSTORRENT  HARDWARE  —  4 × P300C</text>
 
-      <!-- forge.compile box -->
-      <g class="comp" transform="translate(40,178)">
-        <rect class="box" width="130" height="64" rx="8"/>
-        <text class="label" x="65" y="22">forge.compile</text>
-        <text class="sub accent" x="65" y="38">12-layer LlamaModel</text>
-        <text class="sub" x="65" y="52">~45s first call</text>
+      <!-- forge.compile — left column -->
+      <g class="comp" transform="translate(34,148)">
+        <rect class="box" width="116" height="55" rx="8"/>
+        <text class="label" x="58" y="20">forge.compile</text>
+        <text class="sub accent" x="58" y="35">12-layer LlamaModel</text>
+        <text class="sub" x="58" y="49">~45s first call</text>
+      </g>
+      <!-- arrow from forge.compile right → bus -->
+      <line stroke="rgba(79,209,197,.4)" stroke-width="2" x1="150" y1="175" x2="164" y2="175"/>
+
+      <!-- horizontal bus (y=175, from forge to last chip) -->
+      <line stroke="rgba(79,209,197,.5)" stroke-width="2" x1="164" y1="175" x2="548" y2="175"/>
+
+      <!-- 4 chips — w=82, h=55, spacing=94 (12px gap) ── -->
+      <!-- chip centres at x=206, 300, 394, 488 -->
+      <g class="chip" transform="translate(165,148)">
+        <rect class="chip-glow" width="82" height="55" rx="8"/>
+        <rect class="box" width="82" height="55" rx="8"/>
+        <text class="label" x="41" y="20">P300C #0</text>
+        <text class="sub" x="41" y="36" style="fill:rgba(79,209,197,.55);font-size:9px">tensix mesh</text>
+        <text class="sub accent" x="41" y="49" style="font-size:9px">●</text>
+      </g>
+      <g class="chip" transform="translate(259,148)">
+        <rect class="chip-glow" width="82" height="55" rx="8" style="animation-delay:-.6s"/>
+        <rect class="box" width="82" height="55" rx="8"/>
+        <text class="label" x="41" y="20">P300C #1</text>
+        <text class="sub" x="41" y="36" style="fill:rgba(79,209,197,.55);font-size:9px">tensix mesh</text>
+        <text class="sub accent" x="41" y="49" style="font-size:9px">●</text>
+      </g>
+      <g class="chip" transform="translate(353,148)">
+        <rect class="chip-glow" width="82" height="55" rx="8" style="animation-delay:-1.2s"/>
+        <rect class="box" width="82" height="55" rx="8"/>
+        <text class="label" x="41" y="20">P300C #2</text>
+        <text class="sub" x="41" y="36" style="fill:rgba(79,209,197,.55);font-size:9px">tensix mesh</text>
+        <text class="sub accent" x="41" y="49" style="font-size:9px">●</text>
+      </g>
+      <g class="chip" transform="translate(447,148)">
+        <rect class="chip-glow" width="82" height="55" rx="8" style="animation-delay:-1.8s"/>
+        <rect class="box" width="82" height="55" rx="8"/>
+        <text class="label" x="41" y="20">P300C #3</text>
+        <text class="sub" x="41" y="36" style="fill:rgba(79,209,197,.55);font-size:9px">tensix mesh</text>
+        <text class="sub accent" x="41" y="49" style="font-size:9px">●</text>
       </g>
 
-      <!-- bus line from compile to all chips -->
-      <line stroke="rgba(79,209,197,.4)" stroke-width="2" x1="170" y1="210" x2="260" y2="210"/>
-      <line stroke="rgba(79,209,197,.25)" stroke-width="1.5" stroke-dasharray="3 3"
-            x1="260" y1="210" x2="595" y2="210"/>
-      <!-- tick marks at each chip centre -->
-      <line stroke="rgba(79,209,197,.35)" stroke-width="1.5" x1="285" y1="210" x2="285" y2="178"/>
-      <line stroke="rgba(79,209,197,.35)" stroke-width="1.5" x1="370" y1="210" x2="370" y2="178"/>
-      <line stroke="rgba(79,209,197,.35)" stroke-width="1.5" x1="455" y1="210" x2="455" y2="178"/>
-      <line stroke="rgba(79,209,197,.35)" stroke-width="1.5" x1="540" y1="210" x2="540" y2="178"/>
+      <!-- hw_context_interval annotation — right of chips, inside block -->
+      <rect x="554" y="148" width="290" height="55" rx="6"
+            fill="rgba(244,196,113,.05)" stroke="rgba(244,196,113,.2)" stroke-width="1"/>
+      <text font-family="'Segoe UI',sans-serif" font-size="10" font-weight="600"
+            fill="#F4C471" x="569" y="164">hw_context_interval = 4</text>
+      <text font-family="'Segoe UI',sans-serif" font-size="9"
+            fill="rgba(244,196,113,.65)" x="569" y="178">hw net called every 4 events</text>
+      <text font-family="'Segoe UI',sans-serif" font-size="9"
+            fill="rgba(244,196,113,.65)" x="569" y="191">~500 ms PCIe dispatch per call</text>
 
-      <!-- 4 chips — no architecture label -->
-      <g class="chip" transform="translate(235,155)">
-        <rect class="chip-glow" width="100" height="55" rx="8"/>
-        <rect class="box" width="100" height="55" rx="8"/>
-        <text class="label" x="50" y="22">P300C #0</text>
-        <text class="sub accent" x="50" y="40">AI accelerator</text>
+      <!-- CPU net_token band — clearly below chips, inside block -->
+      <!-- chips bottom = 148+55 = 203; net_token starts at 213 (10px gap) -->
+      <g class="comp" transform="translate(34,213)">
+        <rect class="box" width="810" height="80" rx="8" fill="#0d2535"/>
+        <text class="label gold" x="405" y="20">CPU  net_token  (3-layer, ~50M params)</text>
+        <text class="sub" x="405" y="36">runs between hardware refreshes · top-p / top-k sampling per token</text>
+        <!-- interleaving indicator: [cpu][cpu][cpu][HW][cpu][cpu][cpu][HW] -->
+        <rect x="130" y="46" width="12" height="12" rx="2" fill="rgba(79,209,197,.15)" stroke="rgba(79,209,197,.3)" stroke-width="1"/>
+        <text font-family="monospace" font-size="7" fill="rgba(255,255,255,.3)" text-anchor="middle" x="136" y="56">cpu</text>
+        <rect x="148" y="46" width="12" height="12" rx="2" fill="rgba(79,209,197,.15)" stroke="rgba(79,209,197,.3)" stroke-width="1"/>
+        <text font-family="monospace" font-size="7" fill="rgba(255,255,255,.3)" text-anchor="middle" x="154" y="56">cpu</text>
+        <rect x="166" y="46" width="12" height="12" rx="2" fill="rgba(79,209,197,.15)" stroke="rgba(79,209,197,.3)" stroke-width="1"/>
+        <text font-family="monospace" font-size="7" fill="rgba(255,255,255,.3)" text-anchor="middle" x="172" y="56">cpu</text>
+        <rect x="184" y="44" width="16" height="16" rx="2" fill="rgba(79,209,197,.35)" stroke="rgba(79,209,197,.7)" stroke-width="1.5"/>
+        <text font-family="monospace" font-size="7" font-weight="700" fill="#4FD1C5" text-anchor="middle" x="192" y="56">HW</text>
+        <rect x="206" y="46" width="12" height="12" rx="2" fill="rgba(79,209,197,.15)" stroke="rgba(79,209,197,.3)" stroke-width="1"/>
+        <text font-family="monospace" font-size="7" fill="rgba(255,255,255,.3)" text-anchor="middle" x="212" y="56">cpu</text>
+        <rect x="224" y="46" width="12" height="12" rx="2" fill="rgba(79,209,197,.15)" stroke="rgba(79,209,197,.3)" stroke-width="1"/>
+        <text font-family="monospace" font-size="7" fill="rgba(255,255,255,.3)" text-anchor="middle" x="230" y="56">cpu</text>
+        <rect x="242" y="46" width="12" height="12" rx="2" fill="rgba(79,209,197,.15)" stroke="rgba(79,209,197,.3)" stroke-width="1"/>
+        <text font-family="monospace" font-size="7" fill="rgba(255,255,255,.3)" text-anchor="middle" x="248" y="56">cpu</text>
+        <rect x="260" y="44" width="16" height="16" rx="2" fill="rgba(79,209,197,.35)" stroke="rgba(79,209,197,.7)" stroke-width="1.5"/>
+        <text font-family="monospace" font-size="7" font-weight="700" fill="#4FD1C5" text-anchor="middle" x="268" y="56">HW</text>
+        <rect x="282" y="46" width="12" height="12" rx="2" fill="rgba(79,209,197,.15)" stroke="rgba(79,209,197,.3)" stroke-width="1"/>
+        <text font-family="monospace" font-size="7" fill="rgba(255,255,255,.3)" text-anchor="middle" x="288" y="56">cpu</text>
+        <text font-family="'Segoe UI',sans-serif" font-size="8" fill="rgba(255,255,255,.2)" x="302" y="56">···</text>
+        <text font-family="'Segoe UI',sans-serif" font-size="8" fill="rgba(255,255,255,.2)" x="100" y="56">···</text>
       </g>
-      <g class="chip" transform="translate(320,155)">
-        <rect class="chip-glow" width="100" height="55" rx="8" style="animation-delay:-.6s"/>
-        <rect class="box" width="100" height="55" rx="8"/>
-        <text class="label" x="50" y="22">P300C #1</text>
-        <text class="sub accent" x="50" y="40">AI accelerator</text>
-      </g>
-      <g class="chip" transform="translate(405,155)">
-        <rect class="chip-glow" width="100" height="55" rx="8" style="animation-delay:-1.2s"/>
-        <rect class="box" width="100" height="55" rx="8"/>
-        <text class="label" x="50" y="22">P300C #2</text>
-        <text class="sub accent" x="50" y="40">AI accelerator</text>
-      </g>
-      <g class="chip" transform="translate(490,155)">
-        <rect class="chip-glow" width="100" height="55" rx="8" style="animation-delay:-1.8s"/>
-        <rect class="box" width="100" height="55" rx="8"/>
-        <text class="label" x="50" y="22">P300C #3</text>
-        <text class="sub accent" x="50" y="40">AI accelerator</text>
-      </g>
-
-      <!-- hw_context_interval annotation -->
-      <text font-family="'Segoe UI',sans-serif" font-size="10" fill="#F4C471" x="610" y="170">hw_context_interval = 4</text>
-      <text font-family="'Segoe UI',sans-serif" font-size="10" fill="rgba(244,196,113,.6)" x="610" y="184">hw called every 4 events</text>
-      <text font-family="'Segoe UI',sans-serif" font-size="10" fill="rgba(244,196,113,.6)" x="610" y="198">~500ms PCIe dispatch/call</text>
-
-      <!-- CPU net_token band -->
-      <g class="comp" transform="translate(40,230)">
-        <rect class="box" width="600" height="56" rx="8" fill="#142030"/>
-        <text class="label gold" x="300" y="22">CPU  net_token  (3-layer, ~50M params)</text>
-        <text class="sub" x="300" y="38">runs between hardware refreshes · top-p / top-k sampling per token</text>
-      </g>
-      <!-- flowing note particles -->
-      <g transform="translate(200,258)">
+      <!-- flowing note particles inside net_token -->
+      <g transform="translate(440,260)">
         <circle class="note-particle" r="3" cx="0" cy="0"/>
         <circle class="note-particle" r="2.5" cx="0" cy="0"/>
         <circle class="note-particle" r="2" cx="0" cy="0"/>
       </g>
 
-      <!-- vertical arrow down from hw block -->
-      <line class="arrow" x1="430" y1="360" x2="430" y2="398"/>
+      <!-- vertical arrow down from hw block (bottom=312) -->
+      <line class="arrow" x1="440" y1="312" x2="440" y2="330"/>
 
-      <!-- ── Row 3: Coherence ── -->
-      <g class="comp" transform="translate(155,400)">
-        <rect class="box" width="550" height="76" rx="8"/>
-        <text class="label" x="275" y="22">Coherence Layer</text>
-        <rect x="16"  y="32" width="118" height="26" rx="6" fill="rgba(79,209,197,.1)"  stroke="rgba(79,209,197,.3)"  stroke-width="1"/>
-        <text font-family="'Segoe UI',sans-serif" font-size="10" fill="#4FD1C5"  text-anchor="middle" x="75"  y="49">scale_quantize</text>
-        <rect x="144" y="32" width="118" height="26" rx="6" fill="rgba(236,150,184,.1)" stroke="rgba(236,150,184,.3)" stroke-width="1"/>
-        <text font-family="'Segoe UI',sans-serif" font-size="10" fill="#EC96B8" text-anchor="middle" x="203" y="49">chord_aware_filter</text>
-        <rect x="272" y="32" width="118" height="26" rx="6" fill="rgba(244,196,113,.1)" stroke="rgba(244,196,113,.3)" stroke-width="1"/>
-        <text font-family="'Segoe UI',sans-serif" font-size="10" fill="#F4C471" text-anchor="middle" x="331" y="49">humanize_velocities</text>
-        <rect x="400" y="32" width="118" height="26" rx="6" fill="rgba(39,174,96,.1)"  stroke="rgba(39,174,96,.3)"  stroke-width="1"/>
-        <text font-family="'Segoe UI',sans-serif" font-size="10" fill="#27AE60" text-anchor="middle" x="459" y="49">nudge_timing</text>
+      <!-- ── Row 3: Coherence (y=332, h=76) ── -->
+      <g class="comp" transform="translate(155,332)">
+        <rect class="box" width="570" height="76" rx="8"/>
+        <text class="label" x="285" y="22">Coherence Layer</text>
+        <rect x="16"  y="32" width="122" height="26" rx="6" fill="rgba(79,209,197,.1)"  stroke="rgba(79,209,197,.3)"  stroke-width="1"/>
+        <text font-family="'Segoe UI',sans-serif" font-size="10" fill="#4FD1C5"  text-anchor="middle" x="77"  y="49">scale_quantize</text>
+        <rect x="148" y="32" width="122" height="26" rx="6" fill="rgba(236,150,184,.1)" stroke="rgba(236,150,184,.3)" stroke-width="1"/>
+        <text font-family="'Segoe UI',sans-serif" font-size="10" fill="#EC96B8" text-anchor="middle" x="209" y="49">chord_aware_filter</text>
+        <rect x="280" y="32" width="122" height="26" rx="6" fill="rgba(244,196,113,.1)" stroke="rgba(244,196,113,.3)" stroke-width="1"/>
+        <text font-family="'Segoe UI',sans-serif" font-size="10" fill="#F4C471" text-anchor="middle" x="341" y="49">humanize_velocities</text>
+        <rect x="412" y="32" width="122" height="26" rx="6" fill="rgba(39,174,96,.1)"  stroke="rgba(39,174,96,.3)"  stroke-width="1"/>
+        <text font-family="'Segoe UI',sans-serif" font-size="10" fill="#27AE60" text-anchor="middle" x="473" y="49">nudge_timing</text>
       </g>
 
-      <!-- vertical arrow down from coherence to GM MIDI -->
-      <line class="arrow" x1="430" y1="476" x2="430" y2="508"/>
+      <!-- arrow coherence → GM MIDI -->
+      <line class="arrow" x1="440" y1="408" x2="440" y2="428"/>
 
-      <!-- ── Row 4: GM MIDI (fan-out) ── -->
-      <g class="comp" transform="translate(330,510)">
+      <!-- ── Row 4: GM MIDI ── -->
+      <g class="comp" transform="translate(340,430)">
         <rect class="box" width="200" height="40" rx="8"/>
         <text class="label accent" x="100" y="24">GM MIDI</text>
       </g>
 
-      <!-- vertical stem down from GM MIDI -->
-      <line class="arrow" x1="430" y1="550" x2="430" y2="572"/>
-      <!-- horizontal branch bar -->
-      <line stroke="rgba(79,209,197,.4)" stroke-width="2" x1="190" y1="572" x2="670" y2="572"/>
+      <!-- stem + horizontal branch bar -->
+      <line class="arrow" x1="440" y1="470" x2="440" y2="488"/>
+      <line stroke="rgba(79,209,197,.45)" stroke-width="2" x1="180" y1="488" x2="700" y2="488"/>
 
-      <!-- branch arrows down to three destinations -->
-      <line class="arrow" x1="190" y1="572" x2="190" y2="592"/>
-      <line class="arrow" x1="430" y1="572" x2="430" y2="592"/>
-      <line class="arrow" x1="670" y1="572" x2="670" y2="592"/>
+      <!-- branch arrows to 3 destinations -->
+      <line class="arrow" x1="180" y1="488" x2="180" y2="504"/>
+      <line class="arrow" x1="440" y1="488" x2="440" y2="504"/>
+      <line class="arrow" x1="700" y1="488" x2="700" y2="504"/>
 
-      <!-- Destination 1: FluidSynth (left) -->
-      <g class="comp" transform="translate(110,594)">
-        <rect class="box" width="160" height="40" rx="8"/>
-        <text class="label gold" x="80" y="24">FluidSynth</text>
+      <!-- Dest 1: FluidSynth -->
+      <g class="comp" transform="translate(100,506)">
+        <rect class="box" width="160" height="38" rx="8"/>
+        <text class="label gold" x="80" y="23">FluidSynth</text>
       </g>
-      <line class="arrow" x1="190" y1="634" x2="190" y2="652"/>
-      <g class="comp" transform="translate(120,654)">
-        <rect class="box" width="140" height="36" rx="8"/>
-        <text class="label green" x="70" y="22">loop player</text>
+      <line class="arrow" x1="180" y1="544" x2="180" y2="558"/>
+      <g class="comp" transform="translate(110,560)">
+        <rect class="box" width="140" height="34" rx="8"/>
+        <text class="label green" x="70" y="21">loop player</text>
       </g>
-      <line class="arrow" x1="190" y1="690" x2="190" y2="706"/>
-      <text font-family="'Segoe UI',sans-serif" font-size="10" fill="rgba(39,174,96,.8)" text-anchor="middle" x="190" y="716">speakers</text>
+      <line class="arrow" x1="180" y1="594" x2="180" y2="606"/>
+      <text font-family="'Segoe UI',sans-serif" font-size="10" fill="rgba(39,174,96,.8)" text-anchor="middle" x="180" y="618">🔊 speakers</text>
 
-      <!-- Destination 2: Hardware synth (center) -->
-      <g class="comp" transform="translate(340,594)">
-        <rect class="box" width="180" height="40" rx="8"/>
-        <text class="label" x="90" y="16">Hardware</text>
-        <text class="label" x="90" y="30">Synthesizer</text>
+      <!-- Dest 2: Hardware Synth -->
+      <g class="comp" transform="translate(360,506)">
+        <rect class="box" width="160" height="38" rx="8"/>
+        <text class="label" x="80" y="14">Hardware</text>
+        <text class="label" x="80" y="28">Synthesizer</text>
       </g>
-      <text font-family="'Segoe UI',sans-serif" font-size="10" fill="var(--text-dim)" text-anchor="middle" x="430" y="650">MIDI keyboard / module</text>
-      <text font-family="'Segoe UI',sans-serif" font-size="10" fill="var(--text-dim)" text-anchor="middle" x="430" y="663">any MIDI-capable device</text>
+      <text font-family="'Segoe UI',sans-serif" font-size="9" fill="var(--text-dim)" text-anchor="middle" x="440" y="558">MIDI keyboard / module</text>
+      <text font-family="'Segoe UI',sans-serif" font-size="9" fill="var(--text-dim)" text-anchor="middle" x="440" y="570">any MIDI-capable device</text>
 
-      <!-- Destination 3: DAW / Soft Synth (right) -->
-      <g class="comp" transform="translate(580,594)">
-        <rect class="box" width="180" height="40" rx="8"/>
-        <text class="label pink" x="90" y="16">DAW /</text>
-        <text class="label pink" x="90" y="30">Software Synth</text>
+      <!-- Dest 3: DAW / Soft Synth -->
+      <g class="comp" transform="translate(618,506)">
+        <rect class="box" width="164" height="38" rx="8"/>
+        <text class="label pink" x="82" y="14">DAW /</text>
+        <text class="label pink" x="82" y="28">Software Synth</text>
       </g>
-      <text font-family="'Segoe UI',sans-serif" font-size="10" fill="var(--text-dim)" text-anchor="middle" x="670" y="650">Ableton · Logic · Reaper</text>
-      <text font-family="'Segoe UI',sans-serif" font-size="10" fill="var(--text-dim)" text-anchor="middle" x="670" y="663">VST / AU · ALSA port</text>
+      <text font-family="'Segoe UI',sans-serif" font-size="9" fill="var(--text-dim)" text-anchor="middle" x="700" y="558">Ableton · Logic · Reaper</text>
+      <text font-family="'Segoe UI',sans-serif" font-size="9" fill="var(--text-dim)" text-anchor="middle" x="700" y="570">VST / AU · ALSA port</text>
 
     </svg><!-- /svg -->
   </div><!-- /machine-wrap -->
@@ -1015,6 +1073,130 @@ footer a { color: var(--teal); }
       <h4>Collaborative Session</h4>
       <p>Open-ended start. The assistant asks about style, mood, instrumentation, and reference tracks,
          then begins generating and iterating — a co-composer in your chat window.</p>
+    </div>
+
+  </div>
+
+  <!-- workflows -->
+  <div class="section-label">Tool workflows</div>
+  <div class="workflow-grid">
+
+    <!-- Workflow 1: Real-time loop -->
+    <div class="workflow-card">
+      <h4>Real-time loop</h4>
+      <div class="wf-sub">Generate once, then keep improving while the music plays</div>
+      <svg class="flow-svg" viewBox="0 0 300 190" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="wa1" markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto">
+            <polygon points="0 0,7 2.5,0 5" fill="rgba(79,209,197,.5)"/>
+          </marker>
+        </defs>
+        <!-- set_musical_context -->
+        <rect x="10" y="8" width="130" height="28" rx="5" fill="#1A3C47" stroke="rgba(79,209,197,.4)" stroke-width="1"/>
+        <text font-family="'Cascadia Code',monospace" font-size="8.5" fill="#4FD1C5" text-anchor="middle" x="75" y="26">set_musical_context</text>
+        <line x1="140" y1="22" x2="152" y2="22" stroke="rgba(79,209,197,.4)" stroke-width="1.5" marker-end="url(#wa1)"/>
+        <!-- synth_start -->
+        <rect x="154" y="8" width="100" height="28" rx="5" fill="#1A3C47" stroke="rgba(79,209,197,.4)" stroke-width="1"/>
+        <text font-family="'Cascadia Code',monospace" font-size="8.5" fill="#4FD1C5" text-anchor="middle" x="204" y="26">synth_start</text>
+        <!-- down arrow to generate -->
+        <line x1="75" y1="36" x2="75" y2="50" stroke="rgba(79,209,197,.4)" stroke-width="1.5" marker-end="url(#wa1)"/>
+        <!-- generate_midi -->
+        <rect x="10" y="52" width="130" height="28" rx="5" fill="#1A3C47" stroke="rgba(79,209,197,.5)" stroke-width="1.5"/>
+        <text font-family="'Cascadia Code',monospace" font-size="8.5" fill="#81E6D9" text-anchor="middle" x="75" y="70">generate_midi</text>
+        <line x1="140" y1="66" x2="152" y2="66" stroke="rgba(79,209,197,.4)" stroke-width="1.5" marker-end="url(#wa1)"/>
+        <!-- loop_play -->
+        <rect x="154" y="52" width="100" height="28" rx="5" fill="#1A3C47" stroke="rgba(39,174,96,.4)" stroke-width="1.5"/>
+        <text font-family="'Cascadia Code',monospace" font-size="8.5" fill="#27AE60" text-anchor="middle" x="204" y="70">loop_play</text>
+        <!-- while-playing box -->
+        <rect x="10" y="98" width="280" height="72" rx="6" fill="rgba(26,60,71,.5)" stroke="rgba(79,209,197,.2)" stroke-width="1" stroke-dasharray="4 3"/>
+        <text font-family="'Segoe UI',sans-serif" font-size="7.5" fill="rgba(255,255,255,.35)" x="18" y="112">while playing…</text>
+        <!-- generate next -->
+        <rect x="20" y="116" width="115" height="26" rx="5" fill="#1A3C47" stroke="rgba(79,209,197,.5)" stroke-width="1.5"/>
+        <text font-family="'Cascadia Code',monospace" font-size="8" fill="#81E6D9" text-anchor="middle" x="77.5" y="133">generate_midi</text>
+        <line x1="135" y1="129" x2="148" y2="129" stroke="rgba(79,209,197,.4)" stroke-width="1.5" marker-end="url(#wa1)"/>
+        <!-- loop_queue -->
+        <rect x="150" y="116" width="125" height="26" rx="5" fill="#1A3C47" stroke="rgba(39,174,96,.4)" stroke-width="1.5"/>
+        <text font-family="'Cascadia Code',monospace" font-size="8" fill="#27AE60" text-anchor="middle" x="212.5" y="133">loop_queue</text>
+        <!-- loop_stop -->
+        <rect x="85" y="178" width="100" height="24" rx="5" fill="#1A3C47" stroke="rgba(255,107,107,.35)" stroke-width="1"/>
+        <text font-family="'Cascadia Code',monospace" font-size="8" fill="rgba(255,107,107,.8)" text-anchor="middle" x="135" y="194">loop_stop</text>
+      </svg>
+    </div>
+
+    <!-- Workflow 2: Iterative composition -->
+    <div class="workflow-card">
+      <h4>Iterative composition</h4>
+      <div class="wf-sub">Generate → analyze → improve in a conversation loop</div>
+      <svg class="flow-svg" viewBox="0 0 300 190" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="wa2" markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto">
+            <polygon points="0 0,7 2.5,0 5" fill="rgba(79,209,197,.5)"/>
+          </marker>
+        </defs>
+        <!-- set context -->
+        <rect x="10" y="8" width="130" height="26" rx="5" fill="#1A3C47" stroke="rgba(79,209,197,.4)" stroke-width="1"/>
+        <text font-family="'Cascadia Code',monospace" font-size="8.5" fill="#4FD1C5" text-anchor="middle" x="75" y="25">set_musical_context</text>
+        <line x1="75" y1="34" x2="75" y2="48" stroke="rgba(79,209,197,.4)" stroke-width="1.5" marker-end="url(#wa2)"/>
+        <!-- generate -->
+        <rect x="10" y="50" width="130" height="26" rx="5" fill="#1A3C47" stroke="rgba(79,209,197,.5)" stroke-width="1.5"/>
+        <text font-family="'Cascadia Code',monospace" font-size="8.5" fill="#81E6D9" text-anchor="middle" x="75" y="67">generate_midi</text>
+        <line x1="75" y1="76" x2="75" y2="90" stroke="rgba(79,209,197,.4)" stroke-width="1.5" marker-end="url(#wa2)"/>
+        <!-- describe -->
+        <rect x="10" y="92" width="130" height="26" rx="5" fill="#1A3C47" stroke="rgba(236,150,184,.4)" stroke-width="1"/>
+        <text font-family="'Cascadia Code',monospace" font-size="8.5" fill="#EC96B8" text-anchor="middle" x="75" y="109">describe_midi</text>
+        <line x1="140" y1="105" x2="152" y2="105" stroke="rgba(79,209,197,.4)" stroke-width="1.5" marker-end="url(#wa2)"/>
+        <!-- chat -->
+        <rect x="154" y="92" width="130" height="26" rx="5" fill="#1A3C47" stroke="rgba(236,150,184,.4)" stroke-width="1"/>
+        <text font-family="'Cascadia Code',monospace" font-size="8.5" fill="#EC96B8" text-anchor="middle" x="219" y="109">chat_with_midi</text>
+        <!-- down arrow from describe to continue -->
+        <line x1="75" y1="118" x2="75" y2="132" stroke="rgba(79,209,197,.4)" stroke-width="1.5" marker-end="url(#wa2)"/>
+        <!-- continue_midi -->
+        <rect x="10" y="134" width="130" height="26" rx="5" fill="#1A3C47" stroke="rgba(79,209,197,.5)" stroke-width="1.5"/>
+        <text font-family="'Cascadia Code',monospace" font-size="8.5" fill="#81E6D9" text-anchor="middle" x="75" y="151">continue_midi</text>
+        <!-- back arrow (loop back to describe) -->
+        <path d="M 140 147 Q 160 147 160 105" stroke="rgba(79,209,197,.25)" stroke-width="1.2" fill="none" stroke-dasharray="3 3" marker-end="url(#wa2)"/>
+        <!-- play -->
+        <rect x="10" y="174" width="130" height="26" rx="5" fill="#1A3C47" stroke="rgba(39,174,96,.4)" stroke-width="1"/>
+        <text font-family="'Cascadia Code',monospace" font-size="8.5" fill="#27AE60" text-anchor="middle" x="75" y="191">play_midi</text>
+      </svg>
+    </div>
+
+    <!-- Workflow 3: Multi-pattern chaining -->
+    <div class="workflow-card">
+      <h4>Multi-pattern chaining</h4>
+      <div class="wf-sub">Each pattern hears the previous — how Smoke &amp; Mirrors was made</div>
+      <svg class="flow-svg" viewBox="0 0 300 190" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="wa3" markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto">
+            <polygon points="0 0,7 2.5,0 5" fill="rgba(79,209,197,.5)"/>
+          </marker>
+        </defs>
+        <!-- set context -->
+        <rect x="80" y="6" width="140" height="26" rx="5" fill="#1A3C47" stroke="rgba(79,209,197,.4)" stroke-width="1"/>
+        <text font-family="'Cascadia Code',monospace" font-size="8" fill="#4FD1C5" text-anchor="middle" x="150" y="23">set_musical_context</text>
+        <line x1="150" y1="32" x2="150" y2="46" stroke="rgba(79,209,197,.4)" stroke-width="1.5" marker-end="url(#wa3)"/>
+        <!-- P1 -->
+        <rect x="10" y="48" width="280" height="26" rx="5" fill="#1A3C47" stroke="rgba(79,209,197,.5)" stroke-width="1.5"/>
+        <text font-family="'Cascadia Code',monospace" font-size="8" fill="#81E6D9" x="16" y="65">generate_midi(</text>
+        <text font-family="'Cascadia Code',monospace" font-size="8" fill="#F4C471" x="124" y="65">"cold start"</text>
+        <text font-family="'Cascadia Code',monospace" font-size="8" fill="#81E6D9" x="192" y="65">)  →  p1</text>
+        <line x1="150" y1="74" x2="150" y2="88" stroke="rgba(79,209,197,.4)" stroke-width="1.5" marker-end="url(#wa3)"/>
+        <!-- P2 -->
+        <rect x="10" y="90" width="280" height="26" rx="5" fill="#1A3C47" stroke="rgba(79,209,197,.4)" stroke-width="1"/>
+        <text font-family="'Cascadia Code',monospace" font-size="8" fill="#81E6D9" x="16" y="107">generate_midi(</text>
+        <text font-family="'Cascadia Code',monospace" font-size="8" fill="#EC96B8" x="124" y="107">source=p1</text>
+        <text font-family="'Cascadia Code',monospace" font-size="8" fill="#81E6D9" x="192" y="107">)  →  p2</text>
+        <line x1="150" y1="116" x2="150" y2="130" stroke="rgba(79,209,197,.4)" stroke-width="1.5" marker-end="url(#wa3)"/>
+        <!-- P3 -->
+        <rect x="10" y="132" width="280" height="26" rx="5" fill="#1A3C47" stroke="rgba(79,209,197,.4)" stroke-width="1"/>
+        <text font-family="'Cascadia Code',monospace" font-size="8" fill="#81E6D9" x="16" y="149">generate_midi(</text>
+        <text font-family="'Cascadia Code',monospace" font-size="8" fill="#EC96B8" x="124" y="149">source=p2</text>
+        <text font-family="'Cascadia Code',monospace" font-size="8" fill="#81E6D9" x="192" y="149">)  →  p3</text>
+        <line x1="150" y1="158" x2="150" y2="172" stroke="rgba(79,209,197,.4)" stroke-width="1.5" marker-end="url(#wa3)"/>
+        <!-- play all -->
+        <rect x="60" y="174" width="180" height="24" rx="5" fill="#1A3C47" stroke="rgba(39,174,96,.4)" stroke-width="1"/>
+        <text font-family="'Cascadia Code',monospace" font-size="8" fill="#27AE60" text-anchor="middle" x="150" y="190">play p1 → p2 → p3 …</text>
+      </svg>
     </div>
 
   </div>
