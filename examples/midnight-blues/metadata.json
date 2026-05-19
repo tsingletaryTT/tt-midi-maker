@@ -1,17 +1,17 @@
 {
   "suite": "Midnight in East Texas",
-  "description": "A three-pattern A minor blues. Electric guitar leads with blues-scale phrasing (b5 blue notes preserved), piano comping, and a shuffled kit. The coherence layer applies triplet swing (2:1 ratio) to off-beat eighth notes — the shuffle feel is structural, not random jitter. Vocabulary masking (disable_patch_change, disable_control_change) and all-channel prompt conditioning ensure clean instrument separation. Per-role velocity shaping (melody 80-110, harmony 55-80, bass 50-75) adds dynamic depth.",
+  "description": "A three-pattern 1930s Delta blues in A minor. Acoustic steel guitar (GM 25) leads with pentatonic-minor phrasing, barrelhouse piano comping, upright bass, and a shuffled kit at 80 BPM. Pentatonic minor [0,3,5,7,10] at strictness 0.65 keeps melodic lines period-correct — no tritone blue note, no chromatic passing tones. Triplet swing (2:1 ratio) baked into every upbeat for authentic shuffle feel. Vocabulary masking and per-role velocity shaping round out the texture.",
   "generated": "2026-05-19",
   "hardware": "4× Tenstorrent P300C chips (tt-forge)",
   "model": "skytnt/midi-model (LlamaModel, 12-layer, ~350M params)",
 
   "musical_parameters": {
     "key": "A minor",
-    "bpm": 92,
+    "bpm": 80,
     "bars": 8,
-    "loop_duration_sec": 20.9,
+    "loop_duration_sec": 24.0,
     "chord_progression": ["A7", "D7", "A7", "E7"],
-    "style": "blues"
+    "style": "1930s Delta blues"
   },
 
   "generation_parameters": {
@@ -23,17 +23,17 @@
   },
 
   "coherence_settings": {
-    "scale_mode": "blues [0,3,5,6,7,10] — b5 blue note preserved",
-    "scale_strictness": 0.3,
-    "chord_semitone_tolerance": 1,
+    "scale_mode": "pentatonic_minor [0,3,5,7,10] — no tritone b5",
+    "scale_strictness": 0.65,
+    "chord_semitone_tolerance": 0,
     "swing_ratio": 0.67,
     "swing": "triplet shuffle — off-beat eighths snapped to 2/3 beat position"
   },
 
   "instruments": {
-    "melody": {"role": "electric guitar (jazz)", "gm_program": 27, "note_range": "A2–E5"},
+    "melody": {"role": "acoustic steel guitar", "gm_program": 25, "note_range": "A2–E5"},
     "harmony": {"role": "acoustic grand piano", "gm_program": 0, "note_range": "C3–C5"},
-    "bass":    {"role": "acoustic bass (inactive — model generated guitar+piano+drums)", "gm_program": 32, "note_range": "A1–A3"},
+    "bass":    {"role": "acoustic bass", "gm_program": 32, "note_range": "A1–A3"},
     "drums":   {"role": "drum kit", "gm_program": 0, "channel": 10}
   },
 
@@ -43,31 +43,31 @@
       "label": "Pattern 1 — intro (cold start)",
       "source": null,
       "max_events": 128,
-      "generation_time_sec": 48.2,
+      "generation_time_sec": 47.7,
       "ev_per_sec": 2.7,
-      "loop_ratio": 2.31,
-      "note": "JIT cache warm from prior classical session. Blues scale with b5 blue note active.",
-      "tracks": {"melody": 14, "bass": 11, "harmony": 20, "drums": 58}
+      "loop_ratio": 1.99,
+      "note": "JIT cache warm. Pentatonic minor — clean, period-correct Delta blues phrasing.",
+      "tracks": {"melody": 33, "bass": 2, "harmony": 26, "drums": 43}
     },
     {
       "file": "p2_groove.mid",
       "label": "Pattern 2 — groove (seeded from P1)",
       "source": "p1_intro.mid",
       "max_events": 128,
-      "generation_time_sec": 29.2,
+      "generation_time_sec": 28.9,
       "ev_per_sec": 4.4,
-      "loop_ratio": 1.40,
-      "tracks": {"melody": 37, "bass": 48, "harmony": 21, "drums": 99}
+      "loop_ratio": 1.20,
+      "tracks": {"melody": 55, "bass": 8, "harmony": 59, "drums": 69}
     },
     {
       "file": "p3_resolution.mid",
       "label": "Pattern 3 — resolution (seeded from P2)",
       "source": "p2_groove.mid",
       "max_events": 160,
-      "generation_time_sec": 38.5,
+      "generation_time_sec": 38.0,
       "ev_per_sec": 4.2,
-      "loop_ratio": 1.84,
-      "tracks": {"melody": 79, "bass": 59, "harmony": 70, "drums": 126}
+      "loop_ratio": 1.58,
+      "tracks": {"melody": 75, "bass": 14, "harmony": 114, "drums": 120}
     }
   ],
 
