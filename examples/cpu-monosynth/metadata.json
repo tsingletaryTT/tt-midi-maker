@@ -1,0 +1,88 @@
+{
+  "suite": "Monosynth — C Major Chiptune",
+  "description": "A three-pattern single-voice chiptune in C major. Lead 1 Square (GM 80) carries a clean pentatonic melody over Cmaj7→Am7→Fmaj7→G7 at 120 BPM. Single-role generation (melody only, density 1.0, all others 0.0) concentrates the model's output on one clean voice — no channel bleed, no multi-track coherence conflicts. Strict pentatonic major (strictness=0.9) keeps the lines crisp and period-correct. Generated on TT hardware; CPU fallback also works at smaller max_events.",
+  "generated": "2026-05-19",
+  "hardware": "4× Tenstorrent P300C chips (tt-forge)",
+  "model": "skytnt/midi-model (LlamaModel, 12-layer, ~350M params)",
+
+  "musical_parameters": {
+    "key": "C major",
+    "bpm": 120,
+    "bars": 4,
+    "loop_duration_sec": 8.0,
+    "chord_progression": ["Cmaj7", "Am7", "Fmaj7", "G7"],
+    "style": "chiptune / monosynth"
+  },
+
+  "generation_parameters": {
+    "hw_context_interval": 2,
+    "max_events": 96,
+    "temperature": 1.0,
+    "top_p": 0.98,
+    "top_k": 20
+  },
+
+  "coherence_settings": {
+    "scale_mode": "pentatonic_major [0,2,4,7,9] — clean chip feel",
+    "scale_strictness": 0.9,
+    "timing": "nudge ±6 ticks (tight rhythmic lock)",
+    "swing": "none"
+  },
+
+  "instruments": {
+    "melody": {"role": "Lead 1 Square", "gm_program": 80, "note_range": "C4–C7"},
+    "harmony": {"role": "none (density 0)", "gm_program": null},
+    "bass":    {"role": "none (density 0)", "gm_program": null},
+    "drums":   {"role": "none (density 0)", "channel": "—"}
+  },
+
+  "patterns": [
+    {
+      "file": "p1_theme.mid",
+      "label": "Pattern 1 — theme (cold start)",
+      "source": null,
+      "max_events": 96,
+      "generation_time_sec": 41.4,
+      "ev_per_sec": 2.3,
+      "loop_ratio": 5.18,
+      "note": "Includes forge compile time (~25s JIT). Subsequent patterns use JIT cache.",
+      "tracks": {"melody": 45}
+    },
+    {
+      "file": "p2_variation.mid",
+      "label": "Pattern 2 — variation (seeded from P1)",
+      "source": "p1_theme.mid",
+      "max_events": 96,
+      "generation_time_sec": 21.4,
+      "ev_per_sec": 4.5,
+      "loop_ratio": 2.68,
+      "tracks": {"melody": 38}
+    },
+    {
+      "file": "p3_development.mid",
+      "label": "Pattern 3 — development (seeded from P2)",
+      "source": "p2_variation.mid",
+      "max_events": 96,
+      "generation_time_sec": 22.1,
+      "ev_per_sec": 4.3,
+      "loop_ratio": 2.76,
+      "tracks": {"melody": 44}
+    }
+  ],
+
+  "performance_notes": {
+    "forge_compile_time_sec": "~25 (included in P1)",
+    "jit_cache": "hits on P2/P3",
+    "hw_calls_per_pattern": 48,
+    "hw_call_latency_ms": 500,
+    "cpu_fallback": false,
+    "quality_features": {
+      "single_role_focus": true,
+      "disable_patch_change": true,
+      "disable_control_change": true,
+      "channel_masking": true,
+      "velocity_shaping": true,
+      "scale_mode": "pentatonic_major"
+    }
+  }
+}
