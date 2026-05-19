@@ -13,13 +13,13 @@ Chords: Dm → F → Gm → A7   (i – III – iv – V7)
 
 Instruments
 -----------
-  melody   — String Ensemble 1  (program 48)    D4–D7  (strings carry the soprano line)
-  harmony  — Acoustic Grand Piano (program 0)   D2–D5  (piano comps below strings)
-  bass     — Contrabass          (program 43)   D1–A3  (bowed bass continuo)
+  melody   — Acoustic Grand Piano (program 0)    D4–D7  (singing treble line)
+  harmony  — String Ensemble 1   (program 48)    A2–A5  (lush string chords)
+  bass     — Contrabass          (program 43)    D1–A3  (bowed bass continuo)
   drums    — Silent (density 0)  — no percussion in this piece
 
-Role assignment: strings on the melody channel (ch1) so the model actively generates
-them. Piano comps on harmony (ch3). Both roles audible at velocity 75-105.
+The model favours generating piano notes — string chord notes are fewer but boosted
+to velocity 90-115 so each one is clearly audible in the mix (MuseScore sf3 helps too).
 """
 from __future__ import annotations
 
@@ -64,17 +64,19 @@ CHORDS = ["Dm", "F", "Gm", "A7"]
 
 LOOP_SECS = BARS * 4 * (60.0 / BPM)
 
-STRING_PROGRAM    = 48   # String Ensemble 1 — soprano melody line
-STRING_RANGE      = [62, 98]  # D4 – D7  (high singing register for strings)
-PIANO_PROGRAM     = 0    # Acoustic Grand Piano — comps below strings
-PIANO_RANGE       = [38, 74]  # D2 – D5  (mid-register comp)
+PIANO_PROGRAM     = 0    # Acoustic Grand Piano — singing treble line
+PIANO_RANGE       = [62, 98]  # D4 – D7  (high register; model prefers generating here)
+STRING_PROGRAM    = 48   # String Ensemble 1 — chord support
+STRING_RANGE      = [45, 69]  # A2 – A5  (orchestral string range)
 CONTRABASS_PROGRAM = 43  # Contrabass (bowed)
 CONTRABASS_RANGE  = [26, 57]  # D1 – A3  (full bass register)
 
-# Custom velocity windows: both melody and harmony need to be audible at this BPM
+# Strings (harmony) are boosted to be clearly audible despite fewer notes.
+# The model prefers generating piano (program 0) on the melody channel —
+# that's accepted, with string chords prominent when they appear.
 VELOCITY_RANGES = {
-    "melody":  (75, 105),  # strings — prominent but not harsh
-    "harmony": (75, 100),  # piano comp — audible alongside strings
+    "melody":  (80, 108),  # piano melody — bright, singing
+    "harmony": (90, 115),  # strings — boosted so each note is clearly present
     "bass":    (50,  75),  # contrabass — supportive foundation
     "drums":   (60, 100),  # unused (no drums in this piece)
 }
@@ -83,11 +85,9 @@ SUITE_ROLES: dict = {}
 for name, cfg in ROLES_CONFIG.items():
     overrides: dict = {}
     if name == "melody":
-        # Strings on the melody channel (ch1) — model generates ch1 most actively
-        overrides = {"program": STRING_PROGRAM, "note_range": STRING_RANGE}
-    elif name == "harmony":
-        # Piano comping on harmony channel (ch3)
         overrides = {"program": PIANO_PROGRAM, "note_range": PIANO_RANGE}
+    elif name == "harmony":
+        overrides = {"program": STRING_PROGRAM, "note_range": STRING_RANGE}
     elif name == "bass":
         overrides = {"program": CONTRABASS_PROGRAM, "note_range": CONTRABASS_RANGE}
     SUITE_ROLES[name] = {**cfg, **overrides}
@@ -154,9 +154,9 @@ def generate(
     stamped = []
     for t in tracks:
         if t.role == "melody":
-            stamped.append(replace(t, program=STRING_PROGRAM))
-        elif t.role == "harmony":
             stamped.append(replace(t, program=PIANO_PROGRAM))
+        elif t.role == "harmony":
+            stamped.append(replace(t, program=STRING_PROGRAM))
         elif t.role == "bass":
             stamped.append(replace(t, program=CONTRABASS_PROGRAM))
         else:
@@ -189,7 +189,7 @@ def main():
     print(f"  Key     : {KEY}   BPM: {BPM}")
     print(f"  Chords  : {' → '.join(CHORDS)}")
     print(f"  Loop    : {LOOP_SECS:.1f}s per {BARS}-bar phrase")
-    print(f"  Roles   : strings (melody) + piano (harmony) + contrabass (no drums)")
+    print(f"  Roles   : piano + strings (boosted velocity) + contrabass (no drums)")
     print(f"  Output  : {OUTPUT_DIR}")
     bar()
 

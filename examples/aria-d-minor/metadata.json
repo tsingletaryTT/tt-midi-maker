@@ -1,6 +1,6 @@
 {
   "suite": "Aria in D Minor",
-  "description": "A three-pattern Baroque/Classical piece in D minor. Acoustic piano carries the melody over sustained string ensemble chords, with contrabass basso continuo. Strict scale adherence brings the harmonic minor leading tone (C#) to life on cadence points. Vocabulary masking (disable_patch_change, disable_control_change) and all-channel prompt conditioning ensure clean instrument separation. Per-role velocity shaping (melody 80-110, harmony 55-80, bass 50-75) adds dynamic depth.",
+  "description": "A three-pattern Baroque/Classical piece in D minor. Acoustic piano carries the melody over sustained string ensemble chords (boosted velocity 90-115 for audibility), with contrabass basso continuo. Strict scale adherence brings the harmonic minor leading tone (C#) to life on cadence points. MuseScore General sf3 soundfont improves string timbre significantly. Vocabulary masking and per-role velocity shaping add dynamic depth.",
   "generated": "2026-05-19",
   "hardware": "4× Tenstorrent P300C chips (tt-forge)",
   "model": "skytnt/midi-model (LlamaModel, 12-layer, ~350M params)",
@@ -31,8 +31,9 @@
 
   "instruments": {
     "melody": {"role": "acoustic grand piano", "gm_program": 0, "note_range": "D4–D7"},
-    "harmony": {"role": "string ensemble 1", "gm_program": 48, "note_range": "A2–A5"},
-    "bass":    {"role": "contrabass (inactive — model generated melody+harmony only)", "gm_program": 43, "note_range": "D1–A3"},
+    "harmony": {"role": "string ensemble 1", "gm_program": 48, "note_range": "A2–A5",
+                "velocity_boost": "90-115 — ensures audibility even with sparse string notes"},
+    "bass":    {"role": "contrabass", "gm_program": 43, "note_range": "D1–A3"},
     "drums":   {"role": "none (excluded from this piece)", "channel": "—"}
   },
 
@@ -42,37 +43,37 @@
       "label": "Pattern 1 — exposition (cold start)",
       "source": null,
       "max_events": 128,
-      "generation_time_sec": 48.3,
+      "generation_time_sec": 48.8,
       "ev_per_sec": 2.6,
-      "loop_ratio": 1.91,
-      "note": "First call includes forge compile (~33s). Piano-and-strings continuo texture emerged naturally.",
-      "tracks": {"melody": 29, "bass": 7}
+      "loop_ratio": 1.93,
+      "note": "Piano melody line over string chord cushion and contrabass. Strings prominent at boosted velocity.",
+      "tracks": {"melody": 14, "bass": 20, "harmony": 43}
     },
     {
       "file": "p2_development.mid",
       "label": "Pattern 2 — development (seeded from P1)",
       "source": "p1_exposition.mid",
       "max_events": 160,
-      "generation_time_sec": 38.3,
+      "generation_time_sec": 37.7,
       "ev_per_sec": 4.2,
-      "loop_ratio": 1.51,
-      "tracks": {"melody": 32, "bass": 8}
+      "loop_ratio": 1.49,
+      "tracks": {"melody": 38, "bass": 40, "harmony": 70}
     },
     {
       "file": "p3_recapitulation.mid",
       "label": "Pattern 3 — recapitulation (seeded from P2)",
       "source": "p2_development.mid",
       "max_events": 160,
-      "generation_time_sec": 40.2,
-      "ev_per_sec": 4.0,
-      "loop_ratio": 1.59,
-      "tracks": {"melody": 35, "bass": 9, "harmony": 5}
+      "generation_time_sec": 41.1,
+      "ev_per_sec": 3.9,
+      "loop_ratio": 1.63,
+      "tracks": {"melody": 77, "bass": 49, "harmony": 85}
     }
   ],
 
   "performance_notes": {
-    "forge_compile_time_sec": 33,
-    "jit_cache": "0/121 hits on P1 (first session), 121/121 on P2–P3",
+    "forge_compile_time_sec": 0,
+    "jit_cache": "121/121 hits",
     "hw_calls_per_pattern": 64,
     "hw_call_latency_ms": 500,
     "cpu_fallback": false,
@@ -81,7 +82,8 @@
       "disable_control_change": true,
       "channel_masking": true,
       "velocity_shaping": true,
-      "add_default_instr": true
+      "add_default_instr": true,
+      "string_velocity_boost": "harmony (90-115) for audibility"
     }
   }
 }
