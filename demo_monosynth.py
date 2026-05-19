@@ -42,7 +42,7 @@ logging.basicConfig(
     handlers=[logging.StreamHandler(sys.stdout)],
     force=True,
 )
-logger = logging.getLogger("cpu_mono")
+logger = logging.getLogger("monosynth")
 
 import yaml
 
