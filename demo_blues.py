@@ -1,21 +1,26 @@
 #!/usr/bin/env python3
 """
-"Midnight in East Texas" — straight-ahead blues.
+"Midnight in East Texas" — 1930s Delta blues.
 
 Musical design
 --------------
-Key:    A minor  (A C D E G — the blues pentatonic lives here)
-BPM:    92       (medium shuffle)
+Key:    A minor  (pentatonic minor: A C D E G — no tritone)
+BPM:    80       (slow Delta shuffle — period-correct feel)
 Bars:   8        (two passes through the 4-chord cycle)
-Chords: A7 → D7 → A7 → E7   (the 12-bar heart, compressed to 4 chords)
+Chords: A7 → D7 → A7 → E7   (standard I–IV–I–V Delta blues changes)
+
+Coherence
+---------
+  scale_strictness=0.65, override_mode="pentatonic_minor"
+  semitone_tolerance=0 — pentatonic minor only, no chromatic passing tones
+  swing_ratio=0.67 — triplet shuffle baked into every upbeat
 
 Instruments
 -----------
-  melody   — Electric Guitar (jazz, program 27)   A2–E5  (lead guitar)
-  harmony  — Acoustic Grand Piano (program 0)     A2–A5  (blues piano comp)
+  melody   — Acoustic Steel Guitar (program 25)  A2–E5  (1930s acoustic lead)
+  harmony  — Acoustic Grand Piano (program 0)     A2–A5  (barrelhouse comp)
   bass     — Acoustic Bass (program 32)            A1–A3  (upright bass feel)
   drums    — Standard kit (channel 10)
-  Classic Chicago blues band: guitar + piano + upright bass + kit.
 """
 from __future__ import annotations
 
@@ -54,13 +59,13 @@ from tt_midi_maker.generation.midi_backend import generate_from_blueprint
 from tt_midi_maker.models.blueprint import MusicalBlueprint, RoleConfig
 
 KEY    = "A minor"
-BPM    = 92
+BPM    = 80
 BARS   = 8
 CHORDS = ["A7", "D7", "A7", "E7"]
 
 LOOP_SECS = BARS * 4 * (60.0 / BPM)
 
-GUITAR_PROGRAM = 27   # Electric Guitar (jazz) — cleaner blues tone
+GUITAR_PROGRAM = 25   # Acoustic Steel Guitar — 1930s Delta blues
 GUITAR_RANGE   = [45, 76]  # A2 – E5
 PIANO_PROGRAM  = 0    # Acoustic Grand Piano — blues piano comp
 BASS_PROGRAM   = 32   # Acoustic Bass
@@ -95,13 +100,12 @@ def _apply_coherence(tracks, bp: MusicalBlueprint) -> list:
     scale_set  = build_scale_set(root, mode)
     out = []
     for track in tracks:
-        # Blues scale (b3, 4, b5, 5, b7) with low strictness — preserve blue notes
+        # Pentatonic minor (no tritone b5) — stricter 1930s Delta blues feel
         notes = scale_quantize(track.notes, bp.key,
-                               strictness=0.3, override_mode="blues")
-        # Allow passing tones within 1 semitone of chord tones (blues approach notes)
+                               strictness=0.65, override_mode="pentatonic_minor")
         notes = chord_aware_filter(notes, bp.chord_progression,
                                    4 * TICKS_PER_BEAT, TICKS_PER_BEAT, scale_set,
-                                   semitone_tolerance=1)
+                                   semitone_tolerance=0)
         notes = scale_velocity_by_role(notes, track.role)
         notes = humanize_velocities(notes)
         notes = swing_timing(notes, swing_ratio=0.67)   # triplet shuffle feel
@@ -166,7 +170,7 @@ def bar(char="═", width=60):
 
 def main():
     bar("═")
-    print("  tt-midi-maker  ▸  Midnight in East Texas  (A minor blues)")
+    print("  tt-midi-maker  ▸  Midnight in East Texas  (A minor — 1930s Delta blues)")
     bar("═")
 
     devices = detect_tt_devices()
