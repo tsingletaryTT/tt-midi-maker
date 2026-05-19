@@ -612,6 +612,7 @@ footer a { color: var(--teal); }
   <div>
     <a href="#demo" class="btn btn-primary">Hear it compose</a>
     <a href="#machine" class="btn btn-ghost">See the machine</a>
+    <a href="https://github.com/tsingletaryTT/tt-midi-maker" target="_blank" class="btn btn-ghost" style="margin-top:.75rem">GitHub →</a>
   </div>
   <div class="hero-scroll-hint">↓ scroll</div>
 </section>
@@ -1213,10 +1214,10 @@ footer a { color: var(--teal); }
 
     <div class="arch-card">
       <h3>Before <span>tt-forge</span></h3>
-      <p>Running a model on accelerator hardware means writing device kernels, managing memory layouts, handling PCIe transfers, coordinating multi-chip dispatch. Weeks of work before the model runs a single forward pass.</p>
+      <p>Running a model on custom accelerator hardware means writing device kernels, managing memory layouts, and handling chip-specific dispatch. Standard ML frameworks don't speak hardware natively — you need a compiler layer between them.</p>
       <div class="code-block"><span class="comment"># Without tt-forge: hardware-specific kernel code,</span>
 <span class="comment"># manual memory management, chip coordination…</span>
-<span class="comment"># not shown because it would fill this page</span></div>
+<span class="comment"># hardware-specific setup code omitted</span></div>
     </div>
 
     <div class="arch-card">
@@ -1256,9 +1257,9 @@ output = <span class="fn">compiled</span>(tokens)</div>
   </div>
 
   <p style="color:var(--text-dim);font-size:.95rem;margin-bottom:1.5rem">
-    tt-forge is how this project exists at all. Without it, running a 350M-parameter
-    transformer on four P300C chips at real-time speed would be a months-long hardware
-    engineering project. With it, it was an afternoon of Python.
+    tt-forge is what makes this practical. Running a 350M-parameter transformer
+    on four P300C chips at real-time speed requires a compiler that understands
+    the hardware — tt-forge handles that so the Python stays standard PyTorch.
     The music is the demo. The compiler is the story.
   </p>
 
@@ -1922,6 +1923,7 @@ output = <span class="fn">compiled</span>(tokens)</div>
       All of it compiled by <a href="https://github.com/tenstorrent/tt-forge-fe" target="_blank" style="color:var(--teal-light)">tt-forge</a> from plain PyTorch.
     </p>
     <a href="https://tenstorrent.com" target="_blank" class="btn btn-primary" style="margin-right:.75rem">Tenstorrent.com</a>
+    <a href="https://github.com/tsingletaryTT/tt-midi-maker" target="_blank" class="btn btn-ghost" style="margin-right:.75rem">tt-midi-maker →</a>
     <a href="https://github.com/tenstorrent/tt-forge-fe" target="_blank" class="btn btn-ghost">tt-forge →</a>
   </div>
 </section>
@@ -1930,7 +1932,7 @@ output = <span class="fn">compiled</span>(tokens)</div>
 <footer>
   <div class="container">
     <p>
-      <strong style="color:var(--text)">tt-midi-maker</strong> —
+      <a href="https://github.com/tsingletaryTT/tt-midi-maker" target="_blank" style="color:var(--text);font-weight:600">tt-midi-maker</a> —
       multi-track MIDI generation on Tenstorrent Quietbox 2 ·
       Model: <a href="https://huggingface.co/skytnt/midi-model" target="_blank">skytnt/midi-model</a> (Apache 2.0) ·
       Compiled by <a href="https://github.com/tenstorrent/tt-forge-fe" target="_blank">tt-forge</a>
