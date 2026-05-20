@@ -29,11 +29,14 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 import mido
 
 from ..models.track import NoteEvent, RoleTrack
+
+if TYPE_CHECKING:
+    from .structure import GenreStructure
 
 _TICKS_PER_BEAT = 480
 
@@ -407,3 +410,72 @@ def score_perplexity(path: Path | str, model=None, tokenizer=None) -> float | No
         mean_nll = -token_log_probs.mean().item()
 
     return round(mean_nll, 4)
+
+
+# ── Genre structure checks ────────────────────────────────────────────────────
+
+def judge_genre_structure(
+    tracks: list[RoleTrack],
+    structure: "GenreStructure",
+    ticks_per_beat: int = 480,
+) -> list[str]:
+    """Return genre-structural issue strings (empty = all checks pass).
+
+    Checks:
+    1. Walking bass regularity — if walking_bass, bass should be ≥ 2.5 notes/bar
+    2. Response bar sparsity  — melody in response bars should be < 50% of total
+    3. Beat-1 chord tone ratio — ≥ 50% of melody downbeats should land on chord tones
+    """
+    from .harmony import chord_at_tick
+    issues: list[str] = []
+    ticks_per_bar = ticks_per_beat * 4
+
+    # 1. Walking bass regularity
+    if structure.walking_bass:
+        bass_tracks = [t for t in tracks if t.role == "bass"]
+        for bt in bass_tracks:
+            npb = len(bt.notes) / max(1, structure.bars)
+            if npb < 2.5:
+                issues.append(
+                    f"bass: walking_bass=True but {npb:.1f} notes/bar (expected ≥ 2.5)"
+                )
+
+    # 2. Response bar sparsity
+    if structure.response_bars:
+        melody_tracks = [t for t in tracks if t.role == "melody"]
+        for mt in melody_tracks:
+            call_n = sum(
+                1 for n in mt.notes
+                if (n.start_tick // ticks_per_bar + 1) in structure.call_bars
+            )
+            resp_n = sum(
+                1 for n in mt.notes
+                if (n.start_tick // ticks_per_bar + 1) in structure.response_bars
+            )
+            total = call_n + resp_n
+            if total > 0:
+                resp_ratio = resp_n / total
+                if resp_ratio > 0.5:
+                    issues.append(
+                        f"melody: response bars too dense ({resp_ratio:.0%} of notes — expected < 50%)"
+                    )
+
+    # 3. Beat-1 chord tone targeting
+    melody_tracks = [t for t in tracks if t.role == "melody"]
+    for mt in melody_tracks:
+        beat1_notes = [
+            n for n in mt.notes
+            if n.start_tick % ticks_per_bar < ticks_per_beat // 2
+        ]
+        if len(beat1_notes) >= 3:
+            on_chord = sum(
+                1 for n in beat1_notes
+                if n.pitch % 12 in chord_at_tick(
+                    n.start_tick, ticks_per_bar, structure.chord_progression
+                )
+            )
+            ratio = on_chord / len(beat1_notes)
+            if ratio < 0.5:
+                issues.append(
+                    f"melody: beat-1 chord-tone ratio {ratio:.0%} (expected ≥ 50%)"
+                )

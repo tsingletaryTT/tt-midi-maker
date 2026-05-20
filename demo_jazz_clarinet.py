@@ -34,11 +34,16 @@ OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 from tt_midi_maker.assembler import TICKS_PER_BEAT, build_midi_file
 from tt_midi_maker.coherence.harmony import chord_aware_filter
-from tt_midi_maker.coherence.humanize import humanize_velocities, nudge_timing, scale_velocity_by_role
+from tt_midi_maker.coherence.humanize import humanize_velocities, nudge_timing, scale_velocity_by_role, swing_timing
+from tt_midi_maker.coherence.improv import add_approach_notes
 from tt_midi_maker.coherence.scale import build_scale_set, parse_key, scale_quantize
+from tt_midi_maker.coherence.structure import (
+    build_genre_structure, generate_drum_groove, generate_walking_bass,
+)
 from tt_midi_maker.generation.hardware import detect_tt_devices
 from tt_midi_maker.generation.midi_backend import generate_from_blueprint
 from tt_midi_maker.models.blueprint import MusicalBlueprint, RoleConfig
+from tt_midi_maker.models.track import RoleTrack
 from tt_midi_maker.stream_player import (
     loop_play, loop_queue, loop_stop, start_synth, synth_status,
 )
@@ -84,16 +89,24 @@ def _blueprint(active_roles: list[str]) -> MusicalBlueprint:
     )
 
 
-def _apply_coherence(tracks, bp: MusicalBlueprint) -> list:
+def _apply_coherence(tracks, bp: MusicalBlueprint, tension: float = 0.0) -> list:
     root, mode = parse_key(bp.key)
     scale_set  = build_scale_set(root, mode)
-    out = []
+    tpb        = TICKS_PER_BEAT
+    tpbar      = tpb * 4
+    out        = []
     for track in tracks:
+        if track.role in ("bass", "drums"):
+            out.append(track)
+            continue
         notes = scale_quantize(track.notes, bp.key)
-        notes = chord_aware_filter(notes, bp.chord_progression,
-                                   4 * TICKS_PER_BEAT, TICKS_PER_BEAT, scale_set)
+        notes = chord_aware_filter(notes, bp.chord_progression, tpbar, tpb, scale_set)
+        if track.role == "melody" and tension > 0.0:
+            notes = add_approach_notes(notes, bp.chord_progression, tpbar,
+                                       tension=tension, seed=42)
         notes = scale_velocity_by_role(notes, track.role)
         notes = humanize_velocities(notes)
+        notes = swing_timing(notes, swing_ratio=0.60)   # jazz swing
         notes = nudge_timing(notes)
         out.append(replace(track, notes=notes))
     return out
@@ -105,16 +118,17 @@ def generate_pattern(
     source_midi: str | None = None,
     max_events: int = 96,
     hw_context_interval: int = 4,
+    tension: float = 0.0,
 ) -> str | None:
-    """Generate, apply coherence, save, return path.
+    """Generate melody+harmony, inject deterministic walking bass and swing_ride drums.
 
     max_events=96 with hw_context_interval=4 targets ≈12s on P300C hardware
-    which fits within one 8-bar loop at 138 BPM (13.9s).  Falls back to CPU
-    silently if TT hardware is unavailable.
+    which fits within one 8-bar loop at 138 BPM (13.9s).
     """
-    bp = _blueprint(active_roles)
-    label = f"continuing from {Path(source_midi).name}" if source_midi else "cold start"
-    logger.info("generating [%s]  %s …", ", ".join(active_roles), label)
+    structure = build_genre_structure("jazz_swing", KEY, CHORDS, bars=BARS, tension=tension)
+    bp        = _blueprint(["melody", "harmony"])   # model generates melody+harmony only
+    label     = f"continuing from {Path(source_midi).name}" if source_midi else "cold start"
+    logger.info("generating [melody+harmony]  %s …", label)
     t0 = time.time()
 
     tracks = generate_from_blueprint(
@@ -127,19 +141,26 @@ def generate_pattern(
         logger.warning("model returned empty — skipping %s", filename)
         return None
 
-    # Stamp the bass clarinet program onto the melody track
-    tracks = [
+    # Stamp programs onto model-generated tracks
+    stamped = [
         replace(t, program=BASS_CLARINET_PROGRAM) if t.role == "melody" else t
         for t in tracks
     ]
 
-    tracks = _apply_coherence(tracks, bp)
-    out    = OUTPUT_DIR / filename
-    build_midi_file(tracks, bp.bpm, out)
+    # Inject deterministic walking bass and swing_ride drums
+    bass_notes = generate_walking_bass(CHORDS, BARS, ticks_per_beat=TICKS_PER_BEAT,
+                                        velocity=72, channel=2)
+    drum_notes = generate_drum_groove("swing_ride", BARS, ticks_per_beat=TICKS_PER_BEAT)
+    bass_track = RoleTrack(role="bass",  channel=2,  program=32, notes=bass_notes)
+    drum_track = RoleTrack(role="drums", channel=10, program=0,  notes=drum_notes)
+    all_tracks = stamped + [bass_track, drum_track]
+
+    polished = _apply_coherence(all_tracks, bp, tension=tension)
+    out      = OUTPUT_DIR / filename
+    build_midi_file(polished, bp.bpm, out)
 
     dt      = time.time() - t0
-    summary = [(t.role, f"ch{t.channel}", f"prog{t.program}", f"{len(t.notes)}n")
-               for t in tracks]
+    summary = [(t.role, f"{len(t.notes)}n") for t in polished]
     logger.info("done %.1fs → %s  %s", dt, filename, summary)
     return str(out)
 
@@ -168,10 +189,11 @@ def main():
 
     # ── Pattern 1: groove foundation ─────────────────────────────────────────
     print()
-    print("  [1/2] Groove — walking bass + piano comping + drums")
+    print("  [1/2] Groove — walking bass + piano comping + swing_ride drums")
     f1 = generate_pattern(
-        ["bass", "harmony", "drums"],
+        ["melody", "harmony"],   # model generates these; bass+drums are deterministic
         "jazz_1_groove.mid",
+        tension=0.0,
     )
     if f1 is None:
         print("  ERROR: generation failed"); sys.exit(1)
@@ -184,17 +206,18 @@ def main():
 
     bar()
     print(f"  ▶  LOOPING NOW  →  {Path(f1).name}")
-    print("     Walking bass, piano comping. C major, 138 BPM.")
+    print("     Walking bass, piano comping, swing_ride drums. C major, 138 BPM.")
     loop_play(f1)
     print()
 
-    # ── Pattern 2: bass clarinet enters ──────────────────────────────────────
-    print("  [2/2] Bass clarinet solo enters …")
+    # ── Pattern 2: bass clarinet opens up ────────────────────────────────────
+    print("  [2/2] Bass clarinet solo — approach notes open up …")
     print(f"        (generating while groove plays — {loop_secs:.0f}s per loop)")
     f2 = generate_pattern(
-        ["bass", "harmony", "drums", "melody"],
+        ["melody", "harmony"],
         "jazz_2_clarinet_solo.mid",
-        source_midi=f1,       # model hears the groove before soloing
+        source_midi=f1,
+        tension=0.35,           # approach notes add jazz chromatic color
     )
     if f2:
         loop_queue(f2)

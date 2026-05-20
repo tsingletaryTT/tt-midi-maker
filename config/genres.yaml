@@ -1,0 +1,75 @@
+# Genre structural templates for tt_midi_maker coherence layer.
+# chord_template uses Roman numerals resolved against the key at runtime.
+# call_bars / response_bars: 1-indexed bar numbers.
+
+genres:
+  blues_12bar:
+    display_name: "12-bar blues"
+    bars: 12
+    # Classic 12-bar I-IV-V with quick change in bar 2
+    chord_template: ["I7","IV7","I7","I7","IV7","IV7","I7","I7","V7","IV7","I7","V7"]
+    call_bars:     [1, 2, 5, 6, 9, 10]
+    response_bars: [3, 4, 7, 8, 11, 12]
+    walking_bass: true
+    swing_ratio: 0.67
+    drum_groove: "shuffle"
+
+  jazz_swing:
+    display_name: "Jazz swing"
+    bars: 8
+    chord_template: null   # use demo chord_progression as-is
+    call_bars: []
+    response_bars: []
+    walking_bass: true
+    swing_ratio: 0.60
+    drum_groove: "swing_ride"
+
+  bebop:
+    display_name: "Bebop"
+    bars: 8
+    chord_template: null
+    call_bars: []
+    response_bars: []
+    walking_bass: true
+    swing_ratio: 0.58
+    drum_groove: "swing_ride"
+
+  ambient:
+    display_name: "Ambient"
+    bars: 8
+    chord_template: null
+    call_bars: []
+    response_bars: []
+    walking_bass: false
+    swing_ratio: 0.0
+    drum_groove: "none"
+
+  chiptune:
+    display_name: "Chiptune"
+    bars: 4
+    chord_template: null
+    call_bars: []
+    response_bars: []
+    walking_bass: false
+    swing_ratio: 0.0
+    drum_groove: "none"
+
+  classical:
+    display_name: "Classical"
+    bars: 8
+    chord_template: null
+    call_bars: []
+    response_bars: []
+    walking_bass: false
+    swing_ratio: 0.0
+    drum_groove: "none"
+
+  postrock:
+    display_name: "Post-rock"
+    bars: 8
+    chord_template: null
+    call_bars: []
+    response_bars: []
+    walking_bass: false
+    swing_ratio: 0.0
+    drum_groove: "none"
