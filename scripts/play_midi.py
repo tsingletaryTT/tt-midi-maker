@@ -35,7 +35,7 @@ VIZ_COLORS = [
 
 
 def play(midi_path: Path, loop: bool, visual: bool) -> None:
-    midi_str = str(midi_path)
+    midi_str = str(midi_path.resolve())
     procs: list[subprocess.Popen] = []
 
     # --- MIDIVisualizer (non-blocking, X11 window) ---
