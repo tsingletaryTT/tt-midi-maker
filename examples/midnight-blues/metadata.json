@@ -1,6 +1,6 @@
 {
   "suite": "Midnight in East Texas",
-  "description": "A three-pattern 1930s Delta blues in A minor. Acoustic steel guitar (GM 25) leads with pentatonic-minor phrasing, barrelhouse piano comping, upright bass, and a shuffled kit at 80 BPM. Pentatonic minor [0,3,5,7,10] at strictness 0.65 keeps melodic lines period-correct — no tritone blue note, no chromatic passing tones. Triplet swing (2:1 ratio) baked into every upbeat for authentic shuffle feel. Vocabulary masking and per-role velocity shaping round out the texture.",
+  "description": "A three-pattern 1930s Delta blues in A minor. Full 12-bar I-IV-V form with deterministic walking bass (4 quarter notes/bar — root, 3rd, 5th, chromatic approach) and shuffle drum groove (triplet hi-hat pattern). Acoustic steel guitar leads over barrelhouse piano comping. Tension arc 0.0→0.3→0.6 adds chromatic approach notes before chord-tone downbeats across P1→P3. Call-response phrasing enforced: melody drops after beat 1 in response bars (3,4,7,8,11,12) for authentic stop-time feel.",
   "generated": "2026-05-19",
   "hardware": "4× Tenstorrent P300C chips (tt-forge)",
   "model": "skytnt/midi-model (LlamaModel, 12-layer, ~350M params)",
@@ -8,14 +8,16 @@
   "musical_parameters": {
     "key": "A minor",
     "bpm": 80,
-    "bars": 8,
-    "loop_duration_sec": 24.0,
-    "chord_progression": ["A7", "D7", "A7", "E7"],
-    "style": "1930s Delta blues"
+    "bars": 12,
+    "loop_duration_sec": 36.0,
+    "chord_progression": ["A7","D7","A7","A7","D7","D7","A7","A7","E7","D7","A7","E7"],
+    "style": "1930s Delta blues (12-bar form)",
+    "call_bars": [1, 2, 5, 6, 9, 10],
+    "response_bars": [3, 4, 7, 8, 11, 12]
   },
 
   "generation_parameters": {
-    "hw_context_interval": 2,
+    "hw_context_interval": 4,
     "max_padded_len": 256,
     "temperature": 1.0,
     "top_p": 0.98,
@@ -23,66 +25,42 @@
   },
 
   "coherence_settings": {
-    "scale_mode": "pentatonic_minor [0,3,5,7,10] — no tritone b5",
-    "scale_strictness": 0.65,
-    "chord_semitone_tolerance": 0,
+    "scale_mode": "blues (pentatonic minor + b5)",
     "swing_ratio": 0.67,
-    "swing": "triplet shuffle — off-beat eighths snapped to 2/3 beat position"
+    "walking_bass": true,
+    "drum_groove": "shuffle (kick 1+3, snare 2+4, triplet hi-hat)",
+    "phrase_gaps": "beat-1-only in response bars",
+    "tension_arc": [0.0, 0.3, 0.6]
   },
 
   "instruments": {
-    "melody": {"role": "acoustic steel guitar", "gm_program": 25, "note_range": "A2–E5"},
-    "harmony": {"role": "acoustic grand piano", "gm_program": 0, "note_range": "C3–C5"},
-    "bass":    {"role": "acoustic bass", "gm_program": 32, "note_range": "A1–A3"},
-    "drums":   {"role": "drum kit", "gm_program": 0, "channel": 10}
+    "melody":  {"role": "acoustic steel guitar", "gm_program": 25, "note_range": "A2–E5"},
+    "harmony": {"role": "acoustic grand piano (barrelhouse)", "gm_program": 0},
+    "bass":    {"role": "acoustic bass (walking, deterministic)", "gm_program": 32, "note_range": "A1–A3"},
+    "drums":   {"role": "drum kit (shuffle, deterministic)", "gm_program": 0, "channel": 10}
   },
 
   "patterns": [
     {
       "file": "p1_intro.mid",
-      "label": "Pattern 1 — intro (cold start)",
+      "label": "Pattern 1 — intro statement",
+      "tension": 0.0,
       "source": null,
-      "max_events": 128,
-      "generation_time_sec": 47.7,
-      "ev_per_sec": 2.7,
-      "loop_ratio": 1.99,
-      "note": "JIT cache warm. Pentatonic minor — clean, period-correct Delta blues phrasing.",
-      "tracks": {"melody": 33, "bass": 2, "harmony": 26, "drums": 43}
+      "note": "Clean statement. Walking bass + shuffle groove established. No approach notes."
     },
     {
       "file": "p2_groove.mid",
-      "label": "Pattern 2 — groove (seeded from P1)",
+      "label": "Pattern 2 — groove development",
+      "tension": 0.3,
       "source": "p1_intro.mid",
-      "max_events": 128,
-      "generation_time_sec": 28.9,
-      "ev_per_sec": 4.4,
-      "loop_ratio": 1.20,
-      "tracks": {"melody": 55, "bass": 8, "harmony": 59, "drums": 69}
+      "note": "30% of chord-tone downbeats get chromatic approach notes (B3 before C4 etc.)."
     },
     {
       "file": "p3_resolution.mid",
-      "label": "Pattern 3 — resolution (seeded from P2)",
+      "label": "Pattern 3 — resolution peak",
+      "tension": 0.6,
       "source": "p2_groove.mid",
-      "max_events": 160,
-      "generation_time_sec": 38.0,
-      "ev_per_sec": 4.2,
-      "loop_ratio": 1.58,
-      "tracks": {"melody": 75, "bass": 14, "harmony": 114, "drums": 120}
+      "note": "60% approach note density. Full blues chromatic color at peak tension."
     }
-  ],
-
-  "performance_notes": {
-    "forge_compile_time_sec": 0,
-    "jit_cache": "121/121 hits",
-    "hw_calls_per_pattern": 64,
-    "hw_call_latency_ms": 500,
-    "cpu_fallback": false,
-    "quality_features": {
-      "disable_patch_change": true,
-      "disable_control_change": true,
-      "channel_masking": true,
-      "velocity_shaping": true,
-      "add_default_instr": true
-    }
-  }
+  ]
 }

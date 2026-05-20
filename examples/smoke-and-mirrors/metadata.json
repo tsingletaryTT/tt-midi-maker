@@ -1,17 +1,17 @@
 {
   "suite": "Smoke & Mirrors",
-  "description": "A four-pattern D minor modal jazz suite generated on Tenstorrent P300C hardware. Each pattern is seeded from the previous one so musical ideas carry across the whole piece.",
-  "generated": "2026-05-18",
+  "description": "A three-pattern post-rock build in E minor. Inspired by Mogwai and Godspeed You! Black Emperor: bass-first grooves that swell into full-band climaxes. P1 lays the rhythmic foundation (bass + drums), P2 introduces a high-register Electric Bass Finger solo voice (same family, one octave up), P3 adds strings for the full post-rock swell. Tension arc 0.0→0.45→0.75 drives chromatic approach figures that create the characteristic Mogwai-style harmonic crunch before downbeats.",
+  "generated": "2026-05-19",
   "hardware": "4× Tenstorrent P300C chips (tt-forge)",
   "model": "skytnt/midi-model (LlamaModel, 12-layer, ~350M params)",
 
   "musical_parameters": {
-    "key": "D minor (Aeolian)",
-    "bpm": 118,
+    "key": "E minor",
+    "bpm": 92,
     "bars": 8,
-    "loop_duration_sec": 16.3,
-    "chord_progression": ["Dm7", "Am7", "Bbmaj7", "A7"],
-    "style": "modal jazz"
+    "loop_duration_sec": 20.9,
+    "chord_progression": ["Em", "D", "C", "D"],
+    "style": "post-rock"
   },
 
   "generation_parameters": {
@@ -22,63 +22,40 @@
     "top_k": 20
   },
 
+  "coherence_settings": {
+    "scale_mode": "natural minor",
+    "tension_arc": [0.0, 0.45, 0.75],
+    "approach_notes": "pre-downbeat chromatic (Mogwai-style crunch)"
+  },
+
   "instruments": {
-    "melody": {"role": "tenor sax", "gm_program": 66, "note_range": "Bb2–F5"},
-    "harmony": {"role": "Hammond organ", "gm_program": 16, "note_range": "C3–C5"},
-    "bass":    {"role": "acoustic bass",  "gm_program": 32, "note_range": "E1–C4"},
-    "drums":   {"role": "drum kit",       "gm_program": 0,  "channel": 10}
+    "bass":    {"role": "acoustic bass (foundation)", "gm_program": 32},
+    "melody":  {"role": "electric bass finger (upper solo register, P2+P3)", "gm_program": 33},
+    "strings": {"role": "string ensemble 1 (swell, P3 only)", "gm_program": 48},
+    "drums":   {"role": "drum kit", "gm_program": 0, "channel": 10}
   },
 
   "patterns": [
     {
-      "file": "p1_intro.mid",
-      "label": "Pattern 1 — Drums intro (cold start)",
+      "file": "p1_foundation.mid",
+      "label": "Pattern 1 — foundation (bass + drums)",
+      "tension": 0.0,
       "source": null,
-      "max_events": 96,
-      "generation_time_sec": 32.6,
-      "ev_per_sec": 2.9,
-      "loop_ratio": 2.0,
-      "note": "First call includes forge compile (~20s). ev/s during generation: 2.9. Subsequent patterns show true throughput.",
-      "tracks": {"drums": 8}
+      "note": "Pure rhythmic foundation. No melody. Sets the post-rock groove."
     },
     {
-      "file": "p2_variation.mid",
-      "label": "Pattern 2 — Full band enters (seeded from P1)",
-      "source": "p1_intro.mid",
-      "max_events": 96,
-      "generation_time_sec": 12.3,
-      "ev_per_sec": 7.8,
-      "loop_ratio": 0.76,
-      "tracks": {"melody": 38, "bass": 8, "harmony": 19, "drums": 19}
+      "file": "p2_climb.mid",
+      "label": "Pattern 2 — climb (bass + solo + drums)",
+      "tension": 0.45,
+      "source": "p1_foundation.mid",
+      "note": "High-register Electric Bass Finger solo joins. Approach notes beginning to appear."
     },
     {
-      "file": "p3_development.mid",
-      "label": "Pattern 3 — Development (seeded from P2)",
-      "source": "p2_variation.mid",
-      "max_events": 96,
-      "generation_time_sec": 12.5,
-      "ev_per_sec": 7.7,
-      "loop_ratio": 0.77,
-      "tracks": {"melody": 80, "bass": 10, "harmony": 58, "drums": 19}
-    },
-    {
-      "file": "p4_climax.mid",
-      "label": "Pattern 4 — Climax variation (seeded from P3)",
-      "source": "p3_development.mid",
-      "max_events": 128,
-      "generation_time_sec": 16.9,
-      "ev_per_sec": 7.6,
-      "loop_ratio": 1.04,
-      "tracks": {"melody": 82, "bass": 10, "harmony": 58, "drums": 19}
+      "file": "p3_climax.mid",
+      "label": "Pattern 3 — climax (full build: bass + solo + strings + drums)",
+      "tension": 0.75,
+      "source": "p2_climb.mid",
+      "note": "Strings pad layer completes the post-rock swell. Peak chromatic tension."
     }
-  ],
-
-  "performance_notes": {
-    "forge_compile_time_sec": 20,
-    "jit_cache": "121/121 hits on second run",
-    "hw_calls_per_pattern": 24,
-    "hw_call_latency_ms": 500,
-    "cpu_fallback": false,
-    "speedup_vs_interval_1": "4x (interval=4 vs interval=1)"
-  }
+  ]
 }

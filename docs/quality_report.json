@@ -5,42 +5,41 @@
       "file": "p1_exposition.mid",
       "bars": 8,
       "bpm": 76,
-      "rule_score": 0.76,
+      "rule_score": 0.88,
       "passed": true,
       "issues": [
-        "bass: 88% notes clustered within half-beat (stacked pile-up)",
-        "harmony: 100% notes clustered within half-beat (stacked pile-up)"
+        "melody: 76% direction reversals (melodic zigzag/jumble)"
       ],
       "metrics": {
         "melody": {
-          "notes_per_bar": 1.5,
-          "pitch_span": 17,
-          "unique_pitches": 7,
-          "pitch_min": 62,
-          "pitch_max": 79,
-          "mean_interval": 4.82,
-          "max_interval": 12,
-          "direction_reversal_ratio": 0.75,
-          "silence_ratio": 0.901,
-          "cluster_ratio": 0.583
+          "notes_per_bar": 2.38,
+          "pitch_span": 19,
+          "unique_pitches": 9,
+          "pitch_min": 69,
+          "pitch_max": 88,
+          "mean_interval": 6.89,
+          "max_interval": 16,
+          "direction_reversal_ratio": 0.765,
+          "silence_ratio": 0.5,
+          "cluster_ratio": 0.421
         },
         "bass": {
-          "notes_per_bar": 2.12,
-          "pitch_span": 27,
-          "unique_pitches": 9,
-          "pitch_min": 30,
-          "pitch_max": 57,
-          "silence_ratio": 0.893,
-          "cluster_ratio": 0.882
+          "notes_per_bar": 1.25,
+          "pitch_span": 11,
+          "unique_pitches": 6,
+          "pitch_min": 41,
+          "pitch_max": 52,
+          "silence_ratio": 0.773,
+          "cluster_ratio": 0.2
         },
         "harmony": {
-          "notes_per_bar": 3.0,
-          "pitch_span": 13,
+          "notes_per_bar": 3.38,
+          "pitch_span": 12,
           "unique_pitches": 9,
-          "pitch_min": 54,
-          "pitch_max": 67,
-          "silence_ratio": 0.932,
-          "cluster_ratio": 1.0
+          "pitch_min": 58,
+          "pitch_max": 70,
+          "silence_ratio": 0.593,
+          "cluster_ratio": 0.519
         },
         "register_overlap_semitones": 0
       },
@@ -51,43 +50,39 @@
       "file": "p2_development.mid",
       "bars": 8,
       "bpm": 76,
-      "rule_score": 0.64,
+      "rule_score": 1.0,
       "passed": true,
-      "issues": [
-        "melody: 81% direction reversals (melodic zigzag/jumble)",
-        "bass: 73% notes clustered within half-beat (stacked pile-up)",
-        "harmony: 73% notes clustered within half-beat (stacked pile-up)"
-      ],
+      "issues": [],
       "metrics": {
         "melody": {
-          "notes_per_bar": 3.88,
-          "pitch_span": 17,
-          "unique_pitches": 7,
-          "pitch_min": 62,
-          "pitch_max": 79,
-          "mean_interval": 5.07,
+          "notes_per_bar": 2.5,
+          "pitch_span": 19,
+          "unique_pitches": 9,
+          "pitch_min": 69,
+          "pitch_max": 88,
+          "mean_interval": 5.47,
           "max_interval": 12,
-          "direction_reversal_ratio": 0.808,
-          "silence_ratio": 0.791,
-          "cluster_ratio": 0.581
+          "direction_reversal_ratio": 0.5,
+          "silence_ratio": 0.485,
+          "cluster_ratio": 0.4
         },
         "bass": {
-          "notes_per_bar": 4.62,
-          "pitch_span": 31,
-          "unique_pitches": 12,
-          "pitch_min": 26,
-          "pitch_max": 57,
-          "silence_ratio": 0.735,
-          "cluster_ratio": 0.73
+          "notes_per_bar": 1.25,
+          "pitch_span": 11,
+          "unique_pitches": 6,
+          "pitch_min": 41,
+          "pitch_max": 52,
+          "silence_ratio": 0.773,
+          "cluster_ratio": 0.2
         },
         "harmony": {
-          "notes_per_bar": 6.88,
-          "pitch_span": 15,
-          "unique_pitches": 9,
-          "pitch_min": 52,
-          "pitch_max": 67,
-          "silence_ratio": 0.711,
-          "cluster_ratio": 0.727
+          "notes_per_bar": 3.38,
+          "pitch_span": 11,
+          "unique_pitches": 8,
+          "pitch_min": 58,
+          "pitch_max": 69,
+          "silence_ratio": 0.598,
+          "cluster_ratio": 0.481
         },
         "register_overlap_semitones": 0
       },
@@ -98,45 +93,39 @@
       "file": "p3_recapitulation.mid",
       "bars": 8,
       "bpm": 76,
-      "rule_score": 0.4,
-      "passed": false,
-      "issues": [
-        "melody: 79% direction reversals (melodic zigzag/jumble)",
-        "melody: silence ratio 0% (no breathing room)",
-        "melody: 71% notes clustered within half-beat (stacked pile-up)",
-        "bass: 67% notes clustered within half-beat (stacked pile-up)",
-        "harmony: 71% notes clustered within half-beat (stacked pile-up)"
-      ],
+      "rule_score": 1.0,
+      "passed": true,
+      "issues": [],
       "metrics": {
         "melody": {
-          "notes_per_bar": 8.25,
+          "notes_per_bar": 2.5,
           "pitch_span": 19,
-          "unique_pitches": 14,
-          "pitch_min": 62,
-          "pitch_max": 81,
-          "mean_interval": 6.77,
-          "max_interval": 17,
-          "direction_reversal_ratio": 0.794,
-          "silence_ratio": 0.0,
-          "cluster_ratio": 0.712
+          "unique_pitches": 9,
+          "pitch_min": 69,
+          "pitch_max": 88,
+          "mean_interval": 6.0,
+          "max_interval": 16,
+          "direction_reversal_ratio": 0.611,
+          "silence_ratio": 0.485,
+          "cluster_ratio": 0.4
         },
         "bass": {
-          "notes_per_bar": 5.38,
-          "pitch_span": 31,
-          "unique_pitches": 12,
-          "pitch_min": 26,
-          "pitch_max": 57,
-          "silence_ratio": 0.647,
-          "cluster_ratio": 0.674
+          "notes_per_bar": 1.25,
+          "pitch_span": 11,
+          "unique_pitches": 6,
+          "pitch_min": 41,
+          "pitch_max": 52,
+          "silence_ratio": 0.773,
+          "cluster_ratio": 0.2
         },
         "harmony": {
-          "notes_per_bar": 9.62,
-          "pitch_span": 20,
-          "unique_pitches": 14,
-          "pitch_min": 50,
-          "pitch_max": 70,
-          "silence_ratio": 0.101,
-          "cluster_ratio": 0.714
+          "notes_per_bar": 3.5,
+          "pitch_span": 12,
+          "unique_pitches": 8,
+          "pitch_min": 57,
+          "pitch_max": 69,
+          "silence_ratio": 0.58,
+          "cluster_ratio": 0.321
         },
         "register_overlap_semitones": 0
       },
@@ -147,37 +136,52 @@
       "file": "p1_head.mid",
       "bars": 8,
       "bpm": 138,
-      "rule_score": 1.0,
+      "rule_score": 0.88,
       "passed": true,
-      "issues": [],
+      "issues": [
+        "bass: silence ratio 6% (no breathing room)"
+      ],
       "metrics": {
-        "bass": {
-          "notes_per_bar": 0.62,
-          "pitch_span": 4,
-          "unique_pitches": 3,
-          "pitch_min": 34,
-          "pitch_max": 38,
-          "silence_ratio": 0.846,
+        "melody": {
+          "notes_per_bar": 1.5,
+          "pitch_span": 8,
+          "unique_pitches": 4,
+          "pitch_min": 58,
+          "pitch_max": 66,
+          "mean_interval": 3.27,
+          "max_interval": 8,
+          "direction_reversal_ratio": 0.714,
+          "silence_ratio": 0.795,
           "cluster_ratio": 0.0
         },
         "harmony": {
-          "notes_per_bar": 6.88,
-          "pitch_span": 29,
-          "unique_pitches": 11,
-          "pitch_min": 38,
-          "pitch_max": 67,
-          "silence_ratio": 0.521,
+          "notes_per_bar": 8.25,
+          "pitch_span": 13,
+          "unique_pitches": 10,
+          "pitch_min": 57,
+          "pitch_max": 70,
+          "silence_ratio": 0.661,
+          "cluster_ratio": 0.0
+        },
+        "bass": {
+          "notes_per_bar": 4.0,
+          "pitch_span": 11,
+          "unique_pitches": 9,
+          "pitch_min": 42,
+          "pitch_max": 53,
+          "silence_ratio": 0.062,
           "cluster_ratio": 0.0
         },
         "drums": {
-          "notes_per_bar": 5.0,
-          "pitch_span": 28,
-          "unique_pitches": 11,
-          "pitch_min": 35,
-          "pitch_max": 63,
-          "silence_ratio": 0.398,
+          "notes_per_bar": 13.0,
+          "pitch_span": 15,
+          "unique_pitches": 4,
+          "pitch_min": 36,
+          "pitch_max": 51,
+          "silence_ratio": 0.479,
           "cluster_ratio": 0.0
-        }
+        },
+        "register_overlap_semitones": 0
       },
       "event_nll": null
     },
@@ -186,37 +190,52 @@
       "file": "p2_solo1.mid",
       "bars": 8,
       "bpm": 138,
-      "rule_score": 1.0,
+      "rule_score": 0.88,
       "passed": true,
-      "issues": [],
+      "issues": [
+        "bass: silence ratio 6% (no breathing room)"
+      ],
       "metrics": {
-        "bass": {
-          "notes_per_bar": 0.75,
-          "pitch_span": 4,
-          "unique_pitches": 3,
-          "pitch_min": 34,
-          "pitch_max": 38,
-          "silence_ratio": 0.811,
+        "melody": {
+          "notes_per_bar": 1.62,
+          "pitch_span": 9,
+          "unique_pitches": 6,
+          "pitch_min": 58,
+          "pitch_max": 67,
+          "mean_interval": 3.17,
+          "max_interval": 8,
+          "direction_reversal_ratio": 0.5,
+          "silence_ratio": 0.78,
           "cluster_ratio": 0.0
         },
         "harmony": {
-          "notes_per_bar": 10.38,
-          "pitch_span": 33,
-          "unique_pitches": 20,
-          "pitch_min": 34,
-          "pitch_max": 67,
-          "silence_ratio": 0.232,
+          "notes_per_bar": 7.88,
+          "pitch_span": 13,
+          "unique_pitches": 10,
+          "pitch_min": 57,
+          "pitch_max": 70,
+          "silence_ratio": 0.674,
+          "cluster_ratio": 0.0
+        },
+        "bass": {
+          "notes_per_bar": 4.0,
+          "pitch_span": 11,
+          "unique_pitches": 9,
+          "pitch_min": 42,
+          "pitch_max": 53,
+          "silence_ratio": 0.062,
           "cluster_ratio": 0.0
         },
         "drums": {
-          "notes_per_bar": 6.5,
-          "pitch_span": 28,
-          "unique_pitches": 13,
-          "pitch_min": 35,
-          "pitch_max": 63,
-          "silence_ratio": 0.193,
+          "notes_per_bar": 13.0,
+          "pitch_span": 15,
+          "unique_pitches": 4,
+          "pitch_min": 36,
+          "pitch_max": 51,
+          "silence_ratio": 0.479,
           "cluster_ratio": 0.0
-        }
+        },
+        "register_overlap_semitones": 0
       },
       "event_nll": null
     },
@@ -225,37 +244,52 @@
       "file": "p3_solo2.mid",
       "bars": 8,
       "bpm": 138,
-      "rule_score": 1.0,
+      "rule_score": 0.88,
       "passed": true,
-      "issues": [],
+      "issues": [
+        "bass: silence ratio 6% (no breathing room)"
+      ],
       "metrics": {
-        "bass": {
-          "notes_per_bar": 0.75,
-          "pitch_span": 4,
-          "unique_pitches": 3,
-          "pitch_min": 34,
-          "pitch_max": 38,
-          "silence_ratio": 0.811,
+        "melody": {
+          "notes_per_bar": 1.62,
+          "pitch_span": 9,
+          "unique_pitches": 6,
+          "pitch_min": 58,
+          "pitch_max": 67,
+          "mean_interval": 3.17,
+          "max_interval": 8,
+          "direction_reversal_ratio": 0.5,
+          "silence_ratio": 0.78,
           "cluster_ratio": 0.0
         },
         "harmony": {
-          "notes_per_bar": 10.25,
-          "pitch_span": 33,
-          "unique_pitches": 20,
-          "pitch_min": 34,
-          "pitch_max": 67,
-          "silence_ratio": 0.246,
+          "notes_per_bar": 7.88,
+          "pitch_span": 13,
+          "unique_pitches": 10,
+          "pitch_min": 57,
+          "pitch_max": 70,
+          "silence_ratio": 0.674,
+          "cluster_ratio": 0.0
+        },
+        "bass": {
+          "notes_per_bar": 4.0,
+          "pitch_span": 11,
+          "unique_pitches": 9,
+          "pitch_min": 42,
+          "pitch_max": 53,
+          "silence_ratio": 0.062,
           "cluster_ratio": 0.0
         },
         "drums": {
-          "notes_per_bar": 6.5,
-          "pitch_span": 28,
-          "unique_pitches": 13,
-          "pitch_min": 35,
-          "pitch_max": 63,
-          "silence_ratio": 0.193,
+          "notes_per_bar": 13.0,
+          "pitch_span": 15,
+          "unique_pitches": 4,
+          "pitch_min": 36,
+          "pitch_max": 51,
+          "silence_ratio": 0.479,
           "cluster_ratio": 0.0
-        }
+        },
+        "register_overlap_semitones": 0
       },
       "event_nll": null
     },
@@ -267,50 +301,51 @@
       "rule_score": 0.64,
       "passed": true,
       "issues": [
-        "bass: too sparse (0.2 notes/bar)",
-        "bass: pitch span only 0 semitones (monotonous)",
-        "drums: silence ratio 0% (no breathing room)"
+        "harmony: 75% notes clustered within half-beat (stacked pile-up)",
+        "bass: silence ratio 0% (no breathing room)",
+        "register overlap: bass top=57 invades melody bottom=45 by 12 semitones"
       ],
       "metrics": {
         "melody": {
-          "notes_per_bar": 3.12,
-          "pitch_span": 19,
-          "unique_pitches": 9,
+          "notes_per_bar": 4.0,
+          "pitch_span": 17,
+          "unique_pitches": 8,
           "pitch_min": 45,
-          "pitch_max": 64,
-          "mean_interval": 7.92,
-          "max_interval": 19,
-          "direction_reversal_ratio": 0.652,
-          "silence_ratio": 0.711,
-          "cluster_ratio": 0.0
-        },
-        "bass": {
-          "notes_per_bar": 0.25,
-          "pitch_span": 0,
-          "unique_pitches": 1,
-          "pitch_min": 45,
-          "pitch_max": 45,
-          "silence_ratio": 0.875
+          "pitch_max": 62,
+          "mean_interval": 3.84,
+          "max_interval": 15,
+          "direction_reversal_ratio": 0.65,
+          "silence_ratio": 0.894,
+          "cluster_ratio": 0.5
         },
         "harmony": {
-          "notes_per_bar": 2.62,
-          "pitch_span": 14,
-          "unique_pitches": 9,
-          "pitch_min": 57,
-          "pitch_max": 71,
-          "silence_ratio": 0.739,
-          "cluster_ratio": 0.0
+          "notes_per_bar": 7.12,
+          "pitch_span": 24,
+          "unique_pitches": 14,
+          "pitch_min": 48,
+          "pitch_max": 72,
+          "silence_ratio": 0.466,
+          "cluster_ratio": 0.754
         },
-        "drums": {
-          "notes_per_bar": 4.5,
-          "pitch_span": 46,
-          "unique_pitches": 15,
-          "pitch_min": 35,
-          "pitch_max": 81,
+        "bass": {
+          "notes_per_bar": 6.0,
+          "pitch_span": 8,
+          "unique_pitches": 8,
+          "pitch_min": 49,
+          "pitch_max": 57,
           "silence_ratio": 0.0,
           "cluster_ratio": 0.0
         },
-        "register_overlap_semitones": 0
+        "drums": {
+          "notes_per_bar": 18.0,
+          "pitch_span": 6,
+          "unique_pitches": 3,
+          "pitch_min": 36,
+          "pitch_max": 42,
+          "silence_ratio": 0.25,
+          "cluster_ratio": 0.0
+        },
+        "register_overlap_semitones": 12
       },
       "event_nll": null
     },
@@ -322,51 +357,51 @@
       "rule_score": 0.64,
       "passed": true,
       "issues": [
-        "melody: mean interval 8.6 semitones (average > P5 \u2014 sounds like random leaps)",
-        "melody: silence ratio 0% (no breathing room)",
-        "drums: silence ratio 0% (no breathing room)"
+        "melody: 70% notes clustered within half-beat (stacked pile-up)",
+        "bass: silence ratio 0% (no breathing room)",
+        "register overlap: bass top=57 invades melody bottom=45 by 12 semitones"
       ],
       "metrics": {
         "melody": {
-          "notes_per_bar": 6.38,
-          "pitch_span": 30,
-          "unique_pitches": 15,
-          "pitch_min": 44,
-          "pitch_max": 74,
-          "mean_interval": 8.6,
-          "max_interval": 24,
-          "direction_reversal_ratio": 0.592,
-          "silence_ratio": 0.0,
-          "cluster_ratio": 0.0
-        },
-        "bass": {
-          "notes_per_bar": 1.0,
-          "pitch_span": 10,
-          "unique_pitches": 5,
-          "pitch_min": 40,
-          "pitch_max": 50,
-          "silence_ratio": 0.744,
-          "cluster_ratio": 0.0
+          "notes_per_bar": 3.75,
+          "pitch_span": 17,
+          "unique_pitches": 11,
+          "pitch_min": 45,
+          "pitch_max": 62,
+          "mean_interval": 4.62,
+          "max_interval": 17,
+          "direction_reversal_ratio": 0.667,
+          "silence_ratio": 0.707,
+          "cluster_ratio": 0.7
         },
         "harmony": {
-          "notes_per_bar": 6.38,
-          "pitch_span": 23,
-          "unique_pitches": 15,
-          "pitch_min": 49,
+          "notes_per_bar": 4.88,
+          "pitch_span": 24,
+          "unique_pitches": 14,
+          "pitch_min": 48,
           "pitch_max": 72,
-          "silence_ratio": 0.424,
+          "silence_ratio": 0.478,
+          "cluster_ratio": 0.641
+        },
+        "bass": {
+          "notes_per_bar": 6.0,
+          "pitch_span": 8,
+          "unique_pitches": 8,
+          "pitch_min": 49,
+          "pitch_max": 57,
+          "silence_ratio": 0.0,
           "cluster_ratio": 0.0
         },
         "drums": {
-          "notes_per_bar": 8.62,
-          "pitch_span": 46,
-          "unique_pitches": 18,
-          "pitch_min": 35,
-          "pitch_max": 81,
-          "silence_ratio": 0.0,
+          "notes_per_bar": 18.0,
+          "pitch_span": 6,
+          "unique_pitches": 3,
+          "pitch_min": 36,
+          "pitch_max": 42,
+          "silence_ratio": 0.25,
           "cluster_ratio": 0.0
         },
-        "register_overlap_semitones": 6
+        "register_overlap_semitones": 12
       },
       "event_nll": null
     },
@@ -375,54 +410,56 @@
       "file": "p3_resolution.mid",
       "bars": 8,
       "bpm": 80,
-      "rule_score": 0.64,
-      "passed": true,
+      "rule_score": 0.4,
+      "passed": false,
       "issues": [
-        "melody: silence ratio 0% (no breathing room)",
-        "harmony: silence ratio 0% (no breathing room)",
-        "drums: silence ratio 0% (no breathing room)"
+        "melody: 78% notes clustered within half-beat (stacked pile-up)",
+        "harmony: silence ratio 3% (no breathing room)",
+        "harmony: 91% notes clustered within half-beat (stacked pile-up)",
+        "bass: silence ratio 0% (no breathing room)",
+        "register overlap: bass top=57 invades melody bottom=44 by 13 semitones"
       ],
       "metrics": {
         "melody": {
-          "notes_per_bar": 9.12,
-          "pitch_span": 29,
-          "unique_pitches": 18,
-          "pitch_min": 45,
-          "pitch_max": 74,
-          "mean_interval": 7.99,
-          "max_interval": 24,
-          "direction_reversal_ratio": 0.652,
-          "silence_ratio": 0.0,
-          "cluster_ratio": 0.0
-        },
-        "bass": {
-          "notes_per_bar": 1.75,
-          "pitch_span": 13,
-          "unique_pitches": 7,
-          "pitch_min": 37,
-          "pitch_max": 50,
-          "silence_ratio": 0.615,
-          "cluster_ratio": 0.0
+          "notes_per_bar": 6.12,
+          "pitch_span": 22,
+          "unique_pitches": 21,
+          "pitch_min": 44,
+          "pitch_max": 66,
+          "mean_interval": 7.42,
+          "max_interval": 17,
+          "direction_reversal_ratio": 0.711,
+          "silence_ratio": 0.145,
+          "cluster_ratio": 0.776
         },
         "harmony": {
-          "notes_per_bar": 12.75,
-          "pitch_span": 23,
-          "unique_pitches": 16,
-          "pitch_min": 49,
+          "notes_per_bar": 7.0,
+          "pitch_span": 24,
+          "unique_pitches": 19,
+          "pitch_min": 48,
           "pitch_max": 72,
-          "silence_ratio": 0.0,
-          "cluster_ratio": 0.059
+          "silence_ratio": 0.028,
+          "cluster_ratio": 0.911
         },
-        "drums": {
-          "notes_per_bar": 15.0,
-          "pitch_span": 46,
-          "unique_pitches": 28,
-          "pitch_min": 35,
-          "pitch_max": 81,
+        "bass": {
+          "notes_per_bar": 6.0,
+          "pitch_span": 8,
+          "unique_pitches": 8,
+          "pitch_min": 49,
+          "pitch_max": 57,
           "silence_ratio": 0.0,
           "cluster_ratio": 0.0
         },
-        "register_overlap_semitones": 5
+        "drums": {
+          "notes_per_bar": 18.0,
+          "pitch_span": 6,
+          "unique_pitches": 3,
+          "pitch_min": 36,
+          "pitch_max": 42,
+          "silence_ratio": 0.25,
+          "cluster_ratio": 0.0
+        },
+        "register_overlap_semitones": 13
       },
       "event_nll": null
     },
@@ -431,21 +468,24 @@
       "file": "p1_theme.mid",
       "bars": 4,
       "bpm": 120,
-      "rule_score": 1.0,
+      "rule_score": 0.76,
       "passed": true,
-      "issues": [],
+      "issues": [
+        "melody: 76% direction reversals (melodic zigzag/jumble)",
+        "melody: silence ratio 0% (no breathing room)"
+      ],
       "metrics": {
         "melody": {
-          "notes_per_bar": 9.25,
-          "pitch_span": 31,
-          "unique_pitches": 15,
+          "notes_per_bar": 5.5,
+          "pitch_span": 12,
+          "unique_pitches": 7,
           "pitch_min": 60,
-          "pitch_max": 91,
-          "mean_interval": 6.97,
-          "max_interval": 24,
-          "direction_reversal_ratio": 0.676,
-          "silence_ratio": 0.416,
-          "cluster_ratio": 0.541
+          "pitch_max": 72,
+          "mean_interval": 4.33,
+          "max_interval": 9,
+          "direction_reversal_ratio": 0.765,
+          "silence_ratio": 0.0,
+          "cluster_ratio": 0.455
         }
       },
       "event_nll": null
@@ -455,21 +495,24 @@
       "file": "p2_variation.mid",
       "bars": 4,
       "bpm": 120,
-      "rule_score": 1.0,
+      "rule_score": 0.76,
       "passed": true,
-      "issues": [],
+      "issues": [
+        "melody: 80% direction reversals (melodic zigzag/jumble)",
+        "melody: silence ratio 0% (no breathing room)"
+      ],
       "metrics": {
         "melody": {
-          "notes_per_bar": 9.5,
-          "pitch_span": 31,
-          "unique_pitches": 12,
+          "notes_per_bar": 6.0,
+          "pitch_span": 12,
+          "unique_pitches": 8,
           "pitch_min": 60,
-          "pitch_max": 91,
-          "mean_interval": 7.78,
-          "max_interval": 24,
-          "direction_reversal_ratio": 0.676,
-          "silence_ratio": 0.398,
-          "cluster_ratio": 0.447
+          "pitch_max": 72,
+          "mean_interval": 4.74,
+          "max_interval": 9,
+          "direction_reversal_ratio": 0.8,
+          "silence_ratio": 0.0,
+          "cluster_ratio": 0.5
         }
       },
       "event_nll": null
@@ -482,20 +525,20 @@
       "rule_score": 0.88,
       "passed": true,
       "issues": [
-        "melody: max interval 26 semitones (>24 = jarring jump)"
+        "melody: silence ratio 0% (no breathing room)"
       ],
       "metrics": {
         "melody": {
-          "notes_per_bar": 11.0,
-          "pitch_span": 31,
-          "unique_pitches": 12,
+          "notes_per_bar": 6.5,
+          "pitch_span": 12,
+          "unique_pitches": 8,
           "pitch_min": 60,
-          "pitch_max": 91,
-          "mean_interval": 7.58,
-          "max_interval": 26,
-          "direction_reversal_ratio": 0.732,
-          "silence_ratio": 0.348,
-          "cluster_ratio": 0.568
+          "pitch_max": 72,
+          "mean_interval": 3.92,
+          "max_interval": 9,
+          "direction_reversal_ratio": 0.65,
+          "silence_ratio": 0.0,
+          "cluster_ratio": 0.462
         }
       },
       "event_nll": null
@@ -505,45 +548,31 @@
       "file": "p1_void.mid",
       "bars": 8,
       "bpm": 84,
-      "rule_score": 0.64,
+      "rule_score": 0.76,
       "passed": true,
       "issues": [
-        "melody: 67% notes clustered within half-beat (stacked pile-up)",
-        "bass: 100% notes clustered within half-beat (stacked pile-up)",
-        "harmony: 83% notes clustered within half-beat (stacked pile-up)"
+        "harmony: silence ratio 0% (no breathing room)",
+        "harmony: 76% notes clustered within half-beat (stacked pile-up)"
       ],
       "metrics": {
-        "melody": {
-          "notes_per_bar": 0.75,
-          "pitch_span": 8,
-          "unique_pitches": 5,
-          "pitch_min": 59,
-          "pitch_max": 67,
-          "mean_interval": 3.6,
-          "max_interval": 7,
-          "direction_reversal_ratio": 0.5,
-          "silence_ratio": 0.422,
-          "cluster_ratio": 0.667
-        },
         "bass": {
-          "notes_per_bar": 4.25,
-          "pitch_span": 29,
-          "unique_pitches": 15,
-          "pitch_min": 28,
-          "pitch_max": 57,
-          "silence_ratio": 0.158,
-          "cluster_ratio": 1.0
+          "notes_per_bar": 0.62,
+          "pitch_span": 7,
+          "unique_pitches": 2,
+          "pitch_min": 47,
+          "pitch_max": 54,
+          "silence_ratio": 0.823,
+          "cluster_ratio": 0.4
         },
         "harmony": {
-          "notes_per_bar": 0.75,
-          "pitch_span": 13,
-          "unique_pitches": 6,
-          "pitch_min": 54,
-          "pitch_max": 67,
-          "silence_ratio": 0.641,
-          "cluster_ratio": 0.833
-        },
-        "register_overlap_semitones": 0
+          "notes_per_bar": 6.38,
+          "pitch_span": 18,
+          "unique_pitches": 15,
+          "pitch_min": 53,
+          "pitch_max": 71,
+          "silence_ratio": 0.0,
+          "cluster_ratio": 0.765
+        }
       },
       "event_nll": null
     },
@@ -552,48 +581,31 @@
       "file": "p2_drift.mid",
       "bars": 8,
       "bpm": 84,
-      "rule_score": 0.28,
-      "passed": false,
+      "rule_score": 0.76,
+      "passed": true,
       "issues": [
-        "melody: 77% direction reversals (melodic zigzag/jumble)",
-        "melody: silence ratio 0% (no breathing room)",
-        "bass: silence ratio 0% (no breathing room)",
-        "bass: 79% notes clustered within half-beat (stacked pile-up)",
-        "harmony: silence ratio 0% (no breathing room)",
-        "harmony: 78% notes clustered within half-beat (stacked pile-up)"
+        "harmony: silence ratio 5% (no breathing room)",
+        "harmony: 71% notes clustered within half-beat (stacked pile-up)"
       ],
       "metrics": {
-        "melody": {
-          "notes_per_bar": 5.25,
-          "pitch_span": 19,
-          "unique_pitches": 11,
-          "pitch_min": 57,
-          "pitch_max": 76,
-          "mean_interval": 5.63,
-          "max_interval": 19,
-          "direction_reversal_ratio": 0.769,
-          "silence_ratio": 0.0,
-          "cluster_ratio": 0.476
-        },
         "bass": {
-          "notes_per_bar": 4.25,
-          "pitch_span": 29,
-          "unique_pitches": 14,
-          "pitch_min": 28,
-          "pitch_max": 57,
-          "silence_ratio": 0.0,
-          "cluster_ratio": 0.794
+          "notes_per_bar": 0.5,
+          "pitch_span": 7,
+          "unique_pitches": 2,
+          "pitch_min": 47,
+          "pitch_max": 54,
+          "silence_ratio": 0.932,
+          "cluster_ratio": 0.0
         },
         "harmony": {
-          "notes_per_bar": 4.0,
-          "pitch_span": 19,
-          "unique_pitches": 12,
-          "pitch_min": 52,
+          "notes_per_bar": 6.0,
+          "pitch_span": 18,
+          "unique_pitches": 13,
+          "pitch_min": 53,
           "pitch_max": 71,
-          "silence_ratio": 0.0,
-          "cluster_ratio": 0.781
-        },
-        "register_overlap_semitones": 0
+          "silence_ratio": 0.052,
+          "cluster_ratio": 0.708
+        }
       },
       "event_nll": null
     },
@@ -602,47 +614,30 @@
       "file": "p3_shore.mid",
       "bars": 8,
       "bpm": 84,
-      "rule_score": 0.4,
-      "passed": false,
+      "rule_score": 0.88,
+      "passed": true,
       "issues": [
-        "melody: silence ratio 0% (no breathing room)",
-        "bass: silence ratio 0% (no breathing room)",
-        "bass: 76% notes clustered within half-beat (stacked pile-up)",
-        "harmony: silence ratio 0% (no breathing room)",
-        "harmony: 77% notes clustered within half-beat (stacked pile-up)"
+        "harmony: 73% notes clustered within half-beat (stacked pile-up)"
       ],
       "metrics": {
-        "melody": {
-          "notes_per_bar": 4.88,
-          "pitch_span": 19,
-          "unique_pitches": 11,
-          "pitch_min": 57,
-          "pitch_max": 76,
-          "mean_interval": 5.92,
-          "max_interval": 14,
-          "direction_reversal_ratio": 0.703,
-          "silence_ratio": 0.0,
-          "cluster_ratio": 0.436
-        },
         "bass": {
-          "notes_per_bar": 4.12,
-          "pitch_span": 29,
-          "unique_pitches": 14,
-          "pitch_min": 28,
-          "pitch_max": 57,
-          "silence_ratio": 0.0,
-          "cluster_ratio": 0.758
+          "notes_per_bar": 0.62,
+          "pitch_span": 11,
+          "unique_pitches": 3,
+          "pitch_min": 43,
+          "pitch_max": 54,
+          "silence_ratio": 0.898,
+          "cluster_ratio": 0.0
         },
         "harmony": {
-          "notes_per_bar": 3.88,
-          "pitch_span": 19,
-          "unique_pitches": 12,
-          "pitch_min": 52,
+          "notes_per_bar": 6.38,
+          "pitch_span": 18,
+          "unique_pitches": 13,
+          "pitch_min": 53,
           "pitch_max": 71,
-          "silence_ratio": 0.0,
-          "cluster_ratio": 0.774
-        },
-        "register_overlap_semitones": 0
+          "silence_ratio": 0.126,
+          "cluster_ratio": 0.725
+        }
       },
       "event_nll": null
     },
@@ -651,45 +646,42 @@
       "file": "p1_opening.mid",
       "bars": 8,
       "bpm": 72,
-      "rule_score": 0.76,
+      "rule_score": 0.64,
       "passed": true,
       "issues": [
-        "melody: 77% direction reversals (melodic zigzag/jumble)",
+        "melody: too sparse (0.2 notes/bar)",
+        "melody: only 2 distinct pitches (repetitive loop)",
         "bass: too sparse (0.1 notes/bar)"
       ],
       "metrics": {
         "melody": {
-          "notes_per_bar": 1.88,
-          "pitch_span": 9,
-          "unique_pitches": 6,
+          "notes_per_bar": 0.25,
+          "pitch_span": 17,
+          "unique_pitches": 2,
           "pitch_min": 58,
-          "pitch_max": 67,
-          "mean_interval": 3.43,
-          "max_interval": 7,
-          "direction_reversal_ratio": 0.769,
-          "silence_ratio": 0.828,
-          "cluster_ratio": 0.0
+          "pitch_max": 75,
+          "silence_ratio": 0.959
         },
         "bass": {
           "notes_per_bar": 0.12,
-          "silence_ratio": 0.994
+          "silence_ratio": 0.984
         },
         "harmony": {
-          "notes_per_bar": 2.88,
-          "pitch_span": 15,
-          "unique_pitches": 8,
-          "pitch_min": 55,
-          "pitch_max": 70,
-          "silence_ratio": 0.788,
-          "cluster_ratio": 0.391
+          "notes_per_bar": 1.0,
+          "pitch_span": 21,
+          "unique_pitches": 5,
+          "pitch_min": 46,
+          "pitch_max": 67,
+          "silence_ratio": 0.586,
+          "cluster_ratio": 0.0
         },
         "drums": {
-          "notes_per_bar": 1.0,
-          "pitch_span": 20,
-          "unique_pitches": 5,
-          "pitch_min": 37,
-          "pitch_max": 57,
-          "silence_ratio": 0.92,
+          "notes_per_bar": 2.38,
+          "pitch_span": 7,
+          "unique_pitches": 3,
+          "pitch_min": 35,
+          "pitch_max": 42,
+          "silence_ratio": 0.754,
           "cluster_ratio": 0.0
         },
         "register_overlap_semitones": 0
@@ -701,44 +693,45 @@
       "file": "p2_drift.mid",
       "bars": 8,
       "bpm": 72,
-      "rule_score": 0.88,
+      "rule_score": 0.64,
       "passed": true,
       "issues": [
+        "melody: too sparse (0.4 notes/bar)",
+        "melody: mean interval 9.5 semitones (average > P5 \u2014 sounds like random leaps)",
         "bass: too sparse (0.1 notes/bar)"
       ],
       "metrics": {
         "melody": {
-          "notes_per_bar": 2.25,
-          "pitch_span": 9,
-          "unique_pitches": 6,
-          "pitch_min": 58,
-          "pitch_max": 67,
-          "mean_interval": 3.06,
-          "max_interval": 7,
-          "direction_reversal_ratio": 0.733,
-          "silence_ratio": 0.809,
+          "notes_per_bar": 0.38,
+          "pitch_span": 18,
+          "unique_pitches": 3,
+          "pitch_min": 57,
+          "pitch_max": 75,
+          "mean_interval": 9.5,
+          "max_interval": 18,
+          "silence_ratio": 0.944,
           "cluster_ratio": 0.0
         },
         "bass": {
           "notes_per_bar": 0.12,
-          "silence_ratio": 0.994
+          "silence_ratio": 0.984
         },
         "harmony": {
-          "notes_per_bar": 2.75,
-          "pitch_span": 15,
-          "unique_pitches": 8,
-          "pitch_min": 55,
-          "pitch_max": 70,
-          "silence_ratio": 0.8,
-          "cluster_ratio": 0.273
+          "notes_per_bar": 1.0,
+          "pitch_span": 21,
+          "unique_pitches": 5,
+          "pitch_min": 46,
+          "pitch_max": 67,
+          "silence_ratio": 0.588,
+          "cluster_ratio": 0.0
         },
         "drums": {
-          "notes_per_bar": 1.0,
-          "pitch_span": 20,
-          "unique_pitches": 5,
-          "pitch_min": 37,
-          "pitch_max": 57,
-          "silence_ratio": 0.92,
+          "notes_per_bar": 2.5,
+          "pitch_span": 7,
+          "unique_pitches": 3,
+          "pitch_min": 35,
+          "pitch_max": 42,
+          "silence_ratio": 0.752,
           "cluster_ratio": 0.0
         },
         "register_overlap_semitones": 0
@@ -757,37 +750,36 @@
       ],
       "metrics": {
         "melody": {
-          "notes_per_bar": 2.25,
-          "pitch_span": 9,
-          "unique_pitches": 6,
-          "pitch_min": 58,
-          "pitch_max": 67,
-          "mean_interval": 3.06,
-          "max_interval": 7,
-          "direction_reversal_ratio": 0.733,
-          "silence_ratio": 0.809,
-          "cluster_ratio": 0.0
+          "notes_per_bar": 0.5,
+          "pitch_span": 18,
+          "unique_pitches": 3,
+          "pitch_min": 57,
+          "pitch_max": 75,
+          "mean_interval": 6.33,
+          "max_interval": 18,
+          "silence_ratio": 0.929,
+          "cluster_ratio": 0.5
         },
         "bass": {
           "notes_per_bar": 0.12,
-          "silence_ratio": 0.994
+          "silence_ratio": 0.984
         },
         "harmony": {
-          "notes_per_bar": 2.75,
-          "pitch_span": 15,
-          "unique_pitches": 8,
-          "pitch_min": 55,
-          "pitch_max": 70,
-          "silence_ratio": 0.799,
-          "cluster_ratio": 0.455
+          "notes_per_bar": 1.0,
+          "pitch_span": 21,
+          "unique_pitches": 5,
+          "pitch_min": 46,
+          "pitch_max": 67,
+          "silence_ratio": 0.588,
+          "cluster_ratio": 0.0
         },
         "drums": {
-          "notes_per_bar": 1.0,
-          "pitch_span": 20,
-          "unique_pitches": 5,
-          "pitch_min": 37,
-          "pitch_max": 57,
-          "silence_ratio": 0.92,
+          "notes_per_bar": 2.62,
+          "pitch_span": 7,
+          "unique_pitches": 3,
+          "pitch_min": 35,
+          "pitch_max": 42,
+          "silence_ratio": 0.75,
           "cluster_ratio": 0.0
         },
         "register_overlap_semitones": 0
@@ -796,20 +788,29 @@
     },
     {
       "suite": "smoke-and-mirrors",
-      "file": "p1_intro.mid",
+      "file": "p1_foundation.mid",
       "bars": 8,
       "bpm": 100,
       "rule_score": 1.0,
       "passed": true,
       "issues": [],
       "metrics": {
+        "bass": {
+          "notes_per_bar": 1.5,
+          "pitch_span": 17,
+          "unique_pitches": 6,
+          "pitch_min": 33,
+          "pitch_max": 50,
+          "silence_ratio": 0.9,
+          "cluster_ratio": 0.0
+        },
         "drums": {
-          "notes_per_bar": 0.88,
-          "pitch_span": 9,
-          "unique_pitches": 3,
-          "pitch_min": 37,
-          "pitch_max": 46,
-          "silence_ratio": 0.812,
+          "notes_per_bar": 4.62,
+          "pitch_span": 33,
+          "unique_pitches": 10,
+          "pitch_min": 36,
+          "pitch_max": 69,
+          "silence_ratio": 0.67,
           "cluster_ratio": 0.0
         }
       },
@@ -817,163 +818,61 @@
     },
     {
       "suite": "smoke-and-mirrors",
-      "file": "p2_variation.mid",
+      "file": "p2_climb.mid",
       "bars": 8,
       "bpm": 100,
-      "rule_score": 0.88,
+      "rule_score": 1.0,
       "passed": true,
-      "issues": [
-        "melody: mean interval 8.3 semitones (average > P5 \u2014 sounds like random leaps)"
-      ],
+      "issues": [],
       "metrics": {
-        "melody": {
-          "notes_per_bar": 4.12,
-          "pitch_span": 20,
-          "unique_pitches": 12,
-          "pitch_min": 45,
-          "pitch_max": 65,
-          "mean_interval": 8.28,
-          "max_interval": 19,
-          "direction_reversal_ratio": 0.7,
-          "silence_ratio": 0.674,
-          "cluster_ratio": 0.545
-        },
         "bass": {
-          "notes_per_bar": 1.0,
-          "pitch_span": 7,
-          "unique_pitches": 4,
-          "pitch_min": 31,
-          "pitch_max": 38,
-          "silence_ratio": 0.863,
+          "notes_per_bar": 1.5,
+          "pitch_span": 17,
+          "unique_pitches": 6,
+          "pitch_min": 33,
+          "pitch_max": 50,
+          "silence_ratio": 0.898,
           "cluster_ratio": 0.0
         },
-        "harmony": {
-          "notes_per_bar": 2.25,
-          "pitch_span": 14,
+        "drums": {
+          "notes_per_bar": 4.62,
+          "pitch_span": 33,
           "unique_pitches": 10,
-          "pitch_min": 58,
-          "pitch_max": 72,
-          "silence_ratio": 0.734,
-          "cluster_ratio": 0.222
-        },
-        "drums": {
-          "notes_per_bar": 2.38,
-          "pitch_span": 10,
-          "unique_pitches": 5,
           "pitch_min": 36,
-          "pitch_max": 46,
-          "silence_ratio": 0.766,
+          "pitch_max": 69,
+          "silence_ratio": 0.67,
           "cluster_ratio": 0.0
-        },
-        "register_overlap_semitones": 0
+        }
       },
       "event_nll": null
     },
     {
       "suite": "smoke-and-mirrors",
-      "file": "p3_development.mid",
+      "file": "p3_climax.mid",
       "bars": 8,
       "bpm": 100,
-      "rule_score": 0.88,
+      "rule_score": 1.0,
       "passed": true,
-      "issues": [
-        "melody: 68% notes clustered within half-beat (stacked pile-up)"
-      ],
+      "issues": [],
       "metrics": {
-        "melody": {
-          "notes_per_bar": 9.12,
-          "pitch_span": 23,
-          "unique_pitches": 16,
-          "pitch_min": 46,
-          "pitch_max": 69,
-          "mean_interval": 7.1,
-          "max_interval": 19,
-          "direction_reversal_ratio": 0.75,
-          "silence_ratio": 0.447,
-          "cluster_ratio": 0.685
-        },
         "bass": {
-          "notes_per_bar": 1.25,
-          "pitch_span": 7,
-          "unique_pitches": 4,
-          "pitch_min": 31,
-          "pitch_max": 38,
-          "silence_ratio": 0.838,
+          "notes_per_bar": 1.62,
+          "pitch_span": 17,
+          "unique_pitches": 6,
+          "pitch_min": 33,
+          "pitch_max": 50,
+          "silence_ratio": 0.896,
           "cluster_ratio": 0.0
-        },
-        "harmony": {
-          "notes_per_bar": 6.38,
-          "pitch_span": 19,
-          "unique_pitches": 13,
-          "pitch_min": 53,
-          "pitch_max": 72,
-          "silence_ratio": 0.53,
-          "cluster_ratio": 0.51
         },
         "drums": {
-          "notes_per_bar": 2.38,
-          "pitch_span": 10,
-          "unique_pitches": 5,
+          "notes_per_bar": 5.12,
+          "pitch_span": 33,
+          "unique_pitches": 10,
           "pitch_min": 36,
-          "pitch_max": 46,
-          "silence_ratio": 0.766,
-          "cluster_ratio": 0.0
-        },
-        "register_overlap_semitones": 0
-      },
-      "event_nll": null
-    },
-    {
-      "suite": "smoke-and-mirrors",
-      "file": "p4_climax.mid",
-      "bars": 8,
-      "bpm": 100,
-      "rule_score": 0.88,
-      "passed": true,
-      "issues": [
-        "melody: 69% notes clustered within half-beat (stacked pile-up)"
-      ],
-      "metrics": {
-        "melody": {
-          "notes_per_bar": 10.0,
-          "pitch_span": 23,
-          "unique_pitches": 16,
-          "pitch_min": 46,
           "pitch_max": 69,
-          "mean_interval": 7.32,
-          "max_interval": 19,
-          "direction_reversal_ratio": 0.703,
-          "silence_ratio": 0.399,
-          "cluster_ratio": 0.688
-        },
-        "bass": {
-          "notes_per_bar": 1.25,
-          "pitch_span": 7,
-          "unique_pitches": 4,
-          "pitch_min": 31,
-          "pitch_max": 38,
-          "silence_ratio": 0.838,
+          "silence_ratio": 0.658,
           "cluster_ratio": 0.0
-        },
-        "harmony": {
-          "notes_per_bar": 6.5,
-          "pitch_span": 19,
-          "unique_pitches": 13,
-          "pitch_min": 53,
-          "pitch_max": 72,
-          "silence_ratio": 0.588,
-          "cluster_ratio": 0.365
-        },
-        "drums": {
-          "notes_per_bar": 2.38,
-          "pitch_span": 10,
-          "unique_pitches": 5,
-          "pitch_min": 36,
-          "pitch_max": 46,
-          "silence_ratio": 0.766,
-          "cluster_ratio": 0.0
-        },
-        "register_overlap_semitones": 0
+        }
       },
       "event_nll": null
     }

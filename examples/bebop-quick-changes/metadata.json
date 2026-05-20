@@ -1,6 +1,6 @@
 {
   "suite": "Quick Changes",
-  "description": "A three-pattern bebop jazz suite in Bb major. Piano trio texture emerged: piano comping over walking bass and ride cymbal at 200 BPM. Chromatic approach notes and bebop passing tones preserved (scale strictness 0.25, semitone tolerance 1). Medium bebop swing (0.63 ratio). Vocabulary masking (disable_patch_change, disable_control_change) and all-channel prompt conditioning ensure clean instrument separation. Per-role velocity shaping (melody 80-110, harmony 55-80, bass 50-75) adds dynamic depth.",
+  "description": "A three-pattern bebop jazz suite in Bb major at a true bebop tempo of 200 BPM. Deterministic walking bass (4 quarter notes/bar — root, 3rd, 5th, chromatic approach) with swing_ride drums (kick beat 1, brushed snare 2+4, ride on all beats + swung upbeats). The model generates melody + harmony; bass and drums are injected by the coherence layer. Tension arc 0.0→0.4→0.7 adds chromatic approach notes with seed=55 for bebop-style crunch. Scale strictness 0.25 preserves bebop passing tones.",
   "generated": "2026-05-19",
   "hardware": "4× Tenstorrent P300C chips (tt-forge)",
   "model": "skytnt/midi-model (LlamaModel, 12-layer, ~350M params)",
@@ -26,7 +26,11 @@
     "scale_strictness": 0.25,
     "chord_semitone_tolerance": 1,
     "swing_ratio": 0.63,
-    "swing": "medium bebop swing — off-beat eighths at 63% of beat"
+    "swing": "medium bebop swing — off-beat eighths at 63% of beat",
+    "walking_bass": true,
+    "drum_groove": "swing_ride (kick beat 1, snare 2+4, ride all beats + upbeats)",
+    "tension_arc": [0.0, 0.4, 0.7],
+    "approach_notes": "pre-downbeat chromatic (bebop style, seed=55)"
   },
 
   "instruments": {

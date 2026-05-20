@@ -1,0 +1,43 @@
+{
+  "suite": "Silicon Road",
+  "description": "A three-pattern Berlin School ambient sequence in E minor. Slow hypnotic drift at 84 BPM over a i-bVI-iv-v progression (Em7 → Cmaj7 → Am7 → Bm7). Modular synth pads in the upper register, minimalist bass movement, and sparse percussion conjure late-night analog sequencer territory — Tangerine Dream / Klaus Schulze territory. Tension arc 0.0→0.2→0.4 adds subtle chromatic approach notes in P3 for a gentle forward motion.",
+  "generated": "2026-05-19",
+  "hardware": "4× Tenstorrent P300C chips (tt-forge)",
+  "model": "skytnt/midi-model (LlamaModel, 12-layer, ~350M params)",
+
+  "musical_parameters": {
+    "key": "E minor",
+    "bpm": 84,
+    "bars": 8,
+    "loop_duration_sec": 22.9,
+    "chord_progression": ["Em7", "Cmaj7", "Am7", "Bm7"],
+    "style": "Berlin School ambient"
+  },
+
+  "generation_parameters": {
+    "hw_context_interval": 4,
+    "max_padded_len": 256,
+    "temperature": 1.0,
+    "top_p": 0.98,
+    "top_k": 20
+  },
+
+  "coherence_settings": {
+    "scale_mode": "natural minor",
+    "tension_arc": [0.0, 0.2, 0.4],
+    "swing_ratio": 0.0,
+    "approach_notes": "sparse (tension-gated)"
+  },
+
+  "instruments": {
+    "melody": {"role": "modular synth pad / lead", "gm_program": 88},
+    "harmony": {"role": "string ensemble / pad", "gm_program": 48},
+    "bass":    {"role": "acoustic bass", "gm_program": 32}
+  },
+
+  "patterns": [
+    {"file": "p1_void.mid",  "label": "Pattern 1 — void (cold start)", "tension": 0.0},
+    {"file": "p2_drift.mid", "label": "Pattern 2 — drift",             "tension": 0.2, "source": "p1_void.mid"},
+    {"file": "p3_shore.mid", "label": "Pattern 3 — shore",             "tension": 0.4, "source": "p2_drift.mid"}
+  ]
+}
