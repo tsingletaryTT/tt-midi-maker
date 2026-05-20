@@ -44,17 +44,34 @@ def play(midi_path: Path, loop: bool, visual: bool) -> None:
             str(MIDI_VIZ),
             "--midi", midi_str,
             "--loop", "1" if loop else "0",
+            "--preroll", "0",
+            "--show-notes", "1",
             "--show-particles", "1",
             "--show-flashes", "1",
+            "--show-blur", "1",
+            "--show-keyboard", "1",
+            "--min-key", "36",
+            "--max-key", "84",
+            "--sets-mode", "0",
+            "--filter-show-channels", "0", "1", "2", "3", "4", "5",
+                                            "6", "7", "8", "9", "10", "11",
+                                            "12", "13", "14", "15",
             "--quality", "HIGH",
             *VIZ_COLORS,
         ]
         env = {"DISPLAY": DISPLAY, "PATH": "/usr/local/bin:/usr/bin:/bin"}
-        procs.append(subprocess.Popen(viz_cmd, env=env,
-                                      stdout=subprocess.DEVNULL,
-                                      stderr=subprocess.DEVNULL))
+        viz_proc = subprocess.Popen(viz_cmd, env=env,
+                                    stdout=subprocess.DEVNULL,
+                                    stderr=subprocess.DEVNULL)
+        procs.append(viz_proc)
         print(f"  Visual : MIDIVisualizer launched (DISPLAY={DISPLAY})")
-        time.sleep(0.5)  # let window open before audio starts
+        time.sleep(2)  # let window open fully
+        # Hide the settings panel automatically
+        subprocess.run(
+            ["xdotool", "search", "--name", "MIDI", "windowfocus", "--sync", "key", "h"],
+            env={**env, "DISPLAY": DISPLAY},
+            capture_output=True,
+        )
 
     # --- FluidSynth audio ---
     fluid_cmd = [
