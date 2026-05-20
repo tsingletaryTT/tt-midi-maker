@@ -55,6 +55,7 @@ OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 from tt_midi_maker.assembler import TICKS_PER_BEAT, build_midi_file
 from tt_midi_maker.coherence.humanize import humanize_velocities, nudge_timing, scale_velocity_by_role
+from tt_midi_maker.coherence.improv import add_approach_notes
 from tt_midi_maker.coherence.scale import scale_quantize
 from tt_midi_maker.generation.hardware import detect_tt_devices
 from tt_midi_maker.generation.midi_backend import generate_from_blueprint
@@ -99,13 +100,20 @@ def _blueprint() -> MusicalBlueprint:
     )
 
 
-def _apply_coherence(tracks) -> list:
+def _apply_coherence(tracks, tension: float = 0.0) -> list:
+    bp = _blueprint()  # fetch chord progression for approach-note placement
     out = []
     for track in tracks:
         # Strict C major pentatonic: no chromatic passing tones — clean chip feel
         notes = scale_quantize(track.notes, KEY, strictness=0.9,
                                override_mode="pentatonic_major")
         notes = scale_velocity_by_role(notes, track.role, ranges=VELOCITY_RANGES)
+        # Tension arc: chromatic approach notes before chord-tone downbeats
+        # Single-voice monosynth — melody is the only active role, so always applies
+        if track.role == "melody" and tension > 0.0:
+            notes = add_approach_notes(notes, bp.chord_progression,
+                                       4 * TICKS_PER_BEAT, TICKS_PER_BEAT,
+                                       tension=tension, seed=42)
         notes = humanize_velocities(notes, variation=6)
         notes = nudge_timing(notes, max_ticks=6)  # tight rhythmic lock — chip feel
         out.append(replace(track, notes=notes))
@@ -116,6 +124,7 @@ def generate(
     filename: str,
     source_midi: str | None = None,
     label: str = "",
+    tension: float = 0.0,
 ) -> str | None:
     bp        = _blueprint()
     src_label = f"← {Path(source_midi).name}" if source_midi else "cold start"
@@ -140,7 +149,7 @@ def generate(
         return None
 
     stamped  = [replace(t, program=LEAD_PROGRAM) if t.role == "melody" else t for t in tracks]
-    polished = _apply_coherence(stamped)
+    polished = _apply_coherence(stamped, tension=tension)
     out      = OUTPUT_DIR / filename
     build_midi_file(polished, bp.bpm, out)
 
@@ -174,13 +183,16 @@ def main():
     bar()
 
     f1 = generate("p1_theme.mid",
-                  label="Pattern 1 — theme (cold start)")
+                  label="Pattern 1 — theme (cold start)",
+                  tension=0.0)
     f2 = generate("p2_variation.mid",
                   source_midi=f1,
-                  label="Pattern 2 — variation (seeded from P1)")
+                  label="Pattern 2 — variation (seeded from P1)",
+                  tension=0.3)
     f3 = generate("p3_development.mid",
                   source_midi=f2,
-                  label="Pattern 3 — development (seeded from P2)")
+                  label="Pattern 3 — development (seeded from P2)",
+                  tension=0.6)
 
     bar("═")
     valid = [f for f in [f1, f2, f3] if f]

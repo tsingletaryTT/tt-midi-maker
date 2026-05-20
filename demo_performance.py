@@ -48,6 +48,7 @@ OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 from tt_midi_maker.assembler import TICKS_PER_BEAT, build_midi_file
 from tt_midi_maker.coherence.harmony import chord_aware_filter
 from tt_midi_maker.coherence.humanize import humanize_velocities, nudge_timing, scale_velocity_by_role
+from tt_midi_maker.coherence.improv import add_approach_notes
 from tt_midi_maker.coherence.scale import build_scale_set, parse_key, scale_quantize
 from tt_midi_maker.generation.hardware import detect_tt_devices
 from tt_midi_maker.generation.midi_backend import generate_from_blueprint
@@ -101,7 +102,7 @@ def _blueprint(active_roles: list[str]) -> MusicalBlueprint:
     )
 
 
-def _apply_coherence(tracks, bp: MusicalBlueprint) -> list:
+def _apply_coherence(tracks, bp: MusicalBlueprint, tension: float = 0.0) -> list:
     root, mode = parse_key(bp.key)
     scale_set  = build_scale_set(root, mode)
     out = []
@@ -110,6 +111,12 @@ def _apply_coherence(tracks, bp: MusicalBlueprint) -> list:
         notes = chord_aware_filter(notes, bp.chord_progression,
                                    4 * TICKS_PER_BEAT, TICKS_PER_BEAT, scale_set)
         notes = scale_velocity_by_role(notes, track.role)
+        # Tension arc: sax lead benefits from chromatic approach notes —
+        # builds from clean P1 intro to a more ornamented climax by P4
+        if track.role == "melody" and tension > 0.0:
+            notes = add_approach_notes(notes, bp.chord_progression,
+                                       4 * TICKS_PER_BEAT, TICKS_PER_BEAT,
+                                       tension=tension, seed=42)
         notes = humanize_velocities(notes)
         notes = nudge_timing(notes)
         out.append(replace(track, notes=notes))
@@ -123,6 +130,7 @@ def generate(
     max_events: int = 96,
     hw_context_interval: int = 4,
     label: str = "",
+    tension: float = 0.0,
 ) -> str | None:
     """Generate one pattern, apply coherence passes, save MIDI, return path."""
     bp = _blueprint(active_roles)
@@ -157,7 +165,7 @@ def generate(
         else:
             stamped.append(t)
 
-    polished = _apply_coherence(stamped, bp)
+    polished = _apply_coherence(stamped, bp, tension=tension)
     out      = OUTPUT_DIR / filename
     build_midi_file(polished, bp.bpm, out)
 
@@ -206,6 +214,7 @@ def main():
         ["bass", "drums", "harmony", "melody"],
         "p1_intro.mid",
         label="Pattern 1 — full ensemble, cold start",
+        tension=0.0,
     )
     files.append(f1)
 
@@ -215,6 +224,7 @@ def main():
         "p2_variation.mid",
         source_midi=f1,
         label="Pattern 2 — variation (seeded from P1)",
+        tension=0.35,
     )
     files.append(f2)
 
@@ -224,6 +234,7 @@ def main():
         "p3_development.mid",
         source_midi=f2,
         label="Pattern 3 — development (seeded from P2)",
+        tension=0.65,
     )
     files.append(f3)
 
@@ -235,6 +246,7 @@ def main():
         label="Pattern 4 — climax variation (seeded from P3)",
         max_events=128,
         hw_context_interval=4,
+        tension=0.65,
     )
     files.append(f4)
 

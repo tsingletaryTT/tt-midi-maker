@@ -59,6 +59,7 @@ OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 from tt_midi_maker.assembler import TICKS_PER_BEAT, build_midi_file
 from tt_midi_maker.coherence.harmony import chord_aware_filter
 from tt_midi_maker.coherence.humanize import humanize_velocities, nudge_timing, scale_velocity_by_role
+from tt_midi_maker.coherence.improv import add_approach_notes
 from tt_midi_maker.coherence.scale import build_scale_set, parse_key, scale_quantize
 from tt_midi_maker.generation.hardware import detect_tt_devices
 from tt_midi_maker.generation.midi_backend import generate_from_blueprint
@@ -111,7 +112,7 @@ def _blueprint(active_roles: list[str]) -> MusicalBlueprint:
     )
 
 
-def _apply_coherence(tracks, bp: MusicalBlueprint) -> list:
+def _apply_coherence(tracks, bp: MusicalBlueprint, tension: float = 0.0) -> list:
     root, mode = parse_key(bp.key)
     scale_set  = build_scale_set(root, mode)
     out = []
@@ -123,6 +124,12 @@ def _apply_coherence(tracks, bp: MusicalBlueprint) -> list:
                                    4 * TICKS_PER_BEAT, TICKS_PER_BEAT, scale_set,
                                    semitone_tolerance=1)
         notes = scale_velocity_by_role(notes, track.role, ranges=VELOCITY_RANGES)
+        # Tension arc: approach notes add chromatic colour before chord-tone downbeats;
+        # Berlin School allows this naturally (sequencer drift, chromatic leads)
+        if track.role == "melody" and tension > 0.0:
+            notes = add_approach_notes(notes, bp.chord_progression,
+                                       4 * TICKS_PER_BEAT, TICKS_PER_BEAT,
+                                       tension=tension, seed=42)
         notes = humanize_velocities(notes, variation=12, phrase_contour=True)
         notes = nudge_timing(notes, max_ticks=15)  # expressive — Berlin School is loose
         out.append(replace(track, notes=notes))
@@ -136,6 +143,7 @@ def generate(
     max_events: int = 128,
     hw_context_interval: int = 2,
     label: str = "",
+    tension: float = 0.0,
 ) -> str | None:
     bp        = _blueprint(active_roles)
     src_label = f"← {Path(source_midi).name}" if source_midi else "cold start"
@@ -170,7 +178,7 @@ def generate(
         else:
             stamped.append(t)
 
-    polished   = _apply_coherence(stamped, bp)
+    polished   = _apply_coherence(stamped, bp, tension=tension)
     out        = OUTPUT_DIR / filename
     build_midi_file(polished, bp.bpm, out)
 
@@ -205,15 +213,18 @@ def main():
 
     f1 = generate(ROLES, "p1_void.mid",
                   max_events=128, hw_context_interval=2,
-                  label="Pattern 1 — void (cold start, sparse emergence)")
+                  label="Pattern 1 — void (cold start, sparse emergence)",
+                  tension=0.0)
     f2 = generate(ROLES, "p2_drift.mid",
                   source_midi=f1,
                   max_events=160, hw_context_interval=2,
-                  label="Pattern 2 — drift (seeded from P1, texture develops)")
+                  label="Pattern 2 — drift (seeded from P1, texture develops)",
+                  tension=0.2)
     f3 = generate(ROLES, "p3_shore.mid",
                   source_midi=f2,
                   max_events=160, hw_context_interval=2,
-                  label="Pattern 3 — shore (seeded from P2, arrival)")
+                  label="Pattern 3 — shore (seeded from P2, arrival)",
+                  tension=0.4)
 
     bar("═")
     valid = [f for f in [f1, f2, f3] if f]

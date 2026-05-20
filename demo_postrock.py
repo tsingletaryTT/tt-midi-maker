@@ -41,6 +41,7 @@ OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 from tt_midi_maker.assembler import TICKS_PER_BEAT, build_midi_file
 from tt_midi_maker.coherence.harmony import chord_aware_filter
 from tt_midi_maker.coherence.humanize import humanize_velocities, nudge_timing, scale_velocity_by_role
+from tt_midi_maker.coherence.improv import add_approach_notes
 from tt_midi_maker.coherence.scale import build_scale_set, parse_key, scale_quantize
 from tt_midi_maker.generation.hardware import detect_tt_devices
 from tt_midi_maker.generation.midi_backend import generate_from_blueprint
@@ -80,7 +81,7 @@ def _blueprint(active_roles: list[str]) -> MusicalBlueprint:
     )
 
 
-def _apply_coherence(tracks, bp: MusicalBlueprint) -> list:
+def _apply_coherence(tracks, bp: MusicalBlueprint, tension: float = 0.0) -> list:
     root, mode = parse_key(bp.key)
     scale_set  = build_scale_set(root, mode)
     out = []
@@ -89,6 +90,12 @@ def _apply_coherence(tracks, bp: MusicalBlueprint) -> list:
         notes = chord_aware_filter(notes, bp.chord_progression,
                                    4 * TICKS_PER_BEAT, TICKS_PER_BEAT, scale_set)
         notes = scale_velocity_by_role(notes, track.role)
+        # Tension arc: post-rock builds dramatically — high tension values create
+        # dense chromatic approach figures before downbeats (Mogwai/GY!BE climax feel)
+        if track.role == "melody" and tension > 0.0:
+            notes = add_approach_notes(notes, bp.chord_progression,
+                                       4 * TICKS_PER_BEAT, TICKS_PER_BEAT,
+                                       tension=tension, seed=42)
         notes = humanize_velocities(notes)
         notes = nudge_timing(notes)
         out.append(replace(track, notes=notes))
@@ -102,12 +109,14 @@ def generate_pattern(
     override_melody_program: bool = False,
     source_midi: str | None = None,
     source_context_bars: int | None = 8,
+    tension: float = 0.0,
 ) -> str | None:
     """Generate, apply coherence, save, return path. None on empty output.
 
     source_midi: path to a previous generation to use as musical context.
     The model sees the last source_context_bars of that file before generating,
     so each pattern builds naturally on the previous one.
+    tension: approach-note probability (0.0=none, 0.75=dramatic climax).
     """
     bp = _blueprint(active_roles)
     if source_midi:
@@ -133,7 +142,7 @@ def generate_pattern(
             for t in tracks
         ]
 
-    tracks = _apply_coherence(tracks, bp)
+    tracks = _apply_coherence(tracks, bp, tension=tension)
     out = OUTPUT_DIR / filename
     build_midi_file(tracks, bp.bpm, out)
 
@@ -170,6 +179,7 @@ def main():
         ["bass", "drums"],
         "demo_1_bass_drums.mid",
         max_events=256,
+        tension=0.0,
     )
     if f1 is None:
         print("  ERROR: generation failed"); sys.exit(1)
@@ -197,6 +207,7 @@ def main():
         max_events=256,
         override_melody_program=True,   # melody voice → prog 33 = Electric Bass Finger
         source_midi=f1,                 # continue from pattern 1
+        tension=0.45,
     )
     if f2:
         loop_queue(f2)
@@ -214,6 +225,7 @@ def main():
         max_events=256,
         override_melody_program=True,
         source_midi=f2 or f1,           # continue from pattern 2 (or 1 if 2 failed)
+        tension=0.75,
     )
     if f3:
         loop_queue(f3)
