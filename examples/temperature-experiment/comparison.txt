@@ -1,0 +1,15 @@
+Temperature Experiment — tt-midi-maker
+Key: C major   BPM: 120   Bars: 8   Backend: tt-forge (4 P300C)
+
+  Temp  Label           Notes     Raw    Post  Delta
+------------------------------------------------------------
+   0.7  conservative       57    1.00    1.00  +0.00
+   1.0  standard           23    1.00    1.00  +0.00
+   1.5  experimental       12    1.00    0.88  -0.12
+
+Raw  = quality score before coherence layer
+Post = quality score after scale/harmony/approach-note coherence
+
+Higher temperature → more random tokens → lower raw score
+Coherence layer partially recovers quality by forcing scale/harmony alignment
+But high-temp generation retains rhythmic unpredictability even after coherence
